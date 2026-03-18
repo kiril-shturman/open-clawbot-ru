@@ -53,7 +53,8 @@ class I18nManager {
     }
     const language =
       typeof globalThis.navigator?.language === "string" ? globalThis.navigator.language : null;
-    return resolveNavigatorLocale(language ?? "");
+    const resolved = resolveNavigatorLocale(language ?? "");
+    return resolved === DEFAULT_LOCALE ? "ru" : resolved;
   }
 
   private loadLocale() {
