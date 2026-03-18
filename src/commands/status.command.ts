@@ -242,7 +242,7 @@ export async function statusCommand(
 
   if (opts.verbose) {
     const details = buildGatewayConnectionDetails({ config: scan.cfg });
-    runtime.log(info("Gateway connection:"));
+    runtime.log(info("Подключение к gateway:"));
     for (const line of details.message.split("\n")) {
       runtime.log(`  ${line}`);
     }
@@ -252,7 +252,7 @@ export async function statusCommand(
   const tableWidth = getTerminalTableWidth();
 
   if (secretDiagnostics.length > 0) {
-    runtime.log(theme.warn("Secret diagnostics:"));
+    runtime.log(theme.warn("Диагностика секретов:"));
     for (const entry of secretDiagnostics) {
       runtime.log(`- ${entry}`);
     }
@@ -262,7 +262,7 @@ export async function statusCommand(
   const dashboard = (() => {
     const controlUiEnabled = cfg.gateway?.controlUi?.enabled ?? true;
     if (!controlUiEnabled) {
-      return "disabled";
+      return "отключено";
     }
     const links = resolveControlUiLinks({
       port: resolveGatewayPort(cfg),
@@ -275,13 +275,13 @@ export async function statusCommand(
 
   const gatewayValue = (() => {
     const target = remoteUrlMissing
-      ? `fallback ${gatewayConnection.url}`
+      ? `резервный адрес ${gatewayConnection.url}`
       : `${gatewayConnection.url}${gatewayConnection.urlSource ? ` (${gatewayConnection.urlSource})` : ""}`;
     const reach = remoteUrlMissing
-      ? warn("misconfigured (remote.url missing)")
+      ? warn("неверная конфигурация (remote.url отсутствует)")
       : gatewayReachable
-        ? ok(`reachable ${formatDuration(gatewayProbe?.connectLatencyMs)}`)
-        : warn(gatewayProbe?.error ? `unreachable (${gatewayProbe.error})` : "unreachable");
+        ? ok(`доступен ${formatDuration(gatewayProbe?.connectLatencyMs)}`)
+        : warn(gatewayProbe?.error ? `недоступен (${gatewayProbe.error})` : "недоступен");
     const auth =
       gatewayReachable && !remoteUrlMissing
         ? ` · auth ${formatGatewayAuthUsed(gatewayProbeAuth)}`
@@ -308,12 +308,13 @@ export async function statusCommand(
   const agentsValue = (() => {
     const pending =
       agentStatus.bootstrapPendingCount > 0
-        ? `${agentStatus.bootstrapPendingCount} bootstrap file${agentStatus.bootstrapPendingCount === 1 ? "" : "s"} present`
-        : "no bootstrap files";
+        ? `${agentStatus.bootstrapPendingCount} bootstrap-файл${agentStatus.bootstrapPendingCount === 1 ? "" : "ов"} найдено`
+        : "bootstrap-файлов нет";
     const def = agentStatus.agents.find((a) => a.id === agentStatus.defaultId);
-    const defActive = def?.lastActiveAgeMs != null ? formatTimeAgo(def.lastActiveAgeMs) : "unknown";
-    const defSuffix = def ? ` · default ${def.id} active ${defActive}` : "";
-    return `${agentStatus.agents.length} · ${pending} · sessions ${agentStatus.totalSessions}${defSuffix}`;
+    const defActive =
+      def?.lastActiveAgeMs != null ? formatTimeAgo(def.lastActiveAgeMs) : "неизвестно";
+    const defSuffix = def ? ` · по умолчанию ${def.id}, активен ${defActive}` : "";
+    return `${agentStatus.agents.length} · ${pending} · сессий ${agentStatus.totalSessions}${defSuffix}`;
   })();
 
   const [daemon, nodeDaemon] = await Promise.all([
@@ -322,16 +323,16 @@ export async function statusCommand(
   ]);
   const daemonValue = (() => {
     if (daemon.installed === false) {
-      return `${daemon.label} not installed`;
+      return `${daemon.label} не установлен`;
     }
-    const installedPrefix = daemon.managedByOpenClaw ? "installed · " : "";
+    const installedPrefix = daemon.managedByOpenClaw ? "установлен · " : "";
     return `${daemon.label} ${installedPrefix}${daemon.loadedText}${daemon.runtimeShort ? ` · ${daemon.runtimeShort}` : ""}`;
   })();
   const nodeDaemonValue = (() => {
     if (nodeDaemon.installed === false) {
-      return `${nodeDaemon.label} not installed`;
+      return `${nodeDaemon.label} не установлен`;
     }
-    const installedPrefix = nodeDaemon.managedByOpenClaw ? "installed · " : "";
+    const installedPrefix = nodeDaemon.managedByOpenClaw ? "установлен · " : "";
     return `${nodeDaemon.label} ${installedPrefix}${nodeDaemon.loadedText}${nodeDaemon.runtimeShort ? ` · ${nodeDaemon.runtimeShort}` : ""}`;
   })();
 
@@ -340,61 +341,65 @@ export async function statusCommand(
     ? ` (${formatKTokens(defaults.contextTokens)} ctx)`
     : "";
   const eventsValue =
-    summary.queuedSystemEvents.length > 0 ? `${summary.queuedSystemEvents.length} queued` : "none";
+    summary.queuedSystemEvents.length > 0
+      ? `${summary.queuedSystemEvents.length} в очереди`
+      : "нет";
 
-  const probesValue = health ? ok("enabled") : muted("skipped (use --deep)");
+  const probesValue = health ? ok("включено") : muted("пропущено (используйте --deep)");
 
   const heartbeatValue = (() => {
     const parts = summary.heartbeat.agents
       .map((agent) => {
         if (!agent.enabled || !agent.everyMs) {
-          return `disabled (${agent.agentId})`;
+          return `отключено (${agent.agentId})`;
         }
         const everyLabel = agent.every;
         return `${everyLabel} (${agent.agentId})`;
       })
       .filter(Boolean);
-    return parts.length > 0 ? parts.join(", ") : "disabled";
+    return parts.length > 0 ? parts.join(", ") : "отключено";
   })();
   const lastHeartbeatValue = (() => {
     if (!opts.deep) {
       return null;
     }
     if (!gatewayReachable) {
-      return warn("unavailable");
+      return warn("недоступно");
     }
     if (!lastHeartbeat) {
-      return muted("none");
+      return muted("нет");
     }
     const age = formatTimeAgo(Date.now() - lastHeartbeat.ts);
-    const channel = lastHeartbeat.channel ?? "unknown";
-    const accountLabel = lastHeartbeat.accountId ? `account ${lastHeartbeat.accountId}` : null;
-    return [lastHeartbeat.status, `${age} ago`, channel, accountLabel].filter(Boolean).join(" · ");
+    const channel = lastHeartbeat.channel ?? "неизвестно";
+    const accountLabel = lastHeartbeat.accountId ? `аккаунт ${lastHeartbeat.accountId}` : null;
+    return [lastHeartbeat.status, `${age} назад`, channel, accountLabel]
+      .filter(Boolean)
+      .join(" · ");
   })();
 
   const storeLabel =
     summary.sessions.paths.length > 1
-      ? `${summary.sessions.paths.length} stores`
-      : (summary.sessions.paths[0] ?? "unknown");
+      ? `${summary.sessions.paths.length} хранилища`
+      : (summary.sessions.paths[0] ?? "неизвестно");
 
   const memoryValue = (() => {
     if (!memoryPlugin.enabled) {
       const suffix = memoryPlugin.reason ? ` (${memoryPlugin.reason})` : "";
-      return muted(`disabled${suffix}`);
+      return muted(`отключено${suffix}`);
     }
     if (!memory) {
       const slot = memoryPlugin.slot ? `plugin ${memoryPlugin.slot}` : "plugin";
       // Custom (non-built-in) memory plugins can't be probed — show enabled, not unavailable
       if (memoryPlugin.slot && memoryPlugin.slot !== "memory-core") {
-        return `enabled (${slot})`;
+        return `включено (${slot})`;
       }
-      return muted(`enabled (${slot}) · unavailable`);
+      return muted(`включено (${slot}) · недоступно`);
     }
     const parts: string[] = [];
-    const dirtySuffix = memory.dirty ? ` · ${warn("dirty")}` : "";
-    parts.push(`${memory.files} files · ${memory.chunks} chunks${dirtySuffix}`);
+    const dirtySuffix = memory.dirty ? ` · ${warn("есть несохранённые изменения")}` : "";
+    parts.push(`${memory.files} файлов · ${memory.chunks} чанков${dirtySuffix}`);
     if (memory.sources?.length) {
-      parts.push(`sources ${memory.sources.join(", ")}`);
+      parts.push(`источники ${memory.sources.join(", ")}`);
     }
     if (memoryPlugin.slot) {
       parts.push(`plugin ${memoryPlugin.slot}`);
@@ -404,13 +409,13 @@ export async function statusCommand(
     const vector = memory.vector;
     if (vector) {
       const state = resolveMemoryVectorState(vector);
-      const label = state.state === "disabled" ? "vector off" : `vector ${state.state}`;
+      const label = state.state === "disabled" ? "vector выкл" : `vector ${state.state}`;
       parts.push(colorByTone(state.tone, label));
     }
     const fts = memory.fts;
     if (fts) {
       const state = resolveMemoryFtsState(fts);
-      const label = state.state === "disabled" ? "fts off" : `fts ${state.state}`;
+      const label = state.state === "disabled" ? "fts выкл" : `fts ${state.state}`;
       parts.push(colorByTone(state.tone, label));
     }
     const cache = memory.cache;
@@ -428,57 +433,57 @@ export async function statusCommand(
   const pluginCompatibilitySummary = summarizePluginCompatibility(pluginCompatibility);
   const pluginCompatibilityValue =
     pluginCompatibilitySummary.noticeCount === 0
-      ? ok("none")
+      ? ok("нет")
       : warn(
-          `${pluginCompatibilitySummary.noticeCount} notice${pluginCompatibilitySummary.noticeCount === 1 ? "" : "s"} · ${pluginCompatibilitySummary.pluginCount} plugin${pluginCompatibilitySummary.pluginCount === 1 ? "" : "s"}`,
+          `${pluginCompatibilitySummary.noticeCount} уведомлен${pluginCompatibilitySummary.noticeCount === 1 ? "ие" : "ий"} · ${pluginCompatibilitySummary.pluginCount} плагин${pluginCompatibilitySummary.pluginCount === 1 ? "" : "ов"}`,
         );
 
   const overviewRows = [
-    { Item: "Dashboard", Value: dashboard },
-    { Item: "OS", Value: `${osSummary.label} · node ${process.versions.node}` },
+    { Item: "Панель управления", Value: dashboard },
+    { Item: "ОС", Value: `${osSummary.label} · node ${process.versions.node}` },
     {
       Item: "Tailscale",
       Value:
         tailscaleMode === "off"
-          ? muted("off")
+          ? muted("выкл")
           : tailscaleDns && tailscaleHttpsUrl
             ? `${tailscaleMode} · ${tailscaleDns} · ${tailscaleHttpsUrl}`
-            : warn(`${tailscaleMode} · magicdns unknown`),
+            : warn(`${tailscaleMode} · magicdns неизвестен`),
     },
-    { Item: "Channel", Value: channelLabel },
+    { Item: "Канал", Value: channelLabel },
     ...(gitLabel ? [{ Item: "Git", Value: gitLabel }] : []),
     {
-      Item: "Update",
-      Value: updateAvailability.available ? warn(`available · ${updateLine}`) : updateLine,
+      Item: "Обновление",
+      Value: updateAvailability.available ? warn(`доступно · ${updateLine}`) : updateLine,
     },
     { Item: "Gateway", Value: gatewayValue },
     ...(gatewayProbeAuthWarning
-      ? [{ Item: "Gateway auth warning", Value: warn(gatewayProbeAuthWarning) }]
+      ? [{ Item: "Предупреждение auth gateway", Value: warn(gatewayProbeAuthWarning) }]
       : []),
-    { Item: "Gateway service", Value: daemonValue },
-    { Item: "Node service", Value: nodeDaemonValue },
-    { Item: "Agents", Value: agentsValue },
-    { Item: "Memory", Value: memoryValue },
-    { Item: "Plugin compatibility", Value: pluginCompatibilityValue },
-    { Item: "Probes", Value: probesValue },
-    { Item: "Events", Value: eventsValue },
+    { Item: "Сервис Gateway", Value: daemonValue },
+    { Item: "Сервис Node", Value: nodeDaemonValue },
+    { Item: "Агенты", Value: agentsValue },
+    { Item: "Память", Value: memoryValue },
+    { Item: "Совместимость плагинов", Value: pluginCompatibilityValue },
+    { Item: "Проверки", Value: probesValue },
+    { Item: "События", Value: eventsValue },
     { Item: "Heartbeat", Value: heartbeatValue },
-    ...(lastHeartbeatValue ? [{ Item: "Last heartbeat", Value: lastHeartbeatValue }] : []),
+    ...(lastHeartbeatValue ? [{ Item: "Последний heartbeat", Value: lastHeartbeatValue }] : []),
     {
-      Item: "Sessions",
-      Value: `${summary.sessions.count} active · default ${defaults.model ?? "unknown"}${defaultCtx} · ${storeLabel}`,
+      Item: "Сессии",
+      Value: `${summary.sessions.count} активных · по умолчанию ${defaults.model ?? "неизвестно"}${defaultCtx} · ${storeLabel}`,
     },
   ];
 
-  runtime.log(theme.heading("OpenClaw status"));
+  runtime.log(theme.heading("Статус OpenClaw"));
   runtime.log("");
-  runtime.log(theme.heading("Overview"));
+  runtime.log(theme.heading("Обзор"));
   runtime.log(
     renderTable({
       width: tableWidth,
       columns: [
-        { key: "Item", header: "Item", minWidth: 12 },
-        { key: "Value", header: "Value", flex: true, minWidth: 32 },
+        { key: "Item", header: "Пункт", minWidth: 12 },
+        { key: "Value", header: "Значение", flex: true, minWidth: 32 },
       ],
       rows: overviewRows,
     }).trimEnd(),
@@ -486,32 +491,34 @@ export async function statusCommand(
 
   if (pluginCompatibility.length > 0) {
     runtime.log("");
-    runtime.log(theme.heading("Plugin compatibility"));
+    runtime.log(theme.heading("Совместимость плагинов"));
     for (const notice of pluginCompatibility.slice(0, 8)) {
       const label = notice.severity === "warn" ? theme.warn("WARN") : theme.muted("INFO");
       runtime.log(`  ${label} ${formatPluginCompatibilityNotice(notice)}`);
     }
     if (pluginCompatibility.length > 8) {
-      runtime.log(theme.muted(`  … +${pluginCompatibility.length - 8} more`));
+      runtime.log(theme.muted(`  … ещё +${pluginCompatibility.length - 8}`));
     }
   }
 
   if (pairingRecovery) {
     runtime.log("");
-    runtime.log(theme.warn("Gateway pairing approval required."));
+    runtime.log(theme.warn("Требуется подтверждение pairing для gateway."));
     if (pairingRecovery.requestId) {
       runtime.log(
         theme.muted(
-          `Recovery: ${formatCliCommand(`openclaw devices approve ${pairingRecovery.requestId}`)}`,
+          `Восстановление: ${formatCliCommand(`openclaw devices approve ${pairingRecovery.requestId}`)}`,
         ),
       );
     }
-    runtime.log(theme.muted(`Fallback: ${formatCliCommand("openclaw devices approve --latest")}`));
-    runtime.log(theme.muted(`Inspect: ${formatCliCommand("openclaw devices list")}`));
+    runtime.log(
+      theme.muted(`Запасной вариант: ${formatCliCommand("openclaw devices approve --latest")}`),
+    );
+    runtime.log(theme.muted(`Проверить: ${formatCliCommand("openclaw devices list")}`));
   }
 
   runtime.log("");
-  runtime.log(theme.heading("Security audit"));
+  runtime.log(theme.heading("Аудит безопасности"));
   const fmtSummary = (value: { critical: number; warn: number; info: number }) => {
     const parts = [
       theme.error(`${value.critical} critical`),
@@ -520,12 +527,12 @@ export async function statusCommand(
     ];
     return parts.join(" · ");
   };
-  runtime.log(theme.muted(`Summary: ${fmtSummary(securityAudit.summary)}`));
+  runtime.log(theme.muted(`Сводка: ${fmtSummary(securityAudit.summary)}`));
   const importantFindings = securityAudit.findings.filter(
     (f) => f.severity === "critical" || f.severity === "warn",
   );
   if (importantFindings.length === 0) {
-    runtime.log(theme.muted("No critical or warn findings detected."));
+    runtime.log(theme.muted("Критических и предупреждающих находок не обнаружено."));
   } else {
     const severityLabel = (sev: "critical" | "warn" | "info") => {
       if (sev === "critical") {
@@ -546,27 +553,29 @@ export async function statusCommand(
       runtime.log(`  ${severityLabel(f.severity)} ${f.title}`);
       runtime.log(`    ${shortenText(f.detail.replaceAll("\n", " "), 160)}`);
       if (f.remediation?.trim()) {
-        runtime.log(`    ${theme.muted(`Fix: ${f.remediation.trim()}`)}`);
+        runtime.log(`    ${theme.muted(`Исправление: ${f.remediation.trim()}`)}`);
       }
     }
     if (sorted.length > shown.length) {
-      runtime.log(theme.muted(`… +${sorted.length - shown.length} more`));
+      runtime.log(theme.muted(`… ещё +${sorted.length - shown.length}`));
     }
   }
-  runtime.log(theme.muted(`Full report: ${formatCliCommand("openclaw security audit")}`));
-  runtime.log(theme.muted(`Deep probe: ${formatCliCommand("openclaw security audit --deep")}`));
+  runtime.log(theme.muted(`Полный отчёт: ${formatCliCommand("openclaw security audit")}`));
+  runtime.log(
+    theme.muted(`Глубокая проверка: ${formatCliCommand("openclaw security audit --deep")}`),
+  );
 
   runtime.log("");
-  runtime.log(theme.heading("Channels"));
+  runtime.log(theme.heading("Каналы"));
   const channelIssuesByChannel = groupChannelIssuesByChannel(channelIssues);
   runtime.log(
     renderTable({
       width: tableWidth,
       columns: [
-        { key: "Channel", header: "Channel", minWidth: 10 },
-        { key: "Enabled", header: "Enabled", minWidth: 7 },
-        { key: "State", header: "State", minWidth: 8 },
-        { key: "Detail", header: "Detail", flex: true, minWidth: 24 },
+        { key: "Channel", header: "Канал", minWidth: 10 },
+        { key: "Enabled", header: "Вкл", minWidth: 7 },
+        { key: "State", header: "Состояние", minWidth: 8 },
+        { key: "Detail", header: "Детали", flex: true, minWidth: 24 },
       ],
       rows: channels.rows.map((row) => {
         const issues = channelIssuesByChannel.get(row.id) ?? [];
@@ -593,29 +602,29 @@ export async function statusCommand(
   );
 
   runtime.log("");
-  runtime.log(theme.heading("Sessions"));
+  runtime.log(theme.heading("Сессии"));
   runtime.log(
     renderTable({
       width: tableWidth,
       columns: [
-        { key: "Key", header: "Key", minWidth: 20, flex: true },
-        { key: "Kind", header: "Kind", minWidth: 6 },
-        { key: "Age", header: "Age", minWidth: 9 },
-        { key: "Model", header: "Model", minWidth: 14 },
-        { key: "Tokens", header: "Tokens", minWidth: 16 },
+        { key: "Key", header: "Ключ", minWidth: 20, flex: true },
+        { key: "Kind", header: "Тип", minWidth: 6 },
+        { key: "Age", header: "Возраст", minWidth: 9 },
+        { key: "Model", header: "Модель", minWidth: 14 },
+        { key: "Tokens", header: "Токены", minWidth: 16 },
       ],
       rows:
         summary.sessions.recent.length > 0
           ? summary.sessions.recent.map((sess) => ({
               Key: shortenText(sess.key, 32),
               Kind: sess.kind,
-              Age: sess.updatedAt ? formatTimeAgo(sess.age) : "no activity",
-              Model: sess.model ?? "unknown",
+              Age: sess.updatedAt ? formatTimeAgo(sess.age) : "нет активности",
+              Model: sess.model ?? "неизвестно",
               Tokens: formatTokensCompact(sess),
             }))
           : [
               {
-                Key: muted("no sessions yet"),
+                Key: muted("сессий пока нет"),
                 Kind: "",
                 Age: "",
                 Model: "",
@@ -627,28 +636,28 @@ export async function statusCommand(
 
   if (summary.queuedSystemEvents.length > 0) {
     runtime.log("");
-    runtime.log(theme.heading("System events"));
+    runtime.log(theme.heading("Системные события"));
     runtime.log(
       renderTable({
         width: tableWidth,
-        columns: [{ key: "Event", header: "Event", flex: true, minWidth: 24 }],
+        columns: [{ key: "Event", header: "Событие", flex: true, minWidth: 24 }],
         rows: summary.queuedSystemEvents.slice(0, 5).map((event) => ({
           Event: event,
         })),
       }).trimEnd(),
     );
     if (summary.queuedSystemEvents.length > 5) {
-      runtime.log(muted(`… +${summary.queuedSystemEvents.length - 5} more`));
+      runtime.log(muted(`… ещё +${summary.queuedSystemEvents.length - 5}`));
     }
   }
 
   if (health) {
     runtime.log("");
-    runtime.log(theme.heading("Health"));
+    runtime.log(theme.heading("Состояние"));
     const rows: Array<Record<string, string>> = [];
     rows.push({
       Item: "Gateway",
-      Status: ok("reachable"),
+      Status: ok("доступен"),
       Detail: `${health.durationMs}ms`,
     });
 
@@ -668,16 +677,16 @@ export async function statusCommand(
           return warn("WARN");
         }
         if (normalized.startsWith("not configured")) {
-          return muted("OFF");
+          return muted("ВЫКЛ");
         }
         if (normalized.startsWith("configured")) {
           return ok("OK");
         }
         if (normalized.startsWith("linked")) {
-          return ok("LINKED");
+          return ok("СВЯЗАНО");
         }
         if (normalized.startsWith("not linked")) {
-          return warn("UNLINKED");
+          return warn("НЕ СВЯЗАНО");
         }
         return warn("WARN");
       })();
@@ -688,9 +697,9 @@ export async function statusCommand(
       renderTable({
         width: tableWidth,
         columns: [
-          { key: "Item", header: "Item", minWidth: 10 },
-          { key: "Status", header: "Status", minWidth: 8 },
-          { key: "Detail", header: "Detail", flex: true, minWidth: 28 },
+          { key: "Item", header: "Пункт", minWidth: 10 },
+          { key: "Status", header: "Статус", minWidth: 8 },
+          { key: "Detail", header: "Детали", flex: true, minWidth: 28 },
         ],
         rows,
       }).trimEnd(),
@@ -700,7 +709,7 @@ export async function statusCommand(
   if (usage) {
     const { formatUsageReportLines } = await loadProviderUsage();
     runtime.log("");
-    runtime.log(theme.heading("Usage"));
+    runtime.log(theme.heading("Использование"));
     for (const line of formatUsageReportLines(usage)) {
       runtime.log(line);
     }
@@ -708,19 +717,19 @@ export async function statusCommand(
 
   runtime.log("");
   runtime.log("FAQ: https://docs.openclaw.ai/faq");
-  runtime.log("Troubleshooting: https://docs.openclaw.ai/troubleshooting");
+  runtime.log("Устранение проблем: https://docs.openclaw.ai/troubleshooting");
   runtime.log("");
   const updateHint = formatUpdateAvailableHint(update);
   if (updateHint) {
     runtime.log(theme.warn(updateHint));
     runtime.log("");
   }
-  runtime.log("Next steps:");
-  runtime.log(`  Need to share?      ${formatCliCommand("openclaw status --all")}`);
-  runtime.log(`  Need to debug live? ${formatCliCommand("openclaw logs --follow")}`);
+  runtime.log("Следующие шаги:");
+  runtime.log(`  Нужно поделиться?      ${formatCliCommand("openclaw status --all")}`);
+  runtime.log(`  Нужна живая отладка?   ${formatCliCommand("openclaw logs --follow")}`);
   if (gatewayReachable) {
-    runtime.log(`  Need to test channels? ${formatCliCommand("openclaw status --deep")}`);
+    runtime.log(`  Нужно проверить каналы? ${formatCliCommand("openclaw status --deep")}`);
   } else {
-    runtime.log(`  Fix reachability first: ${formatCliCommand("openclaw gateway probe")}`);
+    runtime.log(`  Сначала почините доступность: ${formatCliCommand("openclaw gateway probe")}`);
   }
 }

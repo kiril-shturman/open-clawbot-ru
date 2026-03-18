@@ -389,6 +389,13 @@ vi.mock("../security/audit.js", () => ({
 }));
 vi.mock("../plugins/status.js", () => ({
   buildPluginCompatibilityNotices: mocks.buildPluginCompatibilityNotices,
+  summarizePluginCompatibility: vi.fn((notices: PluginCompatibilityNotice[]) => ({
+    noticeCount: notices.length,
+    pluginCount: new Set(notices.map((notice) => notice.pluginId)).size,
+  })),
+  formatPluginCompatibilityNotice: vi.fn(
+    (notice: PluginCompatibilityNotice) => `${notice.pluginId} ${notice.message}`,
+  ),
 }));
 
 import { statusCommand } from "./status.js";
@@ -489,26 +496,26 @@ describe("statusCommand", () => {
     ]);
     const logs = await runStatusAndGetLogs();
     for (const token of [
-      "OpenClaw status",
-      "Overview",
-      "Security audit",
-      "Summary:",
+      "Статус OpenClaw",
+      "Обзор",
+      "Аудит безопасности",
+      "Сводка:",
       "CRITICAL",
-      "Dashboard",
+      "Панель управления",
       "macos 14.0 (arm64)",
-      "Memory",
-      "Plugin compatibility",
-      "Channels",
+      "Память",
+      "Совместимость плагинов",
+      "Каналы",
       "WhatsApp",
-      "bootstrap files",
-      "Sessions",
+      "bootstrap-файл",
+      "Сессии",
       "+1000",
       "50%",
       "40% cached",
       "LaunchAgent",
       "FAQ:",
-      "Troubleshooting:",
-      "Next steps:",
+      "Устранение проблем:",
+      "Следующие шаги:",
     ]) {
       expect(logs.some((line) => line.includes(token))).toBe(true);
     }
@@ -633,7 +640,7 @@ describe("statusCommand", () => {
       close: { code: 1008, reason: closeReason },
     });
     const joined = await runStatusAndGetJoinedLogs();
-    expect(joined).toContain("Gateway pairing approval required.");
+    expect(joined).toContain("Требуется подтверждение pairing для gateway.");
     expect(joined).toContain("devices approve --latest");
     expect(joined).toContain("devices list");
     for (const expected of includes) {
