@@ -31,7 +31,7 @@ export async function readServiceStatusSummary(
     const externallyManaged = !managedByOpenClaw && runtime?.status === "running";
     const installed = managedByOpenClaw || externallyManaged;
     const loadedText = externallyManaged
-      ? "running (externally managed)"
+      ? "запущен (внешнее управление)"
       : loaded
         ? service.loadedText
         : service.notLoadedText;
@@ -51,7 +51,7 @@ export async function readServiceStatusSummary(
       loaded: false,
       managedByOpenClaw: false,
       externallyManaged: false,
-      loadedText: "unknown",
+      loadedText: "неизвестно",
       runtime: undefined,
     };
   }

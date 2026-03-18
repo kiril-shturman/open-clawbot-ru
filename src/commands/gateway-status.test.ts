@@ -200,9 +200,9 @@ describe("gateway-status command", () => {
     await runGatewayStatus(runtime, { timeout: "1000" });
 
     expect(runtimeErrors).toHaveLength(0);
-    expect(runtimeLogs.join("\n")).toContain("Gateway Status");
-    expect(runtimeLogs.join("\n")).toContain("Discovery (this machine)");
-    expect(runtimeLogs.join("\n")).toContain("Targets");
+    expect(runtimeLogs.join("\n")).toContain("Статус gateway");
+    expect(runtimeLogs.join("\n")).toContain("Обнаружение (эта машина)");
+    expect(runtimeLogs.join("\n")).toContain("Цели");
   });
 
   it("prints a structured JSON envelope when --json is set", async () => {

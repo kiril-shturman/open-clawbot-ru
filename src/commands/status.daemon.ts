@@ -16,7 +16,7 @@ async function buildDaemonStatusSummary(
   serviceLabel: "gateway" | "node",
 ): Promise<DaemonStatusSummary> {
   const service = serviceLabel === "gateway" ? resolveGatewayService() : resolveNodeService();
-  const fallbackLabel = serviceLabel === "gateway" ? "Daemon" : "Node";
+  const fallbackLabel = serviceLabel === "gateway" ? "Gateway" : "Node";
   const summary = await readServiceStatusSummary(service, fallbackLabel);
   return {
     label: summary.label,

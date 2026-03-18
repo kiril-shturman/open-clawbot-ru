@@ -27,7 +27,7 @@ describe("readServiceStatusSummary", () => {
         readCommand: vi.fn(async () => ({ programArguments: ["openclaw", "gateway", "run"] })),
         readRuntime: vi.fn(async () => ({ status: "running" })),
       }),
-      "Daemon",
+      "Gateway",
     );
 
     expect(summary.installed).toBe(true);
@@ -41,17 +41,17 @@ describe("readServiceStatusSummary", () => {
       createService({
         readRuntime: vi.fn(async () => ({ status: "running" })),
       }),
-      "Daemon",
+      "Gateway",
     );
 
     expect(summary.installed).toBe(true);
     expect(summary.managedByOpenClaw).toBe(false);
     expect(summary.externallyManaged).toBe(true);
-    expect(summary.loadedText).toBe("running (externally managed)");
+    expect(summary.loadedText).toBe("запущен (внешнее управление)");
   });
 
   it("keeps missing services as not installed when nothing is running", async () => {
-    const summary = await readServiceStatusSummary(createService({}), "Daemon");
+    const summary = await readServiceStatusSummary(createService({}), "Gateway");
 
     expect(summary.installed).toBe(false);
     expect(summary.managedByOpenClaw).toBe(false);
@@ -76,7 +76,7 @@ describe("readServiceStatusSummary", () => {
         })),
         readRuntime,
       }),
-      "Daemon",
+      "Gateway",
     );
 
     expect(isLoaded).toHaveBeenCalledWith(

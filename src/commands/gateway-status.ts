@@ -88,7 +88,7 @@ export async function gatewayStatusCommand(
 
   const { discovery, probed } = await withProgress(
     {
-      label: "Inspecting gateways…",
+      label: "Проверяю gateway…",
       indeterminate: true,
       enabled: opts.json !== true,
     },
@@ -230,15 +230,15 @@ export async function gatewayStatusCommand(
     warnings.push({
       code: "ssh_tunnel_failed",
       message: sshTunnelError
-        ? `SSH tunnel failed: ${String(sshTunnelError)}`
-        : "SSH tunnel failed to start; falling back to direct probes.",
+        ? `Не удалось поднять SSH tunnel: ${String(sshTunnelError)}`
+        : "Не удалось запустить SSH tunnel; переключаюсь на прямые probe-запросы.",
     });
   }
   if (multipleGateways) {
     warnings.push({
       code: "multiple_gateways",
       message:
-        "Unconventional setup: multiple reachable gateways detected. Usually one gateway per network is recommended unless you intentionally run isolated profiles, like a rescue bot (see docs: /gateway#multiple-gateways-same-host).",
+        "Необычная конфигурация: обнаружено несколько доступных gateway. Обычно рекомендуют один gateway на сеть, если только вы не запускаете изолированные профили намеренно, например rescue bot (см. docs: /gateway#multiple-gateways-same-host).",
       targetIds: reachable.map((p) => p.target.id),
     });
   }
@@ -258,7 +258,7 @@ export async function gatewayStatusCommand(
     warnings.push({
       code: "probe_scope_limited",
       message:
-        "Probe diagnostics are limited by gateway scopes (missing operator.read). Connection succeeded, but status details may be incomplete. Hint: pair device identity or use credentials with operator.read.",
+        "Диагностика probe ограничена scope-правами gateway (не хватает operator.read). Подключение успешно, но детали статуса могут быть неполными. Подсказка: свяжите identity устройства или используйте учётные данные с operator.read.",
       targetIds: [result.target.id],
     });
   }
@@ -325,42 +325,42 @@ export async function gatewayStatusCommand(
     return;
   }
 
-  runtime.log(colorize(rich, theme.heading, "Gateway Status"));
+  runtime.log(colorize(rich, theme.heading, "Статус gateway"));
   runtime.log(
     ok
-      ? `${colorize(rich, theme.success, "Reachable")}: yes`
-      : `${colorize(rich, theme.error, "Reachable")}: no`,
+      ? `${colorize(rich, theme.success, "Доступность")}: да`
+      : `${colorize(rich, theme.error, "Доступность")}: нет`,
   );
-  runtime.log(colorize(rich, theme.muted, `Probe budget: ${overallTimeoutMs}ms`));
+  runtime.log(colorize(rich, theme.muted, `Бюджет probe: ${overallTimeoutMs}ms`));
 
   if (warnings.length > 0) {
     runtime.log("");
-    runtime.log(colorize(rich, theme.warn, "Warning:"));
+    runtime.log(colorize(rich, theme.warn, "Предупреждения:"));
     for (const w of warnings) {
       runtime.log(`- ${w.message}`);
     }
   }
 
   runtime.log("");
-  runtime.log(colorize(rich, theme.heading, "Discovery (this machine)"));
+  runtime.log(colorize(rich, theme.heading, "Обнаружение (эта машина)"));
   const discoveryDomains = wideAreaDomain ? `local. + ${wideAreaDomain}` : "local.";
   runtime.log(
     discovery.length > 0
-      ? `Found ${discovery.length} gateway(s) via Bonjour (${discoveryDomains})`
-      : `Found 0 gateways via Bonjour (${discoveryDomains})`,
+      ? `Найдено gateway через Bonjour: ${discovery.length} (${discoveryDomains})`
+      : `Через Bonjour gateway не найдены (${discoveryDomains})`,
   );
   if (discovery.length === 0) {
     runtime.log(
       colorize(
         rich,
         theme.muted,
-        "Tip: if the gateway is remote, mDNS won’t cross networks; use Wide-Area Bonjour (split DNS) or SSH tunnels.",
+        "Подсказка: если gateway удалённый, mDNS не проходит между сетями; используйте Wide-Area Bonjour (split DNS) или SSH tunnel.",
       ),
     );
   }
 
   runtime.log("");
-  runtime.log(colorize(rich, theme.heading, "Targets"));
+  runtime.log(colorize(rich, theme.heading, "Цели"));
   for (const p of probed) {
     runtime.log(renderTargetHeader(p.target, rich));
     runtime.log(`  ${renderProbeSummaryLine(p.probe, rich)}`);
@@ -370,7 +370,7 @@ export async function gatewayStatusCommand(
       );
     }
     if (p.probe.ok && p.self) {
-      const host = p.self.host ?? "unknown";
+      const host = p.self.host ?? "неизвестно";
       const ip = p.self.ip ? ` (${p.self.ip})` : "";
       const platform = p.self.platform ? ` · ${p.self.platform}` : "";
       const version = p.self.version ? ` · app ${p.self.version}` : "";
