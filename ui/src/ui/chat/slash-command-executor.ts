@@ -16,6 +16,7 @@ import {
   isSubagentSessionKey,
   parseAgentSessionKey,
 } from "../../../../src/routing/session-key.js";
+import { t } from "../../i18n/lib/translate.ts";
 import { createChatModelOverride, resolveServerChatModelValue } from "../chat-model-ref.ts";
 import type { GatewayBrowserClient } from "../gateway.ts";
 import type {
@@ -56,15 +57,15 @@ export async function executeSlashCommand(
     case "help":
       return executeHelp();
     case "new":
-      return { content: "Starting new session...", action: "new-session" };
+      return { content: t("slashCommands.results.new"), action: "new-session" };
     case "reset":
-      return { content: "Resetting session...", action: "reset" };
+      return { content: t("slashCommands.results.reset"), action: "reset" };
     case "stop":
-      return { content: "Stopping current run...", action: "stop" };
+      return { content: t("slashCommands.results.stop"), action: "stop" };
     case "clear":
-      return { content: "Chat history cleared.", action: "clear" };
+      return { content: t("slashCommands.results.clear"), action: "clear" };
     case "focus":
-      return { content: "Toggled focus mode.", action: "toggle-focus" };
+      return { content: t("slashCommands.results.focus"), action: "toggle-focus" };
     case "compact":
       return await executeCompact(client, sessionKey);
     case "model":
@@ -84,28 +85,28 @@ export async function executeSlashCommand(
     case "kill":
       return await executeKill(client, sessionKey, args);
     default:
-      return { content: `Unknown command: \`/${commandName}\`` };
+      return { content: t("slashCommands.results.unknownCommand", { command: commandName }) };
   }
 }
 
 // ── Command Implementations ──
 
 function executeHelp(): SlashCommandResult {
-  const lines = ["**Available Commands**\n"];
+  const lines = [`**${t("slashCommands.results.helpTitle")}**\n`];
   let currentCategory = "";
 
   for (const cmd of SLASH_COMMANDS) {
     const cat = cmd.category ?? "session";
     if (cat !== currentCategory) {
       currentCategory = cat;
-      lines.push(`**${cat.charAt(0).toUpperCase() + cat.slice(1)}**`);
+      lines.push(`**${t(`slashCommands.categories.${cat}`)}**`);
     }
     const argStr = cmd.args ? ` ${cmd.args}` : "";
-    const local = cmd.executeLocal ? "" : " *(agent)*";
+    const local = cmd.executeLocal ? "" : ` ${t("slashCommands.results.agentTag")}`;
     lines.push(`\`/${cmd.name}${argStr}\` — ${cmd.description}${local}`);
   }
 
-  lines.push("\nType `/` to open the command menu.");
+  lines.push(`\n${t("slashCommands.results.helpHint")}`);
   return { content: lines.join("\n") };
 }
 
@@ -115,9 +116,9 @@ async function executeCompact(
 ): Promise<SlashCommandResult> {
   try {
     await client.request("sessions.compact", { key: sessionKey });
-    return { content: "Context compacted successfully.", action: "refresh" };
+    return { content: t("slashCommands.results.compactSuccess"), action: "refresh" };
   } catch (err) {
-    return { content: `Compaction failed: ${String(err)}` };
+    return { content: `${t("slashCommands.results.compactFailed")}: ${String(err)}` };
   }
 }
 
@@ -135,18 +136,20 @@ async function executeModel(
       const session = resolveCurrentSession(sessions, sessionKey);
       const model = session?.model || sessions?.defaults?.model || "default";
       const available = models?.models?.map((m: ModelCatalogEntry) => m.id) ?? [];
-      const lines = [`**Current model:** \`${model}\``];
+      const lines = [`**${t("slashCommands.results.currentModel")}** \`${model}\``];
       if (available.length > 0) {
         lines.push(
-          `**Available:** ${available
+          `**${t("slashCommands.results.availableModels")}** ${available
             .slice(0, 10)
             .map((m: string) => `\`${m}\``)
-            .join(", ")}${available.length > 10 ? ` +${available.length - 10} more` : ""}`,
+            .join(
+              ", ",
+            )}${available.length > 10 ? ` +${available.length - 10} ${t("slashCommands.results.more")}` : ""}`,
         );
       }
       return { content: lines.join("\n") };
     } catch (err) {
-      return { content: `Failed to get model info: ${String(err)}` };
+      return { content: `${t("slashCommands.results.getModelInfoFailed")}: ${String(err)}` };
     }
   }
 
@@ -160,12 +163,12 @@ async function executeModel(
       patched.resolved?.modelProvider,
     );
     return {
-      content: `Model set to \`${args.trim()}\`.`,
+      content: t("slashCommands.results.modelSet", { model: args.trim() }),
       action: "refresh",
       sessionPatch: { modelOverride: createChatModelOverride(resolvedValue) },
     };
   } catch (err) {
-    return { content: `Failed to set model: ${String(err)}` };
+    return { content: `${t("slashCommands.results.setModelFailed")}: ${String(err)}` };
   }
 }
 
@@ -181,12 +184,14 @@ async function executeThink(
       const { session, models } = await loadThinkingCommandState(client, sessionKey);
       return {
         content: formatDirectiveOptions(
-          `Current thinking level: ${resolveCurrentThinkingLevel(session, models)}.`,
+          t("slashCommands.results.currentThinkingLevel", {
+            level: resolveCurrentThinkingLevel(session, models),
+          }),
           formatThinkingLevels(session?.modelProvider, session?.model),
         ),
       };
     } catch (err) {
-      return { content: `Failed to get thinking level: ${String(err)}` };
+      return { content: `${t("slashCommands.results.getThinkingLevelFailed")}: ${String(err)}` };
     }
   }
 
@@ -195,21 +200,26 @@ async function executeThink(
     try {
       const session = await loadCurrentSession(client, sessionKey);
       return {
-        content: `Unrecognized thinking level "${rawLevel}". Valid levels: ${formatThinkingLevels(session?.modelProvider, session?.model)}.`,
+        content: t("slashCommands.results.unrecognizedThinkingLevel", {
+          level: rawLevel,
+          options: formatThinkingLevels(session?.modelProvider, session?.model),
+        }),
       };
     } catch (err) {
-      return { content: `Failed to validate thinking level: ${String(err)}` };
+      return {
+        content: `${t("slashCommands.results.validateThinkingLevelFailed")}: ${String(err)}`,
+      };
     }
   }
 
   try {
     await client.request("sessions.patch", { key: sessionKey, thinkingLevel: level });
     return {
-      content: `Thinking level set to **${level}**.`,
+      content: t("slashCommands.results.thinkingLevelSet", { level }),
       action: "refresh",
     };
   } catch (err) {
-    return { content: `Failed to set thinking level: ${String(err)}` };
+    return { content: `${t("slashCommands.results.setThinkingLevelFailed")}: ${String(err)}` };
   }
 }
 
@@ -225,30 +235,32 @@ async function executeVerbose(
       const session = await loadCurrentSession(client, sessionKey);
       return {
         content: formatDirectiveOptions(
-          `Current verbose level: ${normalizeVerboseLevel(session?.verboseLevel) ?? "off"}.`,
+          t("slashCommands.results.currentVerboseLevel", {
+            level: normalizeVerboseLevel(session?.verboseLevel) ?? "off",
+          }),
           "on, full, off",
         ),
       };
     } catch (err) {
-      return { content: `Failed to get verbose level: ${String(err)}` };
+      return { content: `${t("slashCommands.results.getVerboseLevelFailed")}: ${String(err)}` };
     }
   }
 
   const level = normalizeVerboseLevel(rawLevel);
   if (!level) {
     return {
-      content: `Unrecognized verbose level "${rawLevel}". Valid levels: off, on, full.`,
+      content: t("slashCommands.results.unrecognizedVerboseLevel", { level: rawLevel }),
     };
   }
 
   try {
     await client.request("sessions.patch", { key: sessionKey, verboseLevel: level });
     return {
-      content: `Verbose mode set to **${level}**.`,
+      content: t("slashCommands.results.verboseModeSet", { level }),
       action: "refresh",
     };
   } catch (err) {
-    return { content: `Failed to set verbose mode: ${String(err)}` };
+    return { content: `${t("slashCommands.results.setVerboseModeFailed")}: ${String(err)}` };
   }
 }
 
@@ -264,29 +276,35 @@ async function executeFast(
       const session = await loadCurrentSession(client, sessionKey);
       return {
         content: formatDirectiveOptions(
-          `Current fast mode: ${resolveCurrentFastMode(session)}.`,
+          t("slashCommands.results.currentFastMode", {
+            mode: resolveCurrentFastMode(session),
+          }),
           "status, on, off",
         ),
       };
     } catch (err) {
-      return { content: `Failed to get fast mode: ${String(err)}` };
+      return { content: `${t("slashCommands.results.getFastModeFailed")}: ${String(err)}` };
     }
   }
 
   if (rawMode !== "on" && rawMode !== "off") {
     return {
-      content: `Unrecognized fast mode "${args.trim()}". Valid levels: status, on, off.`,
+      content: t("slashCommands.results.unrecognizedFastMode", { mode: args.trim() }),
     };
   }
 
   try {
     await client.request("sessions.patch", { key: sessionKey, fastMode: rawMode === "on" });
     return {
-      content: `Fast mode ${rawMode === "on" ? "enabled" : "disabled"}.`,
+      content: t(
+        rawMode === "on"
+          ? "slashCommands.results.fastModeEnabled"
+          : "slashCommands.results.fastModeDisabled",
+      ),
       action: "refresh",
     };
   } catch (err) {
-    return { content: `Failed to set fast mode: ${String(err)}` };
+    return { content: `${t("slashCommands.results.setFastModeFailed")}: ${String(err)}` };
   }
 }
 
@@ -298,7 +316,7 @@ async function executeUsage(
     const sessions = await client.request<SessionsListResult>("sessions.list", {});
     const session = resolveCurrentSession(sessions, sessionKey);
     if (!session) {
-      return { content: "No active session." };
+      return { content: t("slashCommands.results.noActiveSession") };
     }
     const input = session.inputTokens ?? 0;
     const output = session.outputTokens ?? 0;
@@ -307,20 +325,25 @@ async function executeUsage(
     const pct = ctx > 0 ? Math.round((input / ctx) * 100) : null;
 
     const lines = [
-      "**Session Usage**",
-      `Input: **${fmtTokens(input)}** tokens`,
-      `Output: **${fmtTokens(output)}** tokens`,
-      `Total: **${fmtTokens(total)}** tokens`,
+      `**${t("slashCommands.results.sessionUsageTitle")}**`,
+      t("slashCommands.results.sessionUsageInput", { tokens: fmtTokens(input) }),
+      t("slashCommands.results.sessionUsageOutput", { tokens: fmtTokens(output) }),
+      t("slashCommands.results.sessionUsageTotal", { tokens: fmtTokens(total) }),
     ];
     if (pct !== null) {
-      lines.push(`Context: **${pct}%** of ${fmtTokens(ctx)}`);
+      lines.push(
+        t("slashCommands.results.sessionUsageContext", {
+          pct: String(pct),
+          tokens: fmtTokens(ctx),
+        }),
+      );
     }
     if (session.model) {
-      lines.push(`Model: \`${session.model}\``);
+      lines.push(t("slashCommands.results.sessionUsageModel", { model: session.model }));
     }
     return { content: lines.join("\n") };
   } catch (err) {
-    return { content: `Failed to get usage: ${String(err)}` };
+    return { content: `${t("slashCommands.results.getUsageFailed")}: ${String(err)}` };
   }
 }
 
@@ -329,18 +352,18 @@ async function executeAgents(client: GatewayBrowserClient): Promise<SlashCommand
     const result = await client.request<AgentsListResult>("agents.list", {});
     const agents = result?.agents ?? [];
     if (agents.length === 0) {
-      return { content: "No agents configured." };
+      return { content: t("slashCommands.results.noAgentsConfigured") };
     }
-    const lines = [`**Agents** (${agents.length})\n`];
+    const lines = [`**${t("slashCommands.results.agentsTitle")}** (${agents.length})\n`];
     for (const agent of agents) {
       const isDefault = agent.id === result?.defaultId;
       const name = agent.identity?.name || agent.name || agent.id;
-      const marker = isDefault ? " *(default)*" : "";
+      const marker = isDefault ? ` ${t("slashCommands.results.defaultMarker")}` : "";
       lines.push(`- \`${agent.id}\` — ${name}${marker}`);
     }
     return { content: lines.join("\n") };
   } catch (err) {
-    return { content: `Failed to list agents: ${String(err)}` };
+    return { content: `${t("slashCommands.results.listAgentsFailed")}: ${String(err)}` };
   }
 }
 
@@ -351,7 +374,7 @@ async function executeKill(
 ): Promise<SlashCommandResult> {
   const target = args.trim();
   if (!target) {
-    return { content: "Usage: `/kill <id|all>`" };
+    return { content: t("slashCommands.results.killUsage") };
   }
   try {
     const sessions = await client.request<SessionsListResult>("sessions.list", {});
@@ -360,8 +383,8 @@ async function executeKill(
       return {
         content:
           target.toLowerCase() === "all"
-            ? "No active sub-agent sessions found."
-            : `No matching sub-agent sessions found for \`${target}\`.`,
+            ? t("slashCommands.results.noActiveSubagentSessions")
+            : t("slashCommands.results.noMatchingSubagentSessions", { target }),
       };
     }
 
@@ -380,30 +403,40 @@ async function executeKill(
         return {
           content:
             target.toLowerCase() === "all"
-              ? "No active sub-agent runs to abort."
-              : `No active runs matched \`${target}\`.`,
+              ? t("slashCommands.results.noActiveSubagentRunsToAbort")
+              : t("slashCommands.results.noActiveRunsMatched", { target }),
         };
       }
-      throw rejected[0]?.reason ?? new Error("abort failed");
+      throw rejected[0]?.reason ?? new Error(t("slashCommands.results.abortFailedShort"));
     }
 
     if (target.toLowerCase() === "all") {
       return {
         content:
           successCount === matched.length
-            ? `Aborted ${successCount} sub-agent session${successCount === 1 ? "" : "s"}.`
-            : `Aborted ${successCount} of ${matched.length} sub-agent sessions.`,
+            ? t("slashCommands.results.abortedSubagentSessions", { count: String(successCount) })
+            : t("slashCommands.results.abortedSomeSubagentSessions", {
+                count: String(successCount),
+                total: String(matched.length),
+              }),
       };
     }
 
     return {
       content:
         successCount === matched.length
-          ? `Aborted ${successCount} matching sub-agent session${successCount === 1 ? "" : "s"} for \`${target}\`.`
-          : `Aborted ${successCount} of ${matched.length} matching sub-agent sessions for \`${target}\`.`,
+          ? t("slashCommands.results.abortedMatchingSubagentSessions", {
+              count: String(successCount),
+              target,
+            })
+          : t("slashCommands.results.abortedSomeMatchingSubagentSessions", {
+              count: String(successCount),
+              total: String(matched.length),
+              target,
+            }),
     };
   } catch (err) {
-    return { content: `Failed to abort: ${String(err)}` };
+    return { content: `${t("slashCommands.results.abortFailed")}: ${String(err)}` };
   }
 }
 
@@ -515,7 +548,7 @@ function resolveEquivalentSessionKeys(
 }
 
 function formatDirectiveOptions(text: string, options: string): string {
-  return `${text}\nOptions: ${options}.`;
+  return t("slashCommands.results.optionsLine", { text, options });
 }
 
 async function loadCurrentSession(

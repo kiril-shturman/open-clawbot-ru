@@ -1,3 +1,4 @@
+import { t } from "../../i18n/lib/translate.ts";
 import type { IconName } from "../icons.ts";
 
 export type SlashCommandCategory = "session" | "model" | "agents" | "tools";
@@ -20,42 +21,42 @@ export const SLASH_COMMANDS: SlashCommandDef[] = [
   // ── Session ──
   {
     name: "new",
-    description: "Start a new session",
+    description: t("slashCommands.commands.new"),
     icon: "plus",
     category: "session",
     executeLocal: true,
   },
   {
     name: "reset",
-    description: "Reset current session",
+    description: t("slashCommands.commands.reset"),
     icon: "refresh",
     category: "session",
     executeLocal: true,
   },
   {
     name: "compact",
-    description: "Compact session context",
+    description: t("slashCommands.commands.compact"),
     icon: "loader",
     category: "session",
     executeLocal: true,
   },
   {
     name: "stop",
-    description: "Stop current run",
+    description: t("slashCommands.commands.stop"),
     icon: "stop",
     category: "session",
     executeLocal: true,
   },
   {
     name: "clear",
-    description: "Clear chat history",
+    description: t("slashCommands.commands.clear"),
     icon: "trash",
     category: "session",
     executeLocal: true,
   },
   {
     name: "focus",
-    description: "Toggle focus mode",
+    description: t("slashCommands.commands.focus"),
     icon: "eye",
     category: "session",
     executeLocal: true,
@@ -64,7 +65,7 @@ export const SLASH_COMMANDS: SlashCommandDef[] = [
   // ── Model ──
   {
     name: "model",
-    description: "Show or set model",
+    description: t("slashCommands.commands.model"),
     args: "<name>",
     icon: "brain",
     category: "model",
@@ -72,7 +73,7 @@ export const SLASH_COMMANDS: SlashCommandDef[] = [
   },
   {
     name: "think",
-    description: "Set thinking level",
+    description: t("slashCommands.commands.think"),
     args: "<level>",
     icon: "brain",
     category: "model",
@@ -81,7 +82,7 @@ export const SLASH_COMMANDS: SlashCommandDef[] = [
   },
   {
     name: "verbose",
-    description: "Toggle verbose mode",
+    description: t("slashCommands.commands.verbose"),
     args: "<on|off|full>",
     icon: "terminal",
     category: "model",
@@ -90,7 +91,7 @@ export const SLASH_COMMANDS: SlashCommandDef[] = [
   },
   {
     name: "fast",
-    description: "Toggle fast mode",
+    description: t("slashCommands.commands.fast"),
     args: "<status|on|off>",
     icon: "zap",
     category: "model",
@@ -101,27 +102,27 @@ export const SLASH_COMMANDS: SlashCommandDef[] = [
   // ── Tools ──
   {
     name: "help",
-    description: "Show available commands",
+    description: t("slashCommands.commands.help"),
     icon: "book",
     category: "tools",
     executeLocal: true,
   },
   {
     name: "status",
-    description: "Show session status",
+    description: t("slashCommands.commands.status"),
     icon: "barChart",
     category: "tools",
   },
   {
     name: "export",
-    description: "Export session to Markdown",
+    description: t("slashCommands.commands.export"),
     icon: "download",
     category: "tools",
     executeLocal: true,
   },
   {
     name: "usage",
-    description: "Show token usage",
+    description: t("slashCommands.commands.usage"),
     icon: "barChart",
     category: "tools",
     executeLocal: true,
@@ -130,14 +131,14 @@ export const SLASH_COMMANDS: SlashCommandDef[] = [
   // ── Agents ──
   {
     name: "agents",
-    description: "List agents",
+    description: t("slashCommands.commands.agents"),
     icon: "monitor",
     category: "agents",
     executeLocal: true,
   },
   {
     name: "kill",
-    description: "Abort sub-agents",
+    description: t("slashCommands.commands.kill"),
     args: "<id|all>",
     icon: "x",
     category: "agents",
@@ -145,14 +146,14 @@ export const SLASH_COMMANDS: SlashCommandDef[] = [
   },
   {
     name: "skill",
-    description: "Run a skill",
+    description: t("slashCommands.commands.skill"),
     args: "<name>",
     icon: "zap",
     category: "tools",
   },
   {
     name: "steer",
-    description: "Steer a sub-agent",
+    description: t("slashCommands.commands.steer"),
     args: "<id> <msg>",
     icon: "send",
     category: "agents",
@@ -162,10 +163,10 @@ export const SLASH_COMMANDS: SlashCommandDef[] = [
 const CATEGORY_ORDER: SlashCommandCategory[] = ["session", "model", "tools", "agents"];
 
 export const CATEGORY_LABELS: Record<SlashCommandCategory, string> = {
-  session: "Session",
-  model: "Model",
-  agents: "Agents",
-  tools: "Tools",
+  session: t("slashCommands.categories.session"),
+  model: t("slashCommands.categories.model"),
+  agents: t("slashCommands.categories.agents"),
+  tools: t("slashCommands.categories.tools"),
 };
 
 export function getSlashCommandCompletions(filter: string): SlashCommandDef[] {
