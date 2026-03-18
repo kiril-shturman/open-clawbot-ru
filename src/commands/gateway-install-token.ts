@@ -26,8 +26,8 @@ export type GatewayInstallTokenResolution = {
 
 function formatAmbiguousGatewayAuthModeReason(): string {
   return [
-    "gateway.auth.token and gateway.auth.password are both configured while gateway.auth.mode is unset.",
-    `Set ${formatCliCommand("openclaw config set gateway.auth.mode token")} or ${formatCliCommand("openclaw config set gateway.auth.mode password")}.`,
+    "В gateway.auth.token и gateway.auth.password заданы значения, но gateway.auth.mode не установлен.",
+    `Укажите ${formatCliCommand("openclaw config set gateway.auth.mode token")} или ${formatCliCommand("openclaw config set gateway.auth.mode password")}.`,
   ].join(" ");
 }
 
@@ -75,13 +75,13 @@ export async function resolveGatewayInstallToken(
       });
       const value = resolved.get(secretRefKey(tokenRef));
       if (typeof value !== "string" || value.trim().length === 0) {
-        throw new Error("gateway.auth.token resolved to an empty or non-string value.");
+        throw new Error("gateway.auth.token разрешился в пустое или нестроковое значение.");
       }
       warnings.push(
-        "gateway.auth.token is SecretRef-managed; install will not persist a resolved token in service environment. Ensure the SecretRef is resolvable in the daemon runtime context.",
+        "gateway.auth.token управляется через SecretRef; установка не будет сохранять разрешённый token в окружении сервиса. Убедитесь, что SecretRef доступен в контексте запуска демона.",
       );
     } catch (err) {
-      unavailableReason = `gateway.auth.token SecretRef is configured but unresolved (${String(err)}).`;
+      unavailableReason = `gateway.auth.token настроен через SecretRef, но не разрешился (${String(err)}).`;
     }
   }
 
@@ -91,8 +91,8 @@ export async function resolveGatewayInstallToken(
     token = randomToken();
     warnings.push(
       persistGeneratedToken
-        ? "No gateway token found. Auto-generated one and saving to config."
-        : "No gateway token found. Auto-generated one for this run without saving to config.",
+        ? "Token gateway не найден. Сгенерировал новый и сохраняю его в конфиг."
+        : "Token gateway не найден. Сгенерировал новый только для этого запуска, без сохранения в конфиг.",
     );
 
     if (persistGeneratedToken) {
@@ -100,7 +100,9 @@ export async function resolveGatewayInstallToken(
       try {
         const snapshot = await readConfigFileSnapshot();
         if (snapshot.exists && !snapshot.valid) {
-          warnings.push("Warning: config file exists but is invalid; skipping token persistence.");
+          warnings.push(
+            "Предупреждение: файл конфига существует, но он некорректен; сохранение token пропущено.",
+          );
         } else {
           const baseConfig = snapshot.exists ? snapshot.config : {};
           const existingTokenRef = resolveSecretInputRef({
@@ -128,12 +130,12 @@ export async function resolveGatewayInstallToken(
           } else {
             token = undefined;
             warnings.push(
-              "Warning: gateway.auth.token is SecretRef-managed; skipping plaintext token persistence.",
+              "Предупреждение: gateway.auth.token управляется через SecretRef; сохранение plaintext token пропущено.",
             );
           }
         }
       } catch (err) {
-        warnings.push(`Warning: could not persist token to config: ${String(err)}`);
+        warnings.push(`Предупреждение: не удалось сохранить token в конфиг: ${String(err)}`);
       }
     }
   }

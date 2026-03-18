@@ -308,7 +308,7 @@ describe("registerQrCli", () => {
 
     await expectQrExit(["--setup-code-only"]);
     const output = runtime.error.mock.calls.map((call) => String(call[0] ?? "")).join("\n");
-    expect(output).toContain("gateway.auth.mode is unset");
+    expect(output).toContain("gateway.auth.mode не установлен");
     expect(resolveCommandSecretRefsViaGateway).not.toHaveBeenCalled();
   });
 

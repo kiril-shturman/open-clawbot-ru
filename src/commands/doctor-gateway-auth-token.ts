@@ -25,6 +25,6 @@ export async function resolveGatewayAuthTokenForService(
     return { unavailableReason: resolved.unresolvedRefReason };
   }
   return {
-    unavailableReason: `gateway.auth.token SecretRef is configured but unresolved (${resolved.unresolvedRefReason ?? "unknown reason"}).`,
+    unavailableReason: `gateway.auth.token настроен через SecretRef, но не разрешился (${resolved.unresolvedRefReason ?? "неизвестная причина"}).`,
   };
 }

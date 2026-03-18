@@ -114,7 +114,9 @@ describe("resolveGatewayInstallToken", () => {
     expect(result.token).toBeUndefined();
     expect(result.tokenRefConfigured).toBe(true);
     expect(result.unavailableReason).toBeUndefined();
-    expect(result.warnings.some((message) => message.includes("SecretRef-managed"))).toBeTruthy();
+    expect(
+      result.warnings.some((message) => message.includes("управляется через SecretRef")),
+    ).toBeTruthy();
   });
 
   it("returns unavailable reason when token SecretRef is unresolved in token mode", async () => {
@@ -131,7 +133,7 @@ describe("resolveGatewayInstallToken", () => {
     });
 
     expect(result.token).toBeUndefined();
-    expect(result.unavailableReason).toContain("gateway.auth.token SecretRef is configured");
+    expect(result.unavailableReason).toContain("gateway.auth.token настроен через SecretRef");
   });
 
   it("returns unavailable reason when token and password are both configured and mode is unset", async () => {
@@ -150,7 +152,7 @@ describe("resolveGatewayInstallToken", () => {
     });
 
     expect(result.token).toBeUndefined();
-    expect(result.unavailableReason).toContain("gateway.auth.mode is unset");
+    expect(result.unavailableReason).toContain("gateway.auth.mode не установлен");
     expect(result.unavailableReason).toContain("openclaw config set gateway.auth.mode token");
     expect(result.unavailableReason).toContain("openclaw config set gateway.auth.mode password");
     expect(writeConfigFileMock).not.toHaveBeenCalled();
@@ -169,7 +171,7 @@ describe("resolveGatewayInstallToken", () => {
     expect(result.token).toBe("generated-token");
     expect(result.unavailableReason).toBeUndefined();
     expect(
-      result.warnings.some((message) => message.includes("without saving to config")),
+      result.warnings.some((message) => message.includes("без сохранения в конфиг")),
     ).toBeTruthy();
     expect(writeConfigFileMock).not.toHaveBeenCalled();
   });
@@ -184,7 +186,9 @@ describe("resolveGatewayInstallToken", () => {
       persistGeneratedToken: true,
     });
 
-    expect(result.warnings.some((message) => message.includes("saving to config"))).toBeTruthy();
+    expect(
+      result.warnings.some((message) => message.includes("сохраняю его в конфиг")),
+    ).toBeTruthy();
     expect(writeConfigFileMock).toHaveBeenCalledWith(
       expect.objectContaining({
         gateway: {
@@ -225,7 +229,7 @@ describe("resolveGatewayInstallToken", () => {
 
     expect(result.token).toBeUndefined();
     expect(
-      result.warnings.some((message) => message.includes("skipping plaintext token persistence")),
+      result.warnings.some((message) => message.includes("сохранение plaintext token пропущено")),
     ).toBeTruthy();
     expect(writeConfigFileMock).not.toHaveBeenCalled();
   });

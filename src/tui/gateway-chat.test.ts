@@ -180,7 +180,7 @@ describe("resolveGatewayConnection", () => {
     });
 
     await expect(resolveGatewayConnection({})).rejects.toThrow(
-      "gateway.auth.mode is unset. Set gateway.auth.mode to token or password.",
+      "gateway.auth.mode не установлен. Укажите gateway.auth.mode = token или password.",
     );
   });
 

@@ -144,12 +144,12 @@ describe("cli integration: qr + dashboard token SecretRef", () => {
     runtimeErrors.length = 0;
     await runCli(["dashboard", "--no-open"]);
     const joined = runtimeLogs.join("\n");
-    expect(joined).toContain("Dashboard URL: http://127.0.0.1:18789/");
+    expect(joined).toContain("URL панели управления: http://127.0.0.1:18789/");
     expect(joined).not.toContain("#token=");
     expect(joined).toContain(
-      "Token auto-auth is disabled for SecretRef-managed gateway.auth.token",
+      "Авто-auth по token отключён для gateway.auth.token под управлением SecretRef",
     );
-    expect(joined).not.toContain("Token auto-auth unavailable");
+    expect(joined).not.toContain("Авто-auth по token недоступен");
     expect(runtimeErrors).toEqual([]);
   });
 
@@ -171,9 +171,9 @@ describe("cli integration: qr + dashboard token SecretRef", () => {
     runtimeErrors.length = 0;
     await runCli(["dashboard", "--no-open"]);
     const joined = runtimeLogs.join("\n");
-    expect(joined).toContain("Dashboard URL: http://127.0.0.1:18789/");
+    expect(joined).toContain("URL панели управления: http://127.0.0.1:18789/");
     expect(joined).not.toContain("#token=");
-    expect(joined).toContain("Token auto-auth unavailable");
-    expect(joined).toContain("Set OPENCLAW_GATEWAY_TOKEN");
+    expect(joined).toContain("Авто-auth по token недоступен");
+    expect(joined).toContain("Задайте OPENCLAW_GATEWAY_TOKEN");
   });
 });

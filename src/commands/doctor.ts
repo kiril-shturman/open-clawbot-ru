@@ -112,22 +112,22 @@ export async function doctorCommand(
   const configPath = configResult.path ?? CONFIG_PATH;
   if (!cfg.gateway?.mode) {
     const lines = [
-      "gateway.mode is unset; gateway start will be blocked.",
-      `Fix: run ${formatCliCommand("openclaw configure")} and set Gateway mode (local/remote).`,
-      `Or set directly: ${formatCliCommand("openclaw config set gateway.mode local")}`,
+      "gateway.mode не установлен; запуск gateway будет заблокирован.",
+      `Исправление: запустите ${formatCliCommand("openclaw configure")} и задайте режим Gateway (local/remote).`,
+      `Или установите напрямую: ${formatCliCommand("openclaw config set gateway.mode local")}`,
     ];
     if (!fs.existsSync(configPath)) {
-      lines.push(`Missing config: run ${formatCliCommand("openclaw setup")} first.`);
+      lines.push(`Конфиг отсутствует: сначала запустите ${formatCliCommand("openclaw setup")}.`);
     }
     note(lines.join("\n"), "Gateway");
   }
   if (resolveMode(cfg) === "local" && hasAmbiguousGatewayAuthModeConfig(cfg)) {
     note(
       [
-        "gateway.auth.token and gateway.auth.password are both configured while gateway.auth.mode is unset.",
-        "Set an explicit mode to avoid ambiguous auth selection and startup/runtime failures.",
-        `Set token mode: ${formatCliCommand("openclaw config set gateway.auth.mode token")}`,
-        `Set password mode: ${formatCliCommand("openclaw config set gateway.auth.mode password")}`,
+        "В gateway.auth.token и gateway.auth.password заданы значения, но gateway.auth.mode не установлен.",
+        "Задайте явный режим, чтобы избежать неоднозначного выбора auth и сбоев при запуске/работе.",
+        `Режим token: ${formatCliCommand("openclaw config set gateway.auth.mode token")}`,
+        `Режим password: ${formatCliCommand("openclaw config set gateway.auth.mode password")}`,
       ].join("\n"),
       "Gateway auth",
     );

@@ -75,16 +75,16 @@ export async function dashboardCommand(
     ? `${links.httpUrl}#token=${encodeURIComponent(token)}`
     : links.httpUrl;
 
-  runtime.log(`Dashboard URL: ${dashboardUrl}`);
+  runtime.log(`URL панели управления: ${dashboardUrl}`);
   if (resolvedToken.tokenSecretRefConfigured && token) {
     runtime.log(
-      "Token auto-auth is disabled for SecretRef-managed gateway.auth.token; use your external token source if prompted.",
+      "Авто-auth по token отключён для gateway.auth.token под управлением SecretRef; при запросе используйте внешний источник token.",
     );
   }
   if (resolvedToken.unresolvedRefReason) {
-    runtime.log(`Token auto-auth unavailable: ${resolvedToken.unresolvedRefReason}`);
+    runtime.log(`Авто-auth по token недоступен: ${resolvedToken.unresolvedRefReason}`);
     runtime.log(
-      "Set OPENCLAW_GATEWAY_TOKEN in this shell or resolve your secret provider, then rerun `openclaw dashboard`.",
+      "Задайте OPENCLAW_GATEWAY_TOKEN в этой shell-сессии или исправьте провайдер секретов, затем повторно запустите `openclaw dashboard`.",
     );
   }
 

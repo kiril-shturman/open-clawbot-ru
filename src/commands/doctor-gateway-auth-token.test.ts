@@ -147,7 +147,7 @@ describe("resolveGatewayAuthTokenForService", () => {
     );
 
     expect(resolved.token).toBeUndefined();
-    expect(resolved.unavailableReason).toContain("gateway.auth.token SecretRef is configured");
+    expect(resolved.unavailableReason).toContain("gateway.auth.token настроен через SecretRef");
   });
 });
 

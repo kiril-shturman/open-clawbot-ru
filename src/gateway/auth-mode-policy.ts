@@ -2,7 +2,7 @@ import type { OpenClawConfig } from "../config/config.js";
 import { hasConfiguredSecretInput } from "../config/types.secrets.js";
 
 export const EXPLICIT_GATEWAY_AUTH_MODE_REQUIRED_ERROR =
-  "Invalid config: gateway.auth.token and gateway.auth.password are both configured, but gateway.auth.mode is unset. Set gateway.auth.mode to token or password.";
+  "Некорректный конфиг: в gateway.auth.token и gateway.auth.password заданы значения, но gateway.auth.mode не установлен. Укажите gateway.auth.mode = token или password.";
 
 export function hasAmbiguousGatewayAuthModeConfig(cfg: OpenClawConfig): boolean {
   const auth = cfg.gateway?.auth;
