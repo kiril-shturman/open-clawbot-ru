@@ -62,8 +62,8 @@ export async function buildStatusAllReportLines(params: {
   const overview = renderTable({
     width: tableWidth,
     columns: [
-      { key: "Item", header: "Item", minWidth: 10 },
-      { key: "Value", header: "Value", flex: true, minWidth: 24 },
+      { key: "Item", header: "Пункт", minWidth: 10 },
+      { key: "Value", header: "Значение", flex: true, minWidth: 24 },
     ],
     rows: params.overviewRows,
   });
@@ -100,10 +100,10 @@ export async function buildStatusAllReportLines(params: {
   const channelsTable = renderTable({
     width: tableWidth,
     columns: [
-      { key: "Channel", header: "Channel", minWidth: 10 },
-      { key: "Enabled", header: "Enabled", minWidth: 7 },
-      { key: "State", header: "State", minWidth: 8 },
-      { key: "Detail", header: "Detail", flex: true, minWidth: 28 },
+      { key: "Channel", header: "Канал", minWidth: 10 },
+      { key: "Enabled", header: "Вкл", minWidth: 7 },
+      { key: "State", header: "Состояние", minWidth: 8 },
+      { key: "Detail", header: "Детали", flex: true, minWidth: 28 },
     ],
     rows: channelRowsWithIssues,
   });
@@ -112,34 +112,34 @@ export async function buildStatusAllReportLines(params: {
     Agent: a.name?.trim() ? `${a.id} (${a.name.trim()})` : a.id,
     BootstrapFile:
       a.bootstrapPending === true
-        ? warn("PRESENT")
+        ? warn("ЕСТЬ")
         : a.bootstrapPending === false
-          ? ok("ABSENT")
-          : "unknown",
+          ? ok("НЕТ")
+          : "неизвестно",
     Sessions: String(a.sessionsCount),
-    Active: a.lastActiveAgeMs != null ? formatTimeAgo(a.lastActiveAgeMs) : "unknown",
+    Active: a.lastActiveAgeMs != null ? formatTimeAgo(a.lastActiveAgeMs) : "неизвестно",
     Store: a.sessionsPath,
   }));
 
   const agentsTable = renderTable({
     width: tableWidth,
     columns: [
-      { key: "Agent", header: "Agent", minWidth: 12 },
-      { key: "BootstrapFile", header: "Bootstrap file", minWidth: 14 },
-      { key: "Sessions", header: "Sessions", align: "right", minWidth: 8 },
-      { key: "Active", header: "Active", minWidth: 10 },
-      { key: "Store", header: "Store", flex: true, minWidth: 34 },
+      { key: "Agent", header: "Агент", minWidth: 12 },
+      { key: "BootstrapFile", header: "Bootstrap-файл", minWidth: 14 },
+      { key: "Sessions", header: "Сессии", align: "right", minWidth: 8 },
+      { key: "Active", header: "Активность", minWidth: 10 },
+      { key: "Store", header: "Хранилище", flex: true, minWidth: 34 },
     ],
     rows: agentRows,
   });
 
   const lines: string[] = [];
-  lines.push(heading("OpenClaw status --all"));
+  lines.push(heading("Статус OpenClaw --all"));
   lines.push("");
-  lines.push(heading("Overview"));
+  lines.push(heading("Обзор"));
   lines.push(overview.trimEnd());
   lines.push("");
-  lines.push(heading("Channels"));
+  lines.push(heading("Каналы"));
   lines.push(channelsTable.trimEnd());
   for (const detail of params.channels.details) {
     lines.push("");
@@ -149,7 +149,7 @@ export async function buildStatusAllReportLines(params: {
         width: tableWidth,
         columns: detail.columns.map((c) => ({
           key: c,
-          header: c,
+          header: c === "Notes" ? "Заметки" : c,
           flex: c === "Notes",
           minWidth: c === "Notes" ? 28 : 10,
         })),
@@ -159,16 +159,18 @@ export async function buildStatusAllReportLines(params: {
             ? { Status: ok("OK") }
             : r.Status === "WARN"
               ? { Status: warn("WARN") }
-              : {}),
+              : r.Status === "OFF"
+                ? { Status: muted("OFF") }
+                : {}),
         })),
       }).trimEnd(),
     );
   }
   lines.push("");
-  lines.push(heading("Agents"));
+  lines.push(heading("Агенты"));
   lines.push(agentsTable.trimEnd());
   lines.push("");
-  lines.push(heading("Diagnosis (read-only)"));
+  lines.push(heading("Диагностика (только чтение)"));
 
   await appendStatusAllDiagnosis({
     lines,

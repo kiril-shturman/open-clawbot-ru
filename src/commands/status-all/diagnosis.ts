@@ -78,7 +78,7 @@ export async function appendStatusAllDiagnosis(params: {
   };
 
   lines.push("");
-  lines.push(muted("Gateway connection details:"));
+  lines.push(muted("Детали подключения к gateway:"));
   for (const line of redactSecrets(params.connectionDetailsForReport)
     .split("\n")
     .map((l) => l.trimEnd())) {
@@ -88,7 +88,7 @@ export async function appendStatusAllDiagnosis(params: {
   lines.push("");
   if (params.snap) {
     const status = !params.snap.exists ? "fail" : params.snap.valid ? "ok" : "warn";
-    emitCheck(`Config: ${params.snap.path ?? "(unknown)"}`, status);
+    emitCheck(`Конфиг: ${params.snap.path ?? "(неизвестно)"}`, status);
     const issues = [...(params.snap.legacyIssues ?? []), ...(params.snap.issues ?? [])];
     const uniqueIssues = issues.filter(
       (issue, index) =>
@@ -98,43 +98,48 @@ export async function appendStatusAllDiagnosis(params: {
       lines.push(`  ${formatConfigIssueLine(issue, "-")}`);
     }
     if (uniqueIssues.length > 12) {
-      lines.push(`  ${muted(`… +${uniqueIssues.length - 12} more`)}`);
+      lines.push(`  ${muted(`… ещё +${uniqueIssues.length - 12}`)}`);
     }
   } else {
-    emitCheck("Config: read failed", "warn");
+    emitCheck("Конфиг: не удалось прочитать", "warn");
   }
 
   if (params.remoteUrlMissing) {
     lines.push("");
-    emitCheck("Gateway remote mode misconfigured (gateway.remote.url missing)", "warn");
-    lines.push(`  ${muted("Fix: set gateway.remote.url, or set gateway.mode=local.")}`);
+    emitCheck(
+      "Некорректная настройка remote-режима gateway (отсутствует gateway.remote.url)",
+      "warn",
+    );
+    lines.push(
+      `  ${muted("Исправление: задайте gateway.remote.url или переключите gateway.mode=local.")}`,
+    );
   }
 
   emitCheck(
-    `Secret diagnostics (${params.secretDiagnostics.length})`,
+    `Диагностика секретов (${params.secretDiagnostics.length})`,
     params.secretDiagnostics.length === 0 ? "ok" : "warn",
   );
   for (const diagnostic of params.secretDiagnostics.slice(0, 10)) {
     lines.push(`  - ${muted(redactSecrets(diagnostic))}`);
   }
   if (params.secretDiagnostics.length > 10) {
-    lines.push(`  ${muted(`… +${params.secretDiagnostics.length - 10} more`)}`);
+    lines.push(`  ${muted(`… ещё +${params.secretDiagnostics.length - 10}`)}`);
   }
 
   if (params.sentinel?.payload) {
-    emitCheck("Restart sentinel present", "warn");
+    emitCheck("Присутствует sentinel перезапуска", "warn");
     lines.push(
       `  ${muted(`${summarizeRestartSentinel(params.sentinel.payload)} · ${formatTimeAgo(Date.now() - params.sentinel.payload.ts)}`)}`,
     );
   } else {
-    emitCheck("Restart sentinel: none", "ok");
+    emitCheck("Sentinel перезапуска: нет", "ok");
   }
 
   const lastErrClean = params.lastErr?.trim() ?? "";
   const isTrivialLastErr = lastErrClean.length < 8 || lastErrClean === "}" || lastErrClean === "{";
   if (lastErrClean && !isTrivialLastErr) {
     lines.push("");
-    lines.push(muted("Gateway last log line:"));
+    lines.push(muted("Последняя строка лога gateway:"));
     lines.push(`  ${muted(redactSecrets(lastErrClean))}`);
   }
 
@@ -149,20 +154,20 @@ export async function appendStatusAllDiagnosis(params: {
   }
 
   {
-    const backend = params.tailscale.backendState ?? "unknown";
+    const backend = params.tailscale.backendState ?? "неизвестно";
     const okBackend = backend === "Running";
     const hasDns = Boolean(params.tailscale.dnsName);
     const label =
       params.tailscaleMode === "off"
-        ? `Tailscale: off · ${backend}${params.tailscale.dnsName ? ` · ${params.tailscale.dnsName}` : ""}`
+        ? `Tailscale: выкл · ${backend}${params.tailscale.dnsName ? ` · ${params.tailscale.dnsName}` : ""}`
         : `Tailscale: ${params.tailscaleMode} · ${backend}${params.tailscale.dnsName ? ` · ${params.tailscale.dnsName}` : ""}`;
     emitCheck(label, okBackend && (params.tailscaleMode === "off" || hasDns) ? "ok" : "warn");
     if (params.tailscale.error) {
-      lines.push(`  ${muted(`error: ${params.tailscale.error}`)}`);
+      lines.push(`  ${muted(`ошибка: ${params.tailscale.error}`)}`);
     }
     if (params.tailscale.ips.length > 0) {
       lines.push(
-        `  ${muted(`ips: ${params.tailscale.ips.slice(0, 3).join(", ")}${params.tailscale.ips.length > 3 ? "…" : ""}`)}`,
+        `  ${muted(`IP: ${params.tailscale.ips.slice(0, 3).join(", ")}${params.tailscale.ips.length > 3 ? "…" : ""}`)}`,
       );
     }
     if (params.tailscaleHttpsUrl) {
@@ -176,13 +181,13 @@ export async function appendStatusAllDiagnosis(params: {
       (s) => s.eligible && Object.values(s.missing).some((arr) => arr.length),
     ).length;
     emitCheck(
-      `Skills: ${eligible} eligible · ${missing} missing · ${params.skillStatus.workspaceDir}`,
+      `Навыки: доступно ${eligible} · отсутствует ${missing} · ${params.skillStatus.workspaceDir}`,
       missing === 0 ? "ok" : "warn",
     );
   }
 
   emitCheck(
-    `Plugin compatibility (${params.pluginCompatibility.length || "none"})`,
+    `Совместимость плагинов (${params.pluginCompatibility.length || "нет"})`,
     params.pluginCompatibility.length === 0 ? "ok" : "warn",
   );
   for (const notice of params.pluginCompatibility.slice(0, 12)) {
@@ -190,10 +195,10 @@ export async function appendStatusAllDiagnosis(params: {
     lines.push(`  - [${severity}] ${formatPluginCompatibilityNotice(notice)}`);
   }
   if (params.pluginCompatibility.length > 12) {
-    lines.push(`  ${muted(`… +${params.pluginCompatibility.length - 12} more`)}`);
+    lines.push(`  ${muted(`… ещё +${params.pluginCompatibility.length - 12}`)}`);
   }
 
-  params.progress.setLabel("Reading logs…");
+  params.progress.setLabel("Читаю логи…");
   const logPaths = (() => {
     try {
       return resolveGatewayLogPaths(process.env);
@@ -202,14 +207,14 @@ export async function appendStatusAllDiagnosis(params: {
     }
   })();
   if (logPaths) {
-    params.progress.setLabel("Reading logs…");
+    params.progress.setLabel("Читаю логи…");
     const [stderrTail, stdoutTail] = await Promise.all([
       readFileTailLines(logPaths.stderrPath, 40).catch(() => []),
       readFileTailLines(logPaths.stdoutPath, 40).catch(() => []),
     ]);
     if (stderrTail.length > 0 || stdoutTail.length > 0) {
       lines.push("");
-      lines.push(muted(`Gateway logs (tail, summarized): ${logPaths.logDir}`));
+      lines.push(muted(`Логи gateway (хвост, краткая сводка): ${logPaths.logDir}`));
       lines.push(`  ${muted(`# stderr: ${logPaths.stderrPath}`)}`);
       for (const line of summarizeLogTail(stderrTail, { maxLines: 22 }).map(redactSecrets)) {
         lines.push(`  ${muted(line)}`);
@@ -224,21 +229,21 @@ export async function appendStatusAllDiagnosis(params: {
 
   if (params.channelsStatus) {
     emitCheck(
-      `Channel issues (${params.channelIssues.length || "none"})`,
+      `Проблемы каналов (${params.channelIssues.length || "нет"})`,
       params.channelIssues.length === 0 ? "ok" : "warn",
     );
     for (const issue of params.channelIssues.slice(0, 12)) {
-      const fixText = issue.fix ? ` · fix: ${issue.fix}` : "";
+      const fixText = issue.fix ? ` · исправление: ${issue.fix}` : "";
       lines.push(
         `  - ${issue.channel}[${issue.accountId}] ${issue.kind}: ${issue.message}${fixText}`,
       );
     }
     if (params.channelIssues.length > 12) {
-      lines.push(`  ${muted(`… +${params.channelIssues.length - 12} more`)}`);
+      lines.push(`  ${muted(`… ещё +${params.channelIssues.length - 12}`)}`);
     }
   } else {
     emitCheck(
-      `Channel issues skipped (gateway ${params.gatewayReachable ? "query failed" : "unreachable"})`,
+      `Проблемы каналов пропущены (gateway ${params.gatewayReachable ? "запрос не удался" : "недоступен"})`,
       "warn",
     );
   }
@@ -261,17 +266,17 @@ export async function appendStatusAllDiagnosis(params: {
     try {
       return JSON.stringify(value, null, 2);
     } catch {
-      return "[unserializable error]";
+      return "[ошибка не сериализуется]";
     }
   })();
   if (healthErr) {
     lines.push("");
-    lines.push(muted("Gateway health:"));
+    lines.push(muted("Состояние gateway:"));
     lines.push(`  ${muted(redactSecrets(healthErr))}`);
   }
 
   lines.push("");
-  lines.push(muted("Pasteable debug report. Auth tokens redacted."));
-  lines.push("Troubleshooting: https://docs.openclaw.ai/troubleshooting");
+  lines.push(muted("Отчёт для вставки в отладку. Auth-токены скрыты."));
+  lines.push("Устранение проблем: https://docs.openclaw.ai/troubleshooting");
   lines.push("");
 }

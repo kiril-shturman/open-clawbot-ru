@@ -42,8 +42,8 @@ export async function statusAllCommand(
   runtime: RuntimeEnv,
   opts?: { timeoutMs?: number },
 ): Promise<void> {
-  await withProgress({ label: "Scanning status --all…", total: 11 }, async (progress) => {
-    progress.setLabel("Loading config…");
+  await withProgress({ label: "Сканирую status --all…", total: 11 }, async (progress) => {
+    progress.setLabel("Загружаю конфиг…");
     const loadedRaw = await readBestEffortConfig();
     const { resolvedConfig: cfg, diagnostics: secretDiagnostics } =
       await resolveCommandSecretRefsViaGateway({
@@ -56,7 +56,7 @@ export async function statusAllCommand(
     const snap = await readConfigFileSnapshot().catch(() => null);
     progress.tick();
 
-    progress.setLabel("Checking Tailscale…");
+    progress.setLabel("Проверяю Tailscale…");
     const tailscaleMode = cfg.gateway?.tailscale?.mode ?? "off";
     const tailscale = await (async () => {
       try {
@@ -93,7 +93,7 @@ export async function statusAllCommand(
         : null;
     progress.tick();
 
-    progress.setLabel("Checking for updates…");
+    progress.setLabel("Проверяю обновления…");
     const root = await resolveOpenClawPackageRoot({
       moduleUrl: import.meta.url,
       argv1: process.argv[1],
@@ -116,7 +116,7 @@ export async function statusAllCommand(
     const gitLabel = formatGitInstallLabel(update);
     progress.tick();
 
-    progress.setLabel("Probing gateway…");
+    progress.setLabel("Проверяю gateway…");
     const connection = buildGatewayConnectionDetails({ config: cfg });
     const isRemoteMode = cfg.gateway?.mode === "remote";
     const remoteUrlRaw =
@@ -139,7 +139,7 @@ export async function statusAllCommand(
     const gatewaySelf = pickGatewaySelfPresence(gatewayProbe?.presence ?? null);
     progress.tick();
 
-    progress.setLabel("Checking services…");
+    progress.setLabel("Проверяю сервисы…");
     const readServiceSummary = async (service: GatewayService) => {
       try {
         const summary = await readServiceStatusSummary(service, service.label);
@@ -159,10 +159,10 @@ export async function statusAllCommand(
     const nodeService = await readServiceSummary(resolveNodeService());
     progress.tick();
 
-    progress.setLabel("Scanning agents…");
+    progress.setLabel("Проверяю агентов…");
     const agentStatus = await getAgentLocalStatuses(cfg);
     progress.tick();
-    progress.setLabel("Summarizing channels…");
+    progress.setLabel("Собираю сводку по каналам…");
     const channels = await buildChannelsTable(cfg, {
       showSecrets: false,
       sourceConfig: loadedRaw,
@@ -174,14 +174,14 @@ export async function statusAllCommand(
         return connection.message;
       }
       const bindMode = cfg.gateway?.bind ?? "loopback";
-      const configPath = snap?.path?.trim() ? snap.path.trim() : "(unknown config path)";
+      const configPath = snap?.path?.trim() ? snap.path.trim() : "(путь к конфигу неизвестен)";
       return [
-        "Gateway mode: remote",
-        "Gateway target: (missing gateway.remote.url)",
-        `Config: ${configPath}`,
+        "Режим gateway: remote",
+        "Цель gateway: (отсутствует gateway.remote.url)",
+        `Конфиг: ${configPath}`,
         `Bind: ${bindMode}`,
-        `Local fallback (used for probes): ${connection.url}`,
-        "Fix: set gateway.remote.url, or set gateway.mode=local.",
+        `Локальный резервный адрес для probe: ${connection.url}`,
+        "Исправление: задайте gateway.remote.url или переключите gateway.mode=local.",
       ].join("\n");
     })();
 
@@ -193,7 +193,7 @@ export async function statusAllCommand(
         }
       : {};
 
-    progress.setLabel("Querying gateway…");
+    progress.setLabel("Запрашиваю gateway…");
     const health = gatewayReachable
       ? await callGateway({
           config: cfg,
@@ -201,7 +201,7 @@ export async function statusAllCommand(
           timeoutMs: Math.min(8000, opts?.timeoutMs ?? 10_000),
           ...callOverrides,
         }).catch((err) => ({ error: String(err) }))
-      : { error: gatewayProbe?.error ?? "gateway unreachable" };
+      : { error: gatewayProbe?.error ?? "gateway недоступен" };
 
     const channelsStatus = gatewayReachable
       ? await callGateway({
@@ -215,7 +215,7 @@ export async function statusAllCommand(
     const channelIssues = channelsStatus ? collectChannelStatusIssues(channelsStatus) : [];
     progress.tick();
 
-    progress.setLabel("Checking local state…");
+    progress.setLabel("Проверяю локальное состояние…");
     const sentinel = await readRestartSentinel().catch(() => null);
     const lastErr = await readLastGatewayErrorLine(process.env).catch(() => null);
     const port = resolveGatewayPort(cfg);
@@ -253,12 +253,12 @@ export async function statusAllCommand(
 
     const updateLine = formatUpdateOneLiner(update).replace(/^Update:\s*/i, "");
 
-    const gatewayTarget = remoteUrlMissing ? `fallback ${connection.url}` : connection.url;
+    const gatewayTarget = remoteUrlMissing ? `резервный адрес ${connection.url}` : connection.url;
     const gatewayStatus = gatewayReachable
-      ? `reachable ${formatDurationPrecise(gatewayProbe?.connectLatencyMs ?? 0)}`
+      ? `доступен ${formatDurationPrecise(gatewayProbe?.connectLatencyMs ?? 0)}`
       : gatewayProbe?.error
-        ? `unreachable (${gatewayProbe.error})`
-        : "unreachable";
+        ? `недоступен (${gatewayProbe.error})`
+        : "недоступен";
     const gatewayAuth = gatewayReachable ? ` · auth ${formatGatewayAuthUsed(probeAuth)}` : "";
     const gatewaySelfLine =
       gatewaySelf?.host || gatewaySelf?.ip || gatewaySelf?.version || gatewaySelf?.platform
@@ -278,65 +278,65 @@ export async function statusAllCommand(
     ).length;
 
     const overviewRows = [
-      { Item: "Version", Value: VERSION },
-      { Item: "OS", Value: osSummary.label },
+      { Item: "Версия", Value: VERSION },
+      { Item: "ОС", Value: osSummary.label },
       { Item: "Node", Value: process.versions.node },
       {
-        Item: "Config",
-        Value: snap?.path?.trim() ? snap.path.trim() : "(unknown config path)",
+        Item: "Конфиг",
+        Value: snap?.path?.trim() ? snap.path.trim() : "(путь к конфигу неизвестен)",
       },
       dashboard
-        ? { Item: "Dashboard", Value: dashboard }
-        : { Item: "Dashboard", Value: "disabled" },
+        ? { Item: "Панель управления", Value: dashboard }
+        : { Item: "Панель управления", Value: "отключена" },
       {
         Item: "Tailscale",
         Value:
           tailscaleMode === "off"
-            ? `off${tailscale.backendState ? ` · ${tailscale.backendState}` : ""}${tailscale.dnsName ? ` · ${tailscale.dnsName}` : ""}`
+            ? `выкл${tailscale.backendState ? ` · ${tailscale.backendState}` : ""}${tailscale.dnsName ? ` · ${tailscale.dnsName}` : ""}`
             : tailscale.dnsName && tailscaleHttpsUrl
-              ? `${tailscaleMode} · ${tailscale.backendState ?? "unknown"} · ${tailscale.dnsName} · ${tailscaleHttpsUrl}`
-              : `${tailscaleMode} · ${tailscale.backendState ?? "unknown"} · magicdns unknown`,
+              ? `${tailscaleMode} · ${tailscale.backendState ?? "неизвестно"} · ${tailscale.dnsName} · ${tailscaleHttpsUrl}`
+              : `${tailscaleMode} · ${tailscale.backendState ?? "неизвестно"} · magicdns неизвестен`,
       },
-      { Item: "Channel", Value: channelLabel },
+      { Item: "Канал", Value: channelLabel },
       ...(gitLabel ? [{ Item: "Git", Value: gitLabel }] : []),
-      { Item: "Update", Value: updateLine },
+      { Item: "Обновление", Value: updateLine },
       {
         Item: "Gateway",
-        Value: `${gatewayMode}${remoteUrlMissing ? " (remote.url missing)" : ""} · ${gatewayTarget} (${connection.urlSource}) · ${gatewayStatus}${gatewayAuth}`,
+        Value: `${gatewayMode}${remoteUrlMissing ? " (remote.url отсутствует)" : ""} · ${gatewayTarget} (${connection.urlSource}) · ${gatewayStatus}${gatewayAuth}`,
       },
       ...(probeAuthResolution.warning
-        ? [{ Item: "Gateway auth warning", Value: probeAuthResolution.warning }]
+        ? [{ Item: "Предупреждение auth gateway", Value: probeAuthResolution.warning }]
         : []),
-      { Item: "Security", Value: `Run: ${formatCliCommand("openclaw security audit --deep")}` },
+      {
+        Item: "Безопасность",
+        Value: `Запуск: ${formatCliCommand("openclaw security audit --deep")}`,
+      },
       gatewaySelfLine
-        ? { Item: "Gateway self", Value: gatewaySelfLine }
-        : { Item: "Gateway self", Value: "unknown" },
+        ? { Item: "Сведения о gateway", Value: gatewaySelfLine }
+        : { Item: "Сведения о gateway", Value: "неизвестно" },
       daemon
         ? {
-            Item: "Gateway service",
+            Item: "Сервис Gateway",
             Value: !daemon.installed
-              ? `${daemon.label} not installed`
-              : `${daemon.label} ${daemon.managedByOpenClaw ? "installed · " : ""}${daemon.loadedText}${daemon.runtime?.status ? ` · ${daemon.runtime.status}` : ""}${daemon.runtime?.pid ? ` (pid ${daemon.runtime.pid})` : ""}`,
+              ? `${daemon.label} не установлен`
+              : `${daemon.label} ${daemon.managedByOpenClaw ? "установлен · " : ""}${daemon.loadedText}${daemon.runtime?.status ? ` · ${daemon.runtime.status}` : ""}${daemon.runtime?.pid ? ` (pid ${daemon.runtime.pid})` : ""}`,
           }
-        : { Item: "Gateway service", Value: "unknown" },
+        : { Item: "Сервис Gateway", Value: "неизвестно" },
       nodeService
         ? {
-            Item: "Node service",
+            Item: "Сервис Node",
             Value: !nodeService.installed
-              ? `${nodeService.label} not installed`
-              : `${nodeService.label} ${nodeService.managedByOpenClaw ? "installed · " : ""}${nodeService.loadedText}${nodeService.runtime?.status ? ` · ${nodeService.runtime.status}` : ""}${nodeService.runtime?.pid ? ` (pid ${nodeService.runtime.pid})` : ""}`,
+              ? `${nodeService.label} не установлен`
+              : `${nodeService.label} ${nodeService.managedByOpenClaw ? "установлен · " : ""}${nodeService.loadedText}${nodeService.runtime?.status ? ` · ${nodeService.runtime.status}` : ""}${nodeService.runtime?.pid ? ` (pid ${nodeService.runtime.pid})` : ""}`,
           }
-        : { Item: "Node service", Value: "unknown" },
+        : { Item: "Сервис Node", Value: "неизвестно" },
       {
-        Item: "Agents",
-        Value: `${agentStatus.agents.length} total · ${agentStatus.bootstrapPendingCount} bootstrapping · ${aliveAgents} active · ${agentStatus.totalSessions} sessions`,
+        Item: "Агенты",
+        Value: `${agentStatus.agents.length} всего · bootstrap ${agentStatus.bootstrapPendingCount} · активных ${aliveAgents} · сессий ${agentStatus.totalSessions}`,
       },
       {
-        Item: "Secrets",
-        Value:
-          secretDiagnostics.length > 0
-            ? `${secretDiagnostics.length} diagnostic${secretDiagnostics.length === 1 ? "" : "s"}`
-            : "none",
+        Item: "Секреты",
+        Value: secretDiagnostics.length > 0 ? `${secretDiagnostics.length} записей` : "нет",
       },
     ];
 
@@ -370,7 +370,7 @@ export async function statusAllCommand(
       },
     });
 
-    progress.setLabel("Rendering…");
+    progress.setLabel("Формирую вывод…");
     runtime.log(lines.join("\n"));
     progress.tick();
   });
