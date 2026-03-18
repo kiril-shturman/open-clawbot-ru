@@ -34,39 +34,39 @@ async function requireRiskAcknowledgement(params: {
 
   await params.prompter.note(
     [
-      "Security warning — please read.",
+      "Предупреждение по безопасности — пожалуйста, прочитайте.",
       "",
-      "OpenClaw is a hobby project and still in beta. Expect sharp edges.",
-      "By default, OpenClaw is a personal agent: one trusted operator boundary.",
-      "This bot can read files and run actions if tools are enabled.",
-      "A bad prompt can trick it into doing unsafe things.",
+      "OpenClaw — это хобби-проект, всё ещё в бете. Ожидайте шероховатостей.",
+      "По умолчанию OpenClaw — личный агент: одна доверенная граница оператора.",
+      "Этот бот может читать файлы и выполнять действия, если инструменты включены.",
+      "Плохой промпт может заставить его сделать что-то небезопасное.",
       "",
-      "OpenClaw is not a hostile multi-tenant boundary by default.",
-      "If multiple users can message one tool-enabled agent, they share that delegated tool authority.",
+      "OpenClaw не является защищённой hostile multi-tenant границей по умолчанию.",
+      "Если несколько пользователей пишут одному агенту с включёнными инструментами, они фактически разделяют эти делегированные права на инструменты.",
       "",
-      "If you’re not comfortable with security hardening and access control, don’t run OpenClaw.",
-      "Ask someone experienced to help before enabling tools or exposing it to the internet.",
+      "Если вам некомфортны вопросы hardening и контроля доступа — не запускайте OpenClaw без помощи.",
+      "Перед включением инструментов или публикацией в интернет попросите помочь человека с опытом.",
       "",
-      "Recommended baseline:",
+      "Рекомендуемая база:",
       "- Pairing/allowlists + mention gating.",
-      "- Multi-user/shared inbox: split trust boundaries (separate gateway/credentials, ideally separate OS users/hosts).",
+      "- Для multi-user/shared inbox разделяйте границы доверия (отдельный gateway/credentials, а лучше и отдельные OS users/hosts).",
       "- Sandbox + least-privilege tools.",
-      "- Shared inboxes: isolate DM sessions (`session.dmScope: per-channel-peer`) and keep tool access minimal.",
-      "- Keep secrets out of the agent’s reachable filesystem.",
-      "- Use the strongest available model for any bot with tools or untrusted inboxes.",
+      "- Для shared inbox изолируйте DM-сессии (`session.dmScope: per-channel-peer`) и держите минимальный доступ к инструментам.",
+      "- Держите секреты вне файловой системы, доступной агенту.",
+      "- Для ботов с инструментами или недоверенными inbox используйте максимально сильную доступную модель.",
       "",
-      "Run regularly:",
+      "Регулярно запускайте:",
       "openclaw security audit --deep",
       "openclaw security audit --fix",
       "",
-      "Must read: https://docs.openclaw.ai/gateway/security",
+      "Обязательно прочитайте: https://docs.openclaw.ai/gateway/security",
     ].join("\n"),
-    "Security",
+    "Безопасность",
   );
 
   const ok = await params.prompter.confirm({
     message:
-      "I understand this is personal-by-default and shared/multi-user use requires lock-down. Continue?",
+      "Я понимаю, что по умолчанию это личный агент, а для shared/multi-user режима нужна жёсткая защита. Продолжить?",
     initialValue: false,
   });
   if (!ok) {
@@ -81,7 +81,7 @@ export async function runSetupWizard(
 ) {
   const onboardHelpers = await import("../commands/onboard-helpers.js");
   onboardHelpers.printWizardHeader(runtime);
-  await prompter.intro("OpenClaw setup");
+  await prompter.intro("Настройка OpenClaw");
   await requireRiskAcknowledgement({ opts, prompter });
 
   const snapshot = await readConfigFileSnapshot();
@@ -127,8 +127,8 @@ export async function runSetupWizard(
     );
   }
 
-  const quickstartHint = `Configure details later via ${formatCliCommand("openclaw configure")}.`;
-  const manualHint = "Configure port, network, Tailscale, and auth options.";
+  const quickstartHint = `Подробности можно настроить позже через ${formatCliCommand("openclaw configure")}.`;
+  const manualHint = "Настроить порт, сеть, Tailscale и параметры авторизации.";
   const explicitFlowRaw = opts.flow?.trim();
   const normalizedExplicitFlow = explicitFlowRaw === "manual" ? "advanced" : explicitFlowRaw;
   if (
@@ -147,18 +147,18 @@ export async function runSetupWizard(
   let flow: WizardFlow =
     explicitFlow ??
     (await prompter.select({
-      message: "Setup mode",
+      message: "Режим настройки",
       options: [
-        { value: "quickstart", label: "QuickStart", hint: quickstartHint },
-        { value: "advanced", label: "Manual", hint: manualHint },
+        { value: "quickstart", label: "Быстрый старт", hint: quickstartHint },
+        { value: "advanced", label: "Ручной", hint: manualHint },
       ],
       initialValue: "quickstart",
     }));
 
   if (opts.mode === "remote" && flow === "quickstart") {
     await prompter.note(
-      "QuickStart only supports local gateways. Switching to Manual mode.",
-      "QuickStart",
+      "Быстрый старт поддерживает только локальные gateway. Переключаю на ручной режим.",
+      "Быстрый старт",
     );
     flow = "advanced";
   }
@@ -166,15 +166,15 @@ export async function runSetupWizard(
   if (snapshot.exists) {
     await prompter.note(
       onboardHelpers.summarizeExistingConfig(baseConfig),
-      "Existing config detected",
+      "Обнаружен существующий конфиг",
     );
 
     const action = await prompter.select({
-      message: "Config handling",
+      message: "Что делать с конфигом",
       options: [
-        { value: "keep", label: "Use existing values" },
-        { value: "modify", label: "Update values" },
-        { value: "reset", label: "Reset" },
+        { value: "keep", label: "Использовать текущие значения" },
+        { value: "modify", label: "Обновить значения" },
+        { value: "reset", label: "Сбросить" },
       ],
     });
 
@@ -182,16 +182,16 @@ export async function runSetupWizard(
       const workspaceDefault =
         baseConfig.agents?.defaults?.workspace ?? onboardHelpers.DEFAULT_WORKSPACE;
       const resetScope = (await prompter.select({
-        message: "Reset scope",
+        message: "Область сброса",
         options: [
-          { value: "config", label: "Config only" },
+          { value: "config", label: "Только конфиг" },
           {
             value: "config+creds+sessions",
-            label: "Config + creds + sessions",
+            label: "Конфиг + креды + сессии",
           },
           {
             value: "full",
-            label: "Full reset (config + creds + sessions + workspace)",
+            label: "Полный сброс (конфиг + креды + сессии + workspace)",
           },
         ],
       })) as ResetScope;

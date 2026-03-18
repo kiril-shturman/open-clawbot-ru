@@ -28,6 +28,9 @@ const resolveGatewayInstallToken = vi.hoisted(() =>
   })),
 );
 const isSystemdUserServiceAvailable = vi.hoisted(() => vi.fn(async () => true));
+const readSystemdUserLingerStatus = vi.hoisted(() =>
+  vi.fn(async () => ({ enabled: true, source: "mock", managerStatus: "running" })),
+);
 const resolveSetupSecretInputString = vi.hoisted(() =>
   vi.fn<() => Promise<string | undefined>>(async () => undefined),
 );
@@ -97,8 +100,17 @@ vi.mock("../daemon/service.js", () => ({
   })),
 }));
 
-vi.mock("../daemon/systemd.js", () => ({
-  isSystemdUserServiceAvailable,
+vi.mock("../daemon/systemd.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../daemon/systemd.js")>();
+  return {
+    ...actual,
+    isSystemdUserServiceAvailable,
+    readSystemdUserLingerStatus,
+  };
+});
+
+vi.mock("../commands/systemd-linger.js", () => ({
+  ensureSystemdUserLingerInteractive: vi.fn(async () => {}),
 }));
 
 vi.mock("../infra/control-ui-assets.js", () => ({
@@ -162,7 +174,7 @@ describe("finalizeSetupWizard", () => {
     process.env.OPENCLAW_GATEWAY_PASSWORD = "resolved-gateway-password"; // pragma: allowlist secret
     resolveSetupSecretInputString.mockResolvedValueOnce("resolved-gateway-password");
     const select = vi.fn(async (params: { message: string }) => {
-      if (params.message === "How do you want to hatch your bot?") {
+      if (params.message === "Как вы хотите запустить своего бота?") {
         return "tui";
       }
       return "later";
@@ -292,7 +304,7 @@ describe("finalizeSetupWizard", () => {
     gatewayServiceRestart.mockResolvedValueOnce({ outcome: "scheduled" });
     const prompter = buildWizardPrompter({
       select: vi.fn(async (params: { message: string }) => {
-        if (params.message === "Gateway service already installed") {
+        if (params.message === "Сервис Gateway уже установлен") {
           return "restart";
         }
         return "later";

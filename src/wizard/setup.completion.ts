@@ -78,7 +78,7 @@ export async function setupWizardShellCompletion(params: {
       params.flow === "quickstart"
         ? true
         : await params.prompter.confirm({
-            message: `Enable ${completionStatus.shell} shell completion for ${cliName}?`,
+            message: `Включить shell completion для ${completionStatus.shell} и ${cliName}?`,
             initialValue: true,
           });
 
@@ -90,7 +90,7 @@ export async function setupWizardShellCompletion(params: {
     const cacheGenerated = await deps.ensureCompletionCacheExists(cliName);
     if (!cacheGenerated) {
       await params.prompter.note(
-        `Failed to generate completion cache. Run \`${cliName} completion --install\` later.`,
+        `Не удалось сгенерировать кэш completion. Позже выполните \`${cliName} completion --install\`.`,
         "Shell completion",
       );
       return;
@@ -101,7 +101,7 @@ export async function setupWizardShellCompletion(params: {
 
     const profileHint = await resolveProfileHint(completionStatus.shell);
     await params.prompter.note(
-      `Shell completion installed. ${formatReloadHint(completionStatus.shell, profileHint)}`,
+      `Shell completion установлен. ${formatReloadHint(completionStatus.shell, profileHint)}`,
       "Shell completion",
     );
   }

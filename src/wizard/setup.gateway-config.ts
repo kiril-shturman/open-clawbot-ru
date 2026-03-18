@@ -146,13 +146,13 @@ export async function configureGatewayForSetup(
   // - Tailscale wants bind=loopback so we never expose a non-loopback server + tailscale serve/funnel at once.
   // - Funnel requires password auth.
   if (tailscaleMode !== "off" && bind !== "loopback") {
-    await prompter.note("Tailscale requires bind=loopback. Adjusting bind to loopback.", "Note");
+    await prompter.note("Tailscale требует bind=loopback. Переключаю bind на loopback.", "Заметка");
     bind = "loopback";
     customBindHost = undefined;
   }
 
   if (tailscaleMode === "funnel" && authMode !== "password") {
-    await prompter.note("Tailscale funnel requires password auth.", "Note");
+    await prompter.note("Для Tailscale funnel нужна авторизация по паролю.", "Заметка");
     authMode = "password";
   }
 
@@ -173,11 +173,11 @@ export async function configureGatewayForSetup(
             prompter,
             explicitMode: opts.secretInputMode,
             copy: {
-              modeMessage: "How do you want to provide the gateway token?",
-              plaintextLabel: "Generate/store plaintext token",
-              plaintextHint: "Default",
-              refLabel: "Use SecretRef",
-              refHint: "Store a reference instead of plaintext",
+              modeMessage: "Как вы хотите указать токен gateway?",
+              plaintextLabel: "Сгенерировать/сохранить токен в открытом виде",
+              plaintextHint: "По умолчанию",
+              refLabel: "Использовать SecretRef",
+              refHint: "Хранить ссылку вместо открытого текста",
             },
           });
     if (tokenMode === "ref") {
@@ -196,7 +196,7 @@ export async function configureGatewayForSetup(
           prompter,
           preferredEnvVar: "OPENCLAW_GATEWAY_TOKEN",
           copy: {
-            sourceMessage: "Where is this gateway token stored?",
+            sourceMessage: "Где хранится этот токен gateway?",
             envVarPlaceholder: "OPENCLAW_GATEWAY_TOKEN",
           },
         });
@@ -210,8 +210,8 @@ export async function configureGatewayForSetup(
       gatewayTokenInput = gatewayToken;
     } else {
       const tokenInput = await prompter.text({
-        message: "Gateway token (blank to generate)",
-        placeholder: "Needed for multi-machine or non-loopback access",
+        message: "Токен gateway (оставьте пустым, чтобы сгенерировать)",
+        placeholder: "Нужен для доступа с нескольких машин или не через loopback",
         initialValue:
           quickstartTokenString ??
           normalizeGatewayTokenInput(process.env.OPENCLAW_GATEWAY_TOKEN) ??
@@ -230,9 +230,9 @@ export async function configureGatewayForSetup(
         prompter,
         explicitMode: opts.secretInputMode,
         copy: {
-          modeMessage: "How do you want to provide the gateway password?",
-          plaintextLabel: "Enter password now",
-          plaintextHint: "Stores the password directly in OpenClaw config",
+          modeMessage: "Как вы хотите указать пароль gateway?",
+          plaintextLabel: "Ввести пароль сейчас",
+          plaintextHint: "Пароль будет сохранён прямо в конфиге OpenClaw",
         },
       });
       if (selectedMode === "ref") {
@@ -242,7 +242,7 @@ export async function configureGatewayForSetup(
           prompter,
           preferredEnvVar: "OPENCLAW_GATEWAY_PASSWORD",
           copy: {
-            sourceMessage: "Where is this gateway password stored?",
+            sourceMessage: "Где хранится этот пароль gateway?",
             envVarPlaceholder: "OPENCLAW_GATEWAY_PASSWORD",
           },
         });
@@ -250,7 +250,7 @@ export async function configureGatewayForSetup(
       } else {
         password = String(
           (await prompter.text({
-            message: "Gateway password",
+            message: "Пароль gateway",
             validate: validateGatewayPasswordInput,
           })) ?? "",
         ).trim();
