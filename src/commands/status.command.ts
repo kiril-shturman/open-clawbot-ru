@@ -427,7 +427,7 @@ export async function statusCommand(
   })();
 
   const updateAvailability = resolveUpdateAvailability(update);
-  const updateLine = formatUpdateOneLiner(update).replace(/^Update:\s*/i, "");
+  const updateLine = formatUpdateOneLiner(update).replace(/^(Update|Обновление):\s*/i, "");
   const channelLabel = channelInfo.label;
   const gitLabel = formatGitInstallLabel(update);
   const pluginCompatibilitySummary = summarizePluginCompatibility(pluginCompatibility);
@@ -493,7 +493,7 @@ export async function statusCommand(
     runtime.log("");
     runtime.log(theme.heading("Совместимость плагинов"));
     for (const notice of pluginCompatibility.slice(0, 8)) {
-      const label = notice.severity === "warn" ? theme.warn("WARN") : theme.muted("INFO");
+      const label = notice.severity === "warn" ? theme.warn("ПРЕД") : theme.muted("ИНФО");
       runtime.log(`  ${label} ${formatPluginCompatibilityNotice(notice)}`);
     }
     if (pluginCompatibility.length > 8) {
@@ -521,9 +521,9 @@ export async function statusCommand(
   runtime.log(theme.heading("Аудит безопасности"));
   const fmtSummary = (value: { critical: number; warn: number; info: number }) => {
     const parts = [
-      theme.error(`${value.critical} critical`),
-      theme.warn(`${value.warn} warn`),
-      theme.muted(`${value.info} info`),
+      theme.error(`${value.critical} критично`),
+      theme.warn(`${value.warn} предупрежд.`),
+      theme.muted(`${value.info} инфо`),
     ];
     return parts.join(" · ");
   };
@@ -536,12 +536,12 @@ export async function statusCommand(
   } else {
     const severityLabel = (sev: "critical" | "warn" | "info") => {
       if (sev === "critical") {
-        return theme.error("CRITICAL");
+        return theme.error("КРИТИЧНО");
       }
       if (sev === "warn") {
-        return theme.warn("WARN");
+        return theme.warn("ПРЕД");
       }
-      return theme.muted("INFO");
+      return theme.muted("ИНФО");
     };
     const sevRank = (sev: "critical" | "warn" | "info") =>
       sev === "critical" ? 0 : sev === "warn" ? 1 : 2;
@@ -582,7 +582,7 @@ export async function statusCommand(
         const effectiveState = row.state === "off" ? "off" : issues.length > 0 ? "warn" : row.state;
         const issueSuffix =
           issues.length > 0
-            ? ` · ${warn(`gateway: ${shortenText(issues[0]?.message ?? "issue", 84)}`)}`
+            ? ` · ${warn(`gateway: ${shortenText(issues[0]?.message ?? "ошибка", 84)}`)}`
             : "";
         return {
           Channel: row.label,
@@ -591,7 +591,7 @@ export async function statusCommand(
             effectiveState === "ok"
               ? ok("OK")
               : effectiveState === "warn"
-                ? warn("WARN")
+                ? warn("ПРЕД")
                 : effectiveState === "off"
                   ? muted("OFF")
                   : theme.accentDim("SETUP"),
@@ -674,7 +674,7 @@ export async function statusCommand(
           return ok("OK");
         }
         if (normalized.startsWith("failed")) {
-          return warn("WARN");
+          return warn("ПРЕД");
         }
         if (normalized.startsWith("not configured")) {
           return muted("ВЫКЛ");
@@ -688,7 +688,7 @@ export async function statusCommand(
         if (normalized.startsWith("not linked")) {
           return warn("НЕ СВЯЗАНО");
         }
-        return warn("WARN");
+        return warn("ПРЕД");
       })();
       rows.push({ Item: item, Status: status, Detail: detail });
     }

@@ -500,7 +500,7 @@ describe("statusCommand", () => {
       "Обзор",
       "Аудит безопасности",
       "Сводка:",
-      "CRITICAL",
+      "КРИТИЧНО",
       "Панель управления",
       "macos 14.0 (arm64)",
       "Память",
@@ -609,7 +609,7 @@ describe("statusCommand", () => {
     expect(joined).toMatch(/Signal/i);
     expect(joined).toMatch(/iMessage/i);
     expect(joined).toMatch(/gateway:/i);
-    expect(joined).toMatch(/WARN/);
+    expect(joined).toMatch(/ПРЕД/);
   });
 
   it.each([
