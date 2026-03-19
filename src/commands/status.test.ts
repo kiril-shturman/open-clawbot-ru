@@ -480,7 +480,7 @@ describe("statusCommand", () => {
   it("prints unknown usage in formatted output when totalTokens is missing", async () => {
     await withUnknownUsageStore(async () => {
       const logs = await runStatusAndGetLogs();
-      expect(logs.some((line) => line.includes("unknown/") && line.includes("(?%)"))).toBe(true);
+      expect(logs.some((line) => line.includes("неизвестно/") && line.includes("(?%)"))).toBe(true);
     });
   });
 
@@ -511,7 +511,7 @@ describe("statusCommand", () => {
       "Сессии",
       "+1000",
       "50%",
-      "40% cached",
+      "40% из кэша",
       "LaunchAgent",
       "FAQ:",
       "Устранение проблем:",

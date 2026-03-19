@@ -8,7 +8,7 @@ export const formatKTokens = (value: number) =>
 
 export const formatDuration = (ms: number | null | undefined) => {
   if (ms == null || !Number.isFinite(ms)) {
-    return "unknown";
+    return "неизвестно";
   }
   return formatDurationPrecise(ms, { decimals: 1 });
 };
@@ -26,9 +26,9 @@ export const formatTokensCompact = (
 
   let result = "";
   if (used == null) {
-    result = ctx ? `unknown/${formatKTokens(ctx)} (?%)` : "unknown used";
+    result = ctx ? `неизвестно/${formatKTokens(ctx)} (?%)` : "использование неизвестно";
   } else if (!ctx) {
-    result = `${formatKTokens(used)} used`;
+    result = `${formatKTokens(used)} исп.`;
   } else {
     const pctLabel = sess.percentUsed != null ? `${sess.percentUsed}%` : "?%";
     result = `${formatKTokens(used)}/${formatKTokens(ctx)} (${pctLabel})`;
@@ -41,7 +41,7 @@ export const formatTokensCompact = (
         ? used
         : cacheRead + (typeof cacheWrite === "number" ? cacheWrite : 0);
     const hitRate = Math.round((cacheRead / total) * 100);
-    result += ` · 🗄️ ${hitRate}% cached`;
+    result += ` · 🗄️ ${hitRate}% из кэша`;
   }
 
   return result;

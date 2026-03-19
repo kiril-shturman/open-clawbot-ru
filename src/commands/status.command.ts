@@ -113,7 +113,7 @@ export async function statusCommand(
     ? await runSecurityAudit()
     : await withProgress(
         {
-          label: "Running security audit…",
+          label: "Запускаю аудит безопасности…",
           indeterminate: true,
           enabled: true,
         },
@@ -147,7 +147,7 @@ export async function statusCommand(
   const usage = opts.usage
     ? await withProgress(
         {
-          label: "Fetching usage snapshot…",
+          label: "Получаю снимок использования…",
           indeterminate: true,
           enabled: opts.json !== true,
         },
@@ -160,7 +160,7 @@ export async function statusCommand(
   const health: HealthSummary | undefined = opts.deep
     ? await withProgress(
         {
-          label: "Checking gateway health…",
+          label: "Проверяю состояние gateway…",
           indeterminate: true,
           enabled: opts.json !== true,
         },
