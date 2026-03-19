@@ -380,10 +380,10 @@ export async function gatewayStatusCommand(
       const c = p.configSummary;
       const wideArea =
         c.discovery.wideAreaEnabled === true
-          ? "enabled"
+          ? "включено"
           : c.discovery.wideAreaEnabled === false
-            ? "disabled"
-            : "unknown";
+            ? "выключено"
+            : "неизвестно";
       runtime.log(`  ${colorize(rich, theme.info, "Wide-area discovery")}: ${wideArea}`);
     }
     runtime.log("");
