@@ -134,7 +134,7 @@ function parseAllowlistCommand(raw: string): AllowlistCommand | null {
   if (action === "add" || action === "remove") {
     const entry = entryTokens.join(" ").trim();
     if (!entry) {
-      return { action: "error", message: "Usage: /allowlist add|remove <entry>" };
+      return { action: "error", message: "Использование: /allowlist add|remove <entry>" };
     }
     return { action, scope, entry, channel, account, resolve, target };
   }
@@ -161,7 +161,7 @@ function normalizeAllowFrom(params: {
 
 function formatEntryList(entries: string[], resolved?: Map<string, string>): string {
   if (entries.length === 0) {
-    return "(none)";
+    return "(нет)";
   }
   return entries
     .map((entry) => {
@@ -260,14 +260,14 @@ export const handleAllowlistCommand: CommandHandler = async (params, allowTextCo
   if (!channelId) {
     return {
       shouldContinue: false,
-      reply: { text: "⚠️ Unknown channel. Add channel=<id> to the command." },
+      reply: { text: "⚠️ Неизвестный канал. Добавьте channel=<id> в команду." },
     };
   }
   if (parsed.account?.trim() && !normalizeOptionalAccountId(parsed.account)) {
     return {
       shouldContinue: false,
       reply: {
-        text: "⚠️ Invalid account id. Reserved keys (__proto__, constructor, prototype) are blocked.",
+        text: "⚠️ Некорректный account id. Зарезервированные ключи (__proto__, constructor, prototype) заблокированы.",
       },
     };
   }
@@ -279,7 +279,7 @@ export const handleAllowlistCommand: CommandHandler = async (params, allowTextCo
     if (!plugin?.allowlist?.readConfig && !supportsStore) {
       return {
         shouldContinue: false,
-        reply: { text: `⚠️ ${channelId} does not expose allowlist configuration.` },
+        reply: { text: `⚠️ ${channelId} не предоставляет конфигурацию allowlist.` },
       };
     }
     const storeAllowFrom = supportsStore
@@ -340,18 +340,18 @@ export const handleAllowlistCommand: CommandHandler = async (params, allowTextCo
         : undefined;
 
     const lines: string[] = ["🧾 Allowlist"];
-    lines.push(`Channel: ${channelId}${accountId ? ` (account ${accountId})` : ""}`);
+    lines.push(`Канал: ${channelId}${accountId ? ` (account ${accountId})` : ""}`);
     if (configState.dmPolicy) {
-      lines.push(`DM policy: ${configState.dmPolicy}`);
+      lines.push(`Политика DM: ${configState.dmPolicy}`);
     }
     if (configState.groupPolicy) {
-      lines.push(`Group policy: ${configState.groupPolicy}`);
+      lines.push(`Политика групп: ${configState.groupPolicy}`);
     }
 
     const showDm = parsed.scope === "dm" || parsed.scope === "all";
     const showGroup = parsed.scope === "group" || parsed.scope === "all";
     if (showDm) {
-      lines.push(`DM allowFrom (config): ${formatEntryList(dmDisplay, resolvedDm)}`);
+      lines.push(`DM allowFrom (конфиг): ${formatEntryList(dmDisplay, resolvedDm)}`);
     }
     if (supportsStore && storeAllowFrom.length > 0) {
       const storeLabel = normalizeAllowFrom({
@@ -364,10 +364,10 @@ export const handleAllowlistCommand: CommandHandler = async (params, allowTextCo
     }
     if (showGroup) {
       if (groupAllowFrom.length > 0) {
-        lines.push(`Group allowFrom (config): ${formatEntryList(groupDisplay, resolvedGroup)}`);
+        lines.push(`Group allowFrom (конфиг): ${formatEntryList(groupDisplay, resolvedGroup)}`);
       }
       if (groupOverrides.length > 0) {
-        lines.push("Group overrides:");
+        lines.push("Переопределения групп:");
         for (const entry of groupOverrides) {
           const normalized = normalizeAllowFrom({
             cfg: params.cfg,
@@ -399,14 +399,14 @@ export const handleAllowlistCommand: CommandHandler = async (params, allowTextCo
     if (parsed.scope === "all") {
       return {
         shouldContinue: false,
-        reply: { text: "⚠️ /allowlist add|remove requires scope dm or group." },
+        reply: { text: "⚠️ Для /allowlist add|remove нужен scope dm или group." },
       };
     }
     if (!plugin?.allowlist?.applyConfigEdit) {
       return {
         shouldContinue: false,
         reply: {
-          text: `⚠️ ${channelId} does not support ${parsed.scope} allowlist edits via /allowlist.`,
+          text: `⚠️ ${channelId} не поддерживает изменение ${parsed.scope} allowlist через /allowlist.`,
         },
       };
     }
@@ -415,7 +415,9 @@ export const handleAllowlistCommand: CommandHandler = async (params, allowTextCo
     if (!snapshot.valid || !snapshot.parsed || typeof snapshot.parsed !== "object") {
       return {
         shouldContinue: false,
-        reply: { text: "⚠️ Config file is invalid; fix it before using /allowlist." },
+        reply: {
+          text: "⚠️ Файл конфигурации некорректен; исправьте его перед использованием /allowlist.",
+        },
       };
     }
     const parsedConfig = structuredClone(snapshot.parsed as Record<string, unknown>);
@@ -431,14 +433,14 @@ export const handleAllowlistCommand: CommandHandler = async (params, allowTextCo
       return {
         shouldContinue: false,
         reply: {
-          text: `⚠️ ${channelId} does not support ${parsed.scope} allowlist edits via /allowlist.`,
+          text: `⚠️ ${channelId} не поддерживает изменение ${parsed.scope} allowlist через /allowlist.`,
         },
       };
     }
     if (editResult.kind === "invalid-entry") {
       return {
         shouldContinue: false,
-        reply: { text: "⚠️ Invalid allowlist entry." },
+        reply: { text: "⚠️ Некорректная запись allowlist." },
       };
     }
     const deniedText = resolveConfigWriteDeniedText({
@@ -465,14 +467,17 @@ export const handleAllowlistCommand: CommandHandler = async (params, allowTextCo
         const issue = validated.issues[0];
         return {
           shouldContinue: false,
-          reply: { text: `⚠️ Config invalid after update (${issue.path}: ${issue.message}).` },
+          reply: {
+            text: `⚠️ Конфигурация стала некорректной после обновления (${issue.path}: ${issue.message}).`,
+          },
         };
       }
       await writeConfigFile(validated.config);
     }
 
     if (!configChanged && !shouldTouchStore) {
-      const message = parsed.action === "add" ? "✅ Already allowlisted." : "⚠️ Entry not found.";
+      const message =
+        parsed.action === "add" ? "✅ Уже есть в allowlist." : "⚠️ Запись не найдена.";
       return { shouldContinue: false, reply: { text: message } };
     }
 
@@ -485,7 +490,7 @@ export const handleAllowlistCommand: CommandHandler = async (params, allowTextCo
       });
     }
 
-    const actionLabel = parsed.action === "add" ? "added" : "removed";
+    const actionLabel = parsed.action === "add" ? "добавлен" : "удалён";
     const scopeLabel = parsed.scope === "dm" ? "DM" : "group";
     const locations: string[] = [];
     if (configChanged) {
@@ -494,7 +499,7 @@ export const handleAllowlistCommand: CommandHandler = async (params, allowTextCo
     if (shouldTouchStore) {
       locations.push("pairing store");
     }
-    const targetLabel = locations.length > 0 ? locations.join(" + ") : "no-op";
+    const targetLabel = locations.length > 0 ? locations.join(" + ") : "без изменений";
     return {
       shouldContinue: false,
       reply: {
@@ -506,7 +511,7 @@ export const handleAllowlistCommand: CommandHandler = async (params, allowTextCo
   if (!shouldTouchStore) {
     return {
       shouldContinue: false,
-      reply: { text: "⚠️ This channel does not support allowlist storage." },
+      reply: { text: "⚠️ Этот канал не поддерживает хранение allowlist." },
     };
   }
 
@@ -517,10 +522,10 @@ export const handleAllowlistCommand: CommandHandler = async (params, allowTextCo
     entry: parsed.entry,
   });
 
-  const actionLabel = parsed.action === "add" ? "added" : "removed";
+  const actionLabel = parsed.action === "add" ? "добавлен" : "удалён";
   const scopeLabel = parsed.scope === "dm" ? "DM" : "group";
   return {
     shouldContinue: false,
-    reply: { text: `✅ ${scopeLabel} allowlist ${actionLabel} in pairing store.` },
+    reply: { text: `✅ ${scopeLabel} allowlist ${actionLabel} в pairing store.` },
   };
 };

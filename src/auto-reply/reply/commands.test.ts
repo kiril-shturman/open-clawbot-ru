@@ -1079,8 +1079,8 @@ describe("handleCommands /allowlist", () => {
     const result = await handleCommands(params);
 
     expect(result.shouldContinue).toBe(false);
-    expect(result.reply?.text).toContain("Channel: telegram");
-    expect(result.reply?.text).toContain("DM allowFrom (config): 123, @alice");
+    expect(result.reply?.text).toContain("Канал: telegram");
+    expect(result.reply?.text).toContain("DM allowFrom (конфиг): 123, @alice");
     expect(result.reply?.text).toContain("Paired allowFrom (store): 456");
   });
 
@@ -1126,7 +1126,7 @@ describe("handleCommands /allowlist", () => {
                 entry: "789",
                 accountId: "default",
               });
-              expect(result.reply?.text, "default account").toContain("DM allowlist added");
+              expect(result.reply?.text, "default account").toContain("DM allowlist добавлен");
             },
           );
         },
@@ -1242,7 +1242,7 @@ describe("handleCommands /allowlist", () => {
     const result = await handleCommands(params);
 
     expect(result.shouldContinue).toBe(false);
-    expect(result.reply?.text).toContain("Invalid account id");
+    expect(result.reply?.text).toContain("Некорректный account id");
     expect((Object.prototype as Record<string, unknown>).allowFrom).toBeUndefined();
     expect(writeConfigFileMock).not.toHaveBeenCalled();
   });
