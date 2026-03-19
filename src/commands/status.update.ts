@@ -60,13 +60,13 @@ export function formatUpdateAvailableHint(update: UpdateCheckResult): string | n
 
   const details: string[] = [];
   if (availability.hasGitUpdate && availability.gitBehind != null) {
-    details.push(`git behind ${availability.gitBehind}`);
+    details.push(`git отстаёт на ${availability.gitBehind}`);
   }
   if (availability.hasRegistryUpdate && availability.latestVersion) {
     details.push(`npm ${availability.latestVersion}`);
   }
   const suffix = details.length > 0 ? ` (${details.join(" · ")})` : "";
-  return `Update available${suffix}. Run: ${formatCliCommand("openclaw update")}`;
+  return `Доступно обновление${suffix}. Команда: ${formatCliCommand("openclaw update")}`;
 }
 
 export function formatUpdateOneLiner(update: UpdateCheckResult): string {
@@ -80,12 +80,12 @@ export function formatUpdateOneLiner(update: UpdateCheckResult): string {
       } else if (cmp != null && cmp < 0) {
         parts.push(`npm update ${update.registry.latestVersion}`);
       } else {
-        parts.push(`npm latest ${update.registry.latestVersion} (local newer)`);
+        parts.push(`npm latest ${update.registry.latestVersion} (локальная версия новее)`);
       }
       return;
     }
     if (update.registry?.error) {
-      parts.push("npm latest unknown");
+      parts.push("npm latest неизвестно");
     }
   };
 
@@ -96,21 +96,21 @@ export function formatUpdateOneLiner(update: UpdateCheckResult): string {
       parts.push(`↔ ${update.git.upstream}`);
     }
     if (update.git.dirty === true) {
-      parts.push("dirty");
+      parts.push("есть локальные изменения");
     }
     if (update.git.behind != null && update.git.ahead != null) {
       if (update.git.behind === 0 && update.git.ahead === 0) {
-        parts.push("up to date");
+        parts.push("актуально");
       } else if (update.git.behind > 0 && update.git.ahead === 0) {
-        parts.push(`behind ${update.git.behind}`);
+        parts.push(`отстаёт на ${update.git.behind}`);
       } else if (update.git.behind === 0 && update.git.ahead > 0) {
-        parts.push(`ahead ${update.git.ahead}`);
+        parts.push(`впереди на ${update.git.ahead}`);
       } else if (update.git.behind > 0 && update.git.ahead > 0) {
-        parts.push(`diverged (ahead ${update.git.ahead}, behind ${update.git.behind})`);
+        parts.push(`разошлось (впереди ${update.git.ahead}, отстаёт ${update.git.behind})`);
       }
     }
     if (update.git.fetchOk === false) {
-      parts.push("fetch failed");
+      parts.push("fetch не удался");
     }
     appendRegistryUpdateSummary();
   } else {
@@ -120,14 +120,14 @@ export function formatUpdateOneLiner(update: UpdateCheckResult): string {
 
   if (update.deps) {
     if (update.deps.status === "ok") {
-      parts.push("deps ok");
+      parts.push("deps в порядке");
     }
     if (update.deps.status === "missing") {
-      parts.push("deps missing");
+      parts.push("deps отсутствуют");
     }
     if (update.deps.status === "stale") {
-      parts.push("deps stale");
+      parts.push("deps устарели");
     }
   }
-  return `Update: ${parts.join(" · ")}`;
+  return `Обновление: ${parts.join(" · ")}`;
 }

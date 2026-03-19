@@ -90,7 +90,7 @@ describe("formatUpdateOneLiner", () => {
     });
 
     expect(formatUpdateOneLiner(update)).toBe(
-      `Update: git main · ↔ origin/main · dirty · behind 2 · npm latest ${VERSION} · deps ok`,
+      `Обновление: git main · ↔ origin/main · есть локальные изменения · отстаёт на 2 · npm latest ${VERSION} · deps в порядке`,
     );
   });
 
@@ -107,7 +107,9 @@ describe("formatUpdateOneLiner", () => {
       },
     });
 
-    expect(formatUpdateOneLiner(update)).toBe("Update: npm · npm latest unknown · deps missing");
+    expect(formatUpdateOneLiner(update)).toBe(
+      "Обновление: npm · npm latest неизвестно · deps отсутствуют",
+    );
   });
 });
 
@@ -141,7 +143,7 @@ describe("formatUpdateAvailableHint", () => {
     });
 
     expect(formatUpdateAvailableHint(update)).toBe(
-      `Update available (git behind 2 · npm ${latestVersion}). Run: openclaw update`,
+      `Доступно обновление (git отстаёт на 2 · npm ${latestVersion}). Команда: openclaw update`,
     );
   });
 });
