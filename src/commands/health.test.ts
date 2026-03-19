@@ -152,7 +152,7 @@ describe("healthCommand", () => {
 
     const lines = formatHealthChannelLines(summary, { accountMode: "all" });
     expect(lines).toContain(
-      "Telegram: ok (@pinguini_ugi_bot:main:196ms, @flurry_ugi_bot:flurry:190ms, @poe_ugi_bot:poe:188ms)",
+      "Telegram: ok (@pinguini_ugi_bot:main:196мс, @flurry_ugi_bot:flurry:190мс, @poe_ugi_bot:poe:188мс)",
     );
   });
 });

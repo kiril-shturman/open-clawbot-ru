@@ -127,7 +127,7 @@ describe("healthCommand (coverage)", () => {
 
     expect(runtime.exit).not.toHaveBeenCalled();
     expect(stripAnsi(runtime.log.mock.calls.map((c) => String(c[0])).join("\n"))).toMatch(
-      /WhatsApp: linked/i,
+      /WhatsApp: связано/i,
     );
     expect(logWebSelfIdMock).toHaveBeenCalled();
   });

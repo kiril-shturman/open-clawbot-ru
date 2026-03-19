@@ -71,15 +71,15 @@ export async function buildStatusAllReportLines(params: {
   const channelRows = params.channels.rows.map((row) => ({
     channelId: row.id,
     Channel: row.label,
-    Enabled: row.enabled ? ok("ON") : muted("OFF"),
+    Enabled: row.enabled ? ok("ВКЛ") : muted("ВЫКЛ"),
     State:
       row.state === "ok"
         ? ok("OK")
         : row.state === "warn"
-          ? warn("WARN")
+          ? warn("ПРЕД")
           : row.state === "off"
-            ? muted("OFF")
-            : theme.accentDim("SETUP"),
+            ? muted("ВЫКЛ")
+            : theme.accentDim("НАСТР"),
     Detail: row.detail,
   }));
   const channelIssuesByChannel = groupChannelIssuesByChannel(params.channelIssues);
@@ -92,7 +92,7 @@ export async function buildStatusAllReportLines(params: {
     const suffix = ` · ${warn(`gateway: ${String(issue.message).slice(0, 90)}`)}`;
     return {
       ...row,
-      State: warn("WARN"),
+      State: warn("ПРЕД"),
       Detail: `${row.Detail}${suffix}`,
     };
   });
@@ -125,7 +125,7 @@ export async function buildStatusAllReportLines(params: {
     width: tableWidth,
     columns: [
       { key: "Agent", header: "Агент", minWidth: 12 },
-      { key: "BootstrapFile", header: "Bootstrap-файл", minWidth: 14 },
+      { key: "BootstrapFile", header: "BOOTSTRAP.md", minWidth: 14 },
       { key: "Sessions", header: "Сессии", align: "right", minWidth: 8 },
       { key: "Active", header: "Активность", minWidth: 10 },
       { key: "Store", header: "Хранилище", flex: true, minWidth: 34 },
@@ -158,9 +158,9 @@ export async function buildStatusAllReportLines(params: {
           ...(r.Status === "OK"
             ? { Status: ok("OK") }
             : r.Status === "WARN"
-              ? { Status: warn("WARN") }
+              ? { Status: warn("ПРЕД") }
               : r.Status === "OFF"
-                ? { Status: muted("OFF") }
+                ? { Status: muted("ВЫКЛ") }
                 : {}),
         })),
       }).trimEnd(),

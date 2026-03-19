@@ -82,7 +82,7 @@ const debugHealth = (...args: unknown[]) => {
 
 const formatDurationParts = (ms: number): string => {
   if (!Number.isFinite(ms)) {
-    return "unknown";
+    return "неизвестно";
   }
   if (ms < 1000) {
     return `${Math.max(0, Math.round(ms))}ms`;
@@ -276,14 +276,14 @@ const formatProbeLine = (probe: unknown, opts: { botUsernames?: string[] } = {})
       label += ` (@${Array.from(usernames).join(", @")})`;
     }
     if (elapsedMs != null) {
-      label += ` (${elapsedMs}ms)`;
+      label += ` (${elapsedMs}мс)`;
     }
     if (webhookUrl) {
-      label += ` - webhook ${webhookUrl}`;
+      label += ` · webhook ${webhookUrl}`;
     }
     return label;
   }
-  let label = `failed (${status ?? "unknown"})`;
+  let label = `ошибка (${status ?? "неизвестно"})`;
   if (error) {
     label += ` - ${error}`;
   }
@@ -306,7 +306,7 @@ const formatAccountProbeTiming = (summary: ChannelAccountHealthSummary): string 
   const botUsername =
     botRecord && typeof botRecord.username === "string" ? botRecord.username : null;
   const handle = botUsername ? `@${botUsername}` : accountId;
-  const timing = elapsedMs != null ? `${elapsedMs}ms` : "ok";
+  const timing = elapsedMs != null ? `${elapsedMs}мс` : "ok";
 
   return `${handle}:${accountId}:${timing}`;
 };
@@ -367,17 +367,18 @@ export const formatHealthChannelLines = (
     if (linked !== null) {
       if (linked) {
         const authAgeMs = typeof baseSummary.authAgeMs === "number" ? baseSummary.authAgeMs : null;
-        const authLabel = authAgeMs != null ? ` (auth age ${Math.round(authAgeMs / 60000)}m)` : "";
-        lines.push(`${label}: linked${authLabel}`);
+        const authLabel =
+          authAgeMs != null ? ` (auth ${Math.round(authAgeMs / 60000)}м назад)` : "";
+        lines.push(`${label}: связано${authLabel}`);
       } else {
-        lines.push(`${label}: not linked`);
+        lines.push(`${label}: не связано`);
       }
       continue;
     }
 
     const configured = typeof baseSummary.configured === "boolean" ? baseSummary.configured : null;
     if (configured === false) {
-      lines.push(`${label}: not configured`);
+      lines.push(`${label}: не настроено`);
       continue;
     }
 
@@ -408,10 +409,10 @@ export const formatHealthChannelLines = (
     }
 
     if (configured === true) {
-      lines.push(`${label}: configured`);
+      lines.push(`${label}: настроено`);
       continue;
     }
-    lines.push(`${label}: unknown`);
+    lines.push(`${label}: неизвестно`);
   }
   return lines;
 };
@@ -602,7 +603,7 @@ export async function healthCommand(
   // Always query the running gateway; do not open a direct Baileys socket here.
   const summary = await withProgress(
     {
-      label: "Checking gateway health…",
+      label: "Проверяю состояние gateway…",
       indeterminate: true,
       enabled: opts.json !== true,
     },
@@ -624,7 +625,7 @@ export async function healthCommand(
     const rich = isRich();
     if (opts.verbose) {
       const details = buildGatewayConnectionDetails({ config: cfg });
-      runtime.log(info("Gateway connection:"));
+      runtime.log(info("Подключение к gateway:"));
       for (const line of details.message.split("\n")) {
         runtime.log(`  ${line}`);
       }
@@ -796,23 +797,23 @@ export async function healthCommand(
 
     if (resolvedAgents.length > 0) {
       const agentLabels = resolvedAgents.map((agent) =>
-        agent.isDefault ? `${agent.agentId} (default)` : agent.agentId,
+        agent.isDefault ? `${agent.agentId} (по умолчанию)` : agent.agentId,
       );
-      runtime.log(info(`Agents: ${agentLabels.join(", ")}`));
+      runtime.log(info(`Агенты: ${agentLabels.join(", ")}`));
     }
     const heartbeatParts = displayAgents
       .map((agent) => {
         const everyMs = agent.heartbeat?.everyMs;
-        const label = everyMs ? formatDurationParts(everyMs) : "disabled";
+        const label = everyMs ? formatDurationParts(everyMs) : "отключено";
         return `${label} (${agent.agentId})`;
       })
       .filter(Boolean);
     if (heartbeatParts.length > 0) {
-      runtime.log(info(`Heartbeat interval: ${heartbeatParts.join(", ")}`));
+      runtime.log(info(`Интервал heartbeat: ${heartbeatParts.join(", ")}`));
     }
     if (displayAgents.length === 0) {
       runtime.log(
-        info(`Session store: ${summary.sessions.path} (${summary.sessions.count} entries)`),
+        info(`Хранилище сессий: ${summary.sessions.path} (${summary.sessions.count} записей)`),
       );
       if (summary.sessions.recent.length > 0) {
         for (const r of summary.sessions.recent) {
@@ -825,13 +826,13 @@ export async function healthCommand(
       for (const agent of displayAgents) {
         runtime.log(
           info(
-            `Session store (${agent.agentId}): ${agent.sessions.path} (${agent.sessions.count} entries)`,
+            `Хранилище сессий (${agent.agentId}): ${agent.sessions.path} (${agent.sessions.count} записей)`,
           ),
         );
         if (agent.sessions.recent.length > 0) {
           for (const r of agent.sessions.recent) {
             runtime.log(
-              `- ${r.key} (${r.updatedAt ? `${Math.round((Date.now() - r.updatedAt) / 60000)}m ago` : "no activity"})`,
+              `- ${r.key} (${r.updatedAt ? `${Math.round((Date.now() - r.updatedAt) / 60000)}м назад` : "нет активности"})`,
             );
           }
         }

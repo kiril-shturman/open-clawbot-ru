@@ -673,19 +673,19 @@ export async function statusCommand(
         if (normalized.startsWith("ok")) {
           return ok("OK");
         }
-        if (normalized.startsWith("failed")) {
+        if (normalized.startsWith("ошибка")) {
           return warn("ПРЕД");
         }
-        if (normalized.startsWith("not configured")) {
+        if (normalized.startsWith("не настроено")) {
           return muted("ВЫКЛ");
         }
-        if (normalized.startsWith("configured")) {
+        if (normalized.startsWith("настроено")) {
           return ok("OK");
         }
-        if (normalized.startsWith("linked")) {
+        if (normalized.startsWith("связано")) {
           return ok("СВЯЗАНО");
         }
-        if (normalized.startsWith("not linked")) {
+        if (normalized.startsWith("не связано")) {
           return warn("НЕ СВЯЗАНО");
         }
         return warn("ПРЕД");

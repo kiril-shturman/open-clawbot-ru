@@ -69,7 +69,7 @@ describe("buildStatusAllReportLines", () => {
     });
 
     const output = lines.join("\n");
-    expect(output).toContain("Bootstrap-файл");
+    expect(output).toContain("BOOTSTRAP.md");
     expect(output).toContain("ЕСТЬ");
     expect(output).toContain("НЕТ");
     expect(diagnosisSpy).toHaveBeenCalledWith(
