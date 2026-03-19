@@ -75,8 +75,8 @@ export async function resolveNonInteractiveApiKey(params: {
     if (!resolvedEnvKey && flagKey) {
       params.runtime.error(
         [
-          `${params.flagName} cannot be used with --secret-input-mode ref unless ${params.envVar} is set in env.`,
-          `Set ${params.envVar} in env and omit ${params.flagName}, or use --secret-input-mode plaintext.`,
+          `${params.flagName} нельзя использовать с --secret-input-mode ref, если ${params.envVar} не задана в env.`,
+          `Задайте ${params.envVar} в env и не используйте ${params.flagName}, либо используйте --secret-input-mode plaintext.`,
         ].join("\n"),
       );
       params.runtime.exit(1);
@@ -86,8 +86,8 @@ export async function resolveNonInteractiveApiKey(params: {
       if (!resolvedEnvVarName) {
         params.runtime.error(
           [
-            `--secret-input-mode ref requires an explicit environment variable for provider "${params.provider}".`,
-            `Set ${params.envVar} in env and retry, or use --secret-input-mode plaintext.`,
+            `Для --secret-input-mode ref требуется явная переменная окружения для провайдера "${params.provider}".`,
+            `Задайте ${params.envVar} в env и повторите попытку либо используйте --secret-input-mode plaintext.`,
           ].join("\n"),
         );
         params.runtime.exit(1);
@@ -122,7 +122,9 @@ export async function resolveNonInteractiveApiKey(params: {
 
   const profileHint =
     params.allowProfile === false ? "" : `, or existing ${params.provider} API-key profile`;
-  params.runtime.error(`Missing ${params.flagName} (or ${params.envVar} in env${profileHint}).`);
+  params.runtime.error(
+    `Отсутствует ${params.flagName} (или ${params.envVar} в env${profileHint}).`,
+  );
   params.runtime.exit(1);
   return null;
 }

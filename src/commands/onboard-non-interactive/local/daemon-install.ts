@@ -32,7 +32,7 @@ export async function installGatewayDaemonNonInteractive(params: {
     process.platform === "linux" ? await isSystemdUserServiceAvailable() : true;
   if (process.platform === "linux" && !systemdAvailable) {
     runtime.log(
-      "Systemd user services are unavailable; skipping service install. Use a direct shell run (`openclaw gateway run`) or rerun without --install-daemon on this session.",
+      "Пользовательские службы systemd недоступны; установка сервиса пропущена. Используйте прямой запуск в shell (`openclaw gateway run`) или повторите команду без --install-daemon в этой сессии.",
     );
     return { installed: false, skippedReason: "systemd-user-unavailable" };
   }
@@ -54,9 +54,9 @@ export async function installGatewayDaemonNonInteractive(params: {
   if (tokenResolution.unavailableReason) {
     runtime.error(
       [
-        "Gateway install blocked:",
+        "Установка gateway заблокирована:",
         tokenResolution.unavailableReason,
-        "Fix gateway auth config/token input and rerun setup.",
+        "Исправьте конфигурацию аутентификации gateway/token и повторите настройку.",
       ].join(" "),
     );
     runtime.exit(1);
@@ -78,7 +78,7 @@ export async function installGatewayDaemonNonInteractive(params: {
       environment,
     });
   } catch (err) {
-    runtime.error(`Gateway service install failed: ${String(err)}`);
+    runtime.error(`Не удалось установить сервис gateway: ${String(err)}`);
     runtime.log(gatewayInstallErrorHint());
     return { installed: false };
   }

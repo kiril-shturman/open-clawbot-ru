@@ -16,7 +16,7 @@ export async function runNonInteractiveRemoteSetup(params: {
 
   const remoteUrl = opts.remoteUrl?.trim();
   if (!remoteUrl) {
-    runtime.error("Missing --remote-url for remote mode.");
+    runtime.error("Для режима remote требуется --remote-url.");
     runtime.exit(1);
     return;
   }
@@ -44,10 +44,10 @@ export async function runNonInteractiveRemoteSetup(params: {
   if (opts.json) {
     runtime.log(JSON.stringify(payload, null, 2));
   } else {
-    runtime.log(`Remote gateway: ${remoteUrl}`);
-    runtime.log(`Auth: ${payload.auth}`);
+    runtime.log(`Удалённый gateway: ${remoteUrl}`);
+    runtime.log(`Аутентификация: ${payload.auth}`);
     runtime.log(
-      `Tip: run \`${formatCliCommand("openclaw configure --section web")}\` to store your Brave API key for web_search. Docs: https://docs.openclaw.ai/tools/web`,
+      `Подсказка: запустите \`${formatCliCommand("openclaw configure --section web")}\`, чтобы сохранить Brave API key для web_search. Документация: https://docs.openclaw.ai/tools/web`,
     );
   }
 }

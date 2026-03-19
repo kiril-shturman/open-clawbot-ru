@@ -53,7 +53,7 @@ describe("setupWizardCommand", () => {
     );
 
     expect(runtime.error).toHaveBeenCalledWith(
-      'Invalid --secret-input-mode. Use "plaintext" or "ref".',
+      'Некорректный --secret-input-mode. Используйте "plaintext" или "ref".',
     );
     expect(runtime.exit).toHaveBeenCalledWith(1);
     expect(mocks.runInteractiveSetup).not.toHaveBeenCalled();
@@ -151,7 +151,7 @@ describe("setupWizardCommand", () => {
     );
 
     expect(runtime.error).toHaveBeenCalledWith(
-      'Invalid --reset-scope. Use "config", "config+creds+sessions", or "full".',
+      'Некорректный --reset-scope. Используйте "config", "config+creds+sessions" или "full".',
     );
     expect(runtime.exit).toHaveBeenCalledWith(1);
     expect(mocks.handleReset).not.toHaveBeenCalled();

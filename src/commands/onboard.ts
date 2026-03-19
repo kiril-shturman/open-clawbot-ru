@@ -22,18 +22,22 @@ export async function setupWizardCommand(
   if (opts.nonInteractive && isDeprecatedAuthChoice(originalAuthChoice)) {
     runtime.error(
       [
-        `Auth choice "${String(originalAuthChoice)}" is deprecated.`,
-        'Use "--auth-choice token" (Anthropic setup-token) or "--auth-choice openai-codex".',
+        `Вариант аутентификации "${String(originalAuthChoice)}" устарел.`,
+        'Используйте "--auth-choice token" (Anthropic setup-token) или "--auth-choice openai-codex".',
       ].join("\n"),
     );
     runtime.exit(1);
     return;
   }
   if (originalAuthChoice === "claude-cli") {
-    runtime.log('Auth choice "claude-cli" is deprecated; using setup-token flow instead.');
+    runtime.log(
+      'Вариант аутентификации "claude-cli" устарел; вместо него используется поток setup-token.',
+    );
   }
   if (originalAuthChoice === "codex-cli") {
-    runtime.log('Auth choice "codex-cli" is deprecated; using OpenAI Codex OAuth instead.');
+    runtime.log(
+      'Вариант аутентификации "codex-cli" устарел; вместо него используется OpenAI Codex OAuth.',
+    );
   }
   const flow = opts.flow === "manual" ? ("advanced" as const) : opts.flow;
   const normalizedOpts =
@@ -45,13 +49,15 @@ export async function setupWizardCommand(
     normalizedOpts.secretInputMode !== "plaintext" && // pragma: allowlist secret
     normalizedOpts.secretInputMode !== "ref" // pragma: allowlist secret
   ) {
-    runtime.error('Invalid --secret-input-mode. Use "plaintext" or "ref".');
+    runtime.error('Некорректный --secret-input-mode. Используйте "plaintext" или "ref".');
     runtime.exit(1);
     return;
   }
 
   if (normalizedOpts.resetScope && !VALID_RESET_SCOPES.has(normalizedOpts.resetScope)) {
-    runtime.error('Invalid --reset-scope. Use "config", "config+creds+sessions", or "full".');
+    runtime.error(
+      'Некорректный --reset-scope. Используйте "config", "config+creds+sessions" или "full".',
+    );
     runtime.exit(1);
     return;
   }
@@ -59,9 +65,9 @@ export async function setupWizardCommand(
   if (normalizedOpts.nonInteractive && normalizedOpts.acceptRisk !== true) {
     runtime.error(
       [
-        "Non-interactive setup requires explicit risk acknowledgement.",
-        "Read: https://docs.openclaw.ai/security",
-        `Re-run with: ${formatCliCommand("openclaw onboard --non-interactive --accept-risk ...")}`,
+        "Неинтерактивная настройка требует явного подтверждения риска.",
+        "См.: https://docs.openclaw.ai/security",
+        `Повторите запуск так: ${formatCliCommand("openclaw onboard --non-interactive --accept-risk ...")}`,
       ].join("\n"),
     );
     runtime.exit(1);

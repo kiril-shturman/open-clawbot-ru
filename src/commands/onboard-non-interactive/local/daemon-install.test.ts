@@ -97,7 +97,9 @@ describe("installGatewayDaemonNonInteractive", () => {
       port: 18789,
     });
 
-    expect(runtime.error).toHaveBeenCalledWith(expect.stringContaining("Gateway install blocked"));
+    expect(runtime.error).toHaveBeenCalledWith(
+      expect.stringContaining("Установка gateway заблокирована"),
+    );
     expect(runtime.exit).toHaveBeenCalledWith(1);
     expect(buildGatewayInstallPlan).not.toHaveBeenCalled();
     expect(serviceInstall).not.toHaveBeenCalled();
@@ -126,7 +128,7 @@ describe("installGatewayDaemonNonInteractive", () => {
         skippedReason: "systemd-user-unavailable",
       });
       expect(runtime.log).toHaveBeenCalledWith(
-        expect.stringContaining("Systemd user services are unavailable"),
+        expect.stringContaining("Пользовательские службы systemd недоступны"),
       );
       expect(buildGatewayInstallPlan).not.toHaveBeenCalled();
       expect(serviceInstall).not.toHaveBeenCalled();

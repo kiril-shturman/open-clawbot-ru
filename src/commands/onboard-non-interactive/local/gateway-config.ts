@@ -23,7 +23,7 @@ export function applyNonInteractiveGatewayConfig(params: {
 
   const hasGatewayPort = opts.gatewayPort !== undefined;
   if (hasGatewayPort && (!Number.isFinite(opts.gatewayPort) || (opts.gatewayPort ?? 0) <= 0)) {
-    runtime.error("Invalid --gateway-port");
+    runtime.error("Некорректный --gateway-port.");
     runtime.exit(1);
     return null;
   }
@@ -32,7 +32,7 @@ export function applyNonInteractiveGatewayConfig(params: {
   let bind = opts.gatewayBind ?? "loopback";
   const authModeRaw = opts.gatewayAuth ?? "token";
   if (authModeRaw !== "token" && authModeRaw !== "password") {
-    runtime.error("Invalid --gateway-auth (use token|password).");
+    runtime.error("Некорректный --gateway-auth (используйте token|password).");
     runtime.exit(1);
     return null;
   }
@@ -60,19 +60,21 @@ export function applyNonInteractiveGatewayConfig(params: {
     if (gatewayTokenRefEnv) {
       if (!isValidEnvSecretRefId(gatewayTokenRefEnv)) {
         runtime.error(
-          "Invalid --gateway-token-ref-env (use env var name like OPENCLAW_GATEWAY_TOKEN).",
+          "Некорректный --gateway-token-ref-env (используйте имя переменной окружения вроде OPENCLAW_GATEWAY_TOKEN).",
         );
         runtime.exit(1);
         return null;
       }
       if (explicitGatewayToken) {
-        runtime.error("Use either --gateway-token or --gateway-token-ref-env, not both.");
+        runtime.error(
+          "Используйте либо --gateway-token, либо --gateway-token-ref-env, но не оба сразу.",
+        );
         runtime.exit(1);
         return null;
       }
       const resolvedFromEnv = process.env[gatewayTokenRefEnv]?.trim();
       if (!resolvedFromEnv) {
-        runtime.error(`Environment variable "${gatewayTokenRefEnv}" is missing or empty.`);
+        runtime.error(`Переменная окружения "${gatewayTokenRefEnv}" отсутствует или пуста.`);
         runtime.exit(1);
         return null;
       }
@@ -115,7 +117,7 @@ export function applyNonInteractiveGatewayConfig(params: {
   if (authMode === "password") {
     const password = opts.gatewayPassword?.trim();
     if (!password) {
-      runtime.error("Missing --gateway-password for password auth.");
+      runtime.error("Для аутентификации password требуется --gateway-password.");
       runtime.exit(1);
       return null;
     }

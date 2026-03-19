@@ -40,7 +40,7 @@ export async function applyNonInteractiveAuthChoice(params: {
   let nextConfig = params.nextConfig;
   const requestedSecretInputMode = normalizeSecretInputModeInput(opts.secretInputMode);
   if (opts.secretInputMode && !requestedSecretInputMode) {
-    runtime.error('Invalid --secret-input-mode. Use "plaintext" or "ref".');
+    runtime.error('Некорректный --secret-input-mode. Используйте "plaintext" или "ref".');
     runtime.exit(1);
     return null;
   }
@@ -58,8 +58,8 @@ export async function applyNonInteractiveAuthChoice(params: {
     if (!resolved.envVarName) {
       runtime.error(
         [
-          `Unable to determine which environment variable to store as a ref for provider "${authChoice}".`,
-          "Set an explicit provider env var and retry, or use --secret-input-mode plaintext.",
+          `Не удалось определить, какую переменную окружения сохранить как ref для провайдера "${authChoice}".`,
+          "Укажите явную переменную окружения провайдера и повторите попытку либо используйте --secret-input-mode plaintext.",
         ].join("\n"),
       );
       runtime.exit(1);
@@ -89,8 +89,8 @@ export async function applyNonInteractiveAuthChoice(params: {
       if (!params.resolved.envVarName) {
         runtime.error(
           [
-            `--secret-input-mode ref requires an explicit environment variable for provider "${params.provider}".`,
-            "Set the provider API key env var and retry, or use --secret-input-mode plaintext.",
+            `Для --secret-input-mode ref требуется явная переменная окружения для провайдера "${params.provider}".`,
+            "Укажите переменную окружения с API key провайдера и повторите попытку либо используйте --secret-input-mode plaintext.",
           ].join("\n"),
         );
         runtime.exit(1);
@@ -136,8 +136,8 @@ export async function applyNonInteractiveAuthChoice(params: {
   if (authChoice === "claude-cli" || authChoice === "codex-cli") {
     runtime.error(
       [
-        `Auth choice "${authChoice}" is deprecated.`,
-        'Use "--auth-choice token" (Anthropic setup-token) or "--auth-choice openai-codex".',
+        `Вариант аутентификации "${authChoice}" устарел.`,
+        'Используйте "--auth-choice token" (Anthropic setup-token) или "--auth-choice openai-codex".',
       ].join("\n"),
     );
     runtime.exit(1);
@@ -147,8 +147,8 @@ export async function applyNonInteractiveAuthChoice(params: {
   if (authChoice === "setup-token") {
     runtime.error(
       [
-        'Auth choice "setup-token" requires interactive mode.',
-        'Use "--auth-choice token" with --token and --token-provider anthropic.',
+        'Вариант аутентификации "setup-token" требует интерактивного режима.',
+        'Используйте "--auth-choice token" вместе с --token и --token-provider anthropic.',
       ].join("\n"),
     );
     runtime.exit(1);
@@ -300,7 +300,7 @@ export async function applyNonInteractiveAuthChoice(params: {
       });
       if (result.providerIdRenamedFrom && result.providerId) {
         runtime.log(
-          `Custom provider ID "${result.providerIdRenamedFrom}" already exists for a different base URL. Using "${result.providerId}".`,
+          `Custom provider ID "${result.providerIdRenamedFrom}" уже существует для другого base URL. Используется "${result.providerId}".`,
         );
       }
       return result.config;
@@ -312,14 +312,14 @@ export async function applyNonInteractiveAuthChoice(params: {
             runtime.error(err.message);
             break;
           default:
-            runtime.error(`Invalid custom provider config: ${err.message}`);
+            runtime.error(`Некорректная конфигурация custom provider: ${err.message}`);
             break;
         }
         runtime.exit(1);
         return null;
       }
       const reason = err instanceof Error ? err.message : String(err);
-      runtime.error(`Invalid custom provider config: ${reason}`);
+      runtime.error(`Некорректная конфигурация custom provider: ${reason}`);
       runtime.exit(1);
       return null;
     }
@@ -332,7 +332,7 @@ export async function applyNonInteractiveAuthChoice(params: {
     authChoice === "minimax-global-oauth" ||
     authChoice === "minimax-cn-oauth"
   ) {
-    runtime.error("OAuth requires interactive mode.");
+    runtime.error("OAuth требует интерактивного режима.");
     runtime.exit(1);
     return null;
   }

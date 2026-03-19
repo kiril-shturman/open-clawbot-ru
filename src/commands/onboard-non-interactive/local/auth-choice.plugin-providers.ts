@@ -125,8 +125,8 @@ export async function applyNonInteractivePluginProviderChoice(params: {
   if (!method.runNonInteractive) {
     params.runtime.error(
       [
-        `Auth choice "${params.authChoice}" requires interactive mode.`,
-        `The ${providerChoice.provider.label} provider plugin does not implement non-interactive setup.`,
+        `Вариант аутентификации "${params.authChoice}" требует интерактивного режима.`,
+        `Плагин провайдера ${providerChoice.provider.label} не поддерживает неинтерактивную настройку.`,
       ].join("\n"),
     );
     params.runtime.exit(1);

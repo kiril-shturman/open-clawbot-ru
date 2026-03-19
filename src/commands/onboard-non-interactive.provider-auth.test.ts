@@ -514,10 +514,10 @@ describe("onboard (non-interactive): provider auth", () => {
           expect(thrown).toBeDefined();
           const message = String(thrown?.message ?? "");
           expect(message).toContain(
-            `${flagName} cannot be used with --secret-input-mode ref unless ${envVar} is set in env.`,
+            `${flagName} нельзя использовать с --secret-input-mode ref, если ${envVar} не задана в env.`,
           );
           expect(message).toContain(
-            `Set ${envVar} in env and omit ${flagName}, or use --secret-input-mode plaintext.`,
+            `Задайте ${envVar} в env и не используйте ${flagName}, либо используйте --secret-input-mode plaintext.`,
           );
           expect(message).not.toContain(providedSecret);
         });
@@ -818,10 +818,10 @@ describe("onboard (non-interactive): provider auth", () => {
         expect(thrown).toBeDefined();
         const message = String(thrown?.message ?? "");
         expect(message).toContain(
-          "--custom-api-key cannot be used with --secret-input-mode ref unless CUSTOM_API_KEY is set in env.",
+          "--custom-api-key нельзя использовать с --secret-input-mode ref, если CUSTOM_API_KEY не задана в env.",
         );
         expect(message).toContain(
-          "Set CUSTOM_API_KEY in env and omit --custom-api-key, or use --secret-input-mode plaintext.",
+          "Задайте CUSTOM_API_KEY в env и не используйте --custom-api-key, либо используйте --secret-input-mode plaintext.",
         );
         expect(message).not.toContain(providedSecret);
       });
@@ -874,7 +874,7 @@ describe("onboard (non-interactive): provider auth", () => {
           skipSkills: true,
         }),
       ).rejects.toThrow(
-        "Invalid custom provider config: Custom provider ID must include letters, numbers, or hyphens.",
+        "Некорректная конфигурация custom provider: Custom provider ID must include letters, numbers, or hyphens.",
       );
     });
   });
