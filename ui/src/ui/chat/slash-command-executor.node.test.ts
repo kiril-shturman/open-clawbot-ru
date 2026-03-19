@@ -42,7 +42,7 @@ describe("executeSlashCommand /kill", () => {
       "all",
     );
 
-    expect(result.content).toBe("Aborted 3 sub-agent sessions.");
+    expect(result.content).toBe("Остановлено субагент-сессий: 3.");
     expect(request).toHaveBeenNthCalledWith(1, "sessions.list", {});
     expect(request).toHaveBeenNthCalledWith(2, "chat.abort", {
       sessionKey: "agent:main:subagent:one",
@@ -79,7 +79,7 @@ describe("executeSlashCommand /kill", () => {
       "main",
     );
 
-    expect(result.content).toBe("Aborted 2 matching sub-agent sessions for `main`.");
+    expect(result.content).toBe("Остановлено подходящих субагент-сессий для `main`: 2.");
     expect(request).toHaveBeenNthCalledWith(1, "sessions.list", {});
     expect(request).toHaveBeenNthCalledWith(2, "chat.abort", {
       sessionKey: "agent:main:subagent:one",
@@ -116,7 +116,7 @@ describe("executeSlashCommand /kill", () => {
     );
 
     expect(result.content).toBe(
-      "No matching sub-agent sessions found for `agent:main:subagent:sibling`.",
+      "Не найдено подходящих субагент-сессий для `agent:main:subagent:sibling`.",
     );
     expect(request).toHaveBeenCalledTimes(1);
     expect(request).toHaveBeenNthCalledWith(1, "sessions.list", {});
@@ -145,7 +145,7 @@ describe("executeSlashCommand /kill", () => {
       "all",
     );
 
-    expect(result.content).toBe("No active sub-agent runs to abort.");
+    expect(result.content).toBe("Нет активных запусков субагентов для остановки.");
     expect(request).toHaveBeenNthCalledWith(1, "sessions.list", {});
     expect(request).toHaveBeenNthCalledWith(2, "chat.abort", {
       sessionKey: "agent:main:subagent:one",
@@ -180,7 +180,7 @@ describe("executeSlashCommand /kill", () => {
       "all",
     );
 
-    expect(result.content).toBe("Aborted 2 sub-agent sessions.");
+    expect(result.content).toBe("Остановлено субагент-сессий: 2.");
     expect(request).toHaveBeenNthCalledWith(1, "sessions.list", {});
     expect(request).toHaveBeenNthCalledWith(2, "chat.abort", {
       sessionKey: "agent:main:subagent:one",
@@ -219,7 +219,7 @@ describe("executeSlashCommand /kill", () => {
       "all",
     );
 
-    expect(result.content).toBe("Aborted 2 sub-agent sessions.");
+    expect(result.content).toBe("Остановлено субагент-сессий: 2.");
     expect(request).toHaveBeenNthCalledWith(1, "sessions.list", {});
     expect(request).toHaveBeenNthCalledWith(2, "chat.abort", {
       sessionKey: "agent:main:subagent:mine",
@@ -259,7 +259,7 @@ describe("executeSlashCommand directives", () => {
     );
 
     expect(result.content).toBe(
-      "**Current model:** `gpt-4.1-mini`\n**Available:** `gpt-4.1-mini`, `gpt-4.1`",
+      "**Текущая модель:** `gpt-4.1-mini`\n**Доступные:** `gpt-4.1-mini`, `gpt-4.1`",
     );
     expect(request).toHaveBeenNthCalledWith(1, "sessions.list", {});
     expect(request).toHaveBeenNthCalledWith(2, "models.list", {});
@@ -323,7 +323,7 @@ describe("executeSlashCommand directives", () => {
     );
 
     expect(result.content).toBe(
-      "**Session Usage**\nInput: **1.2k** tokens\nOutput: **300** tokens\nTotal: **1.5k** tokens\nContext: **30%** of 4k\nModel: `gpt-4.1-mini`",
+      "**Использование сессии**\nВход: **1.2k** токенов\nВыход: **300** токенов\nВсего: **1.5k** токенов\nКонтекст: **30%** от 4k\nМодель: `gpt-4.1-mini`",
     );
     expect(request).toHaveBeenNthCalledWith(1, "sessions.list", {});
   });
@@ -356,7 +356,7 @@ describe("executeSlashCommand directives", () => {
     );
 
     expect(result.content).toBe(
-      "Current thinking level: low.\nOptions: off, minimal, low, medium, high, adaptive.",
+      "Текущий уровень рассуждений: low.\nВарианты: off, minimal, low, medium, high, adaptive.",
     );
     expect(request).toHaveBeenNthCalledWith(1, "sessions.list", {});
     expect(request).toHaveBeenNthCalledWith(2, "models.list", {});
@@ -378,8 +378,8 @@ describe("executeSlashCommand directives", () => {
       "xhigh",
     );
 
-    expect(minimal.content).toBe("Thinking level set to **minimal**.");
-    expect(xhigh.content).toBe("Thinking level set to **xhigh**.");
+    expect(minimal.content).toBe("Уровень рассуждений установлен: **minimal**.");
+    expect(xhigh.content).toBe("Уровень рассуждений установлен: **xhigh**.");
     expect(request).toHaveBeenNthCalledWith(1, "sessions.patch", {
       key: "agent:main:main",
       thinkingLevel: "minimal",
@@ -407,7 +407,7 @@ describe("executeSlashCommand directives", () => {
       "",
     );
 
-    expect(result.content).toBe("Current verbose level: full.\nOptions: on, full, off.");
+    expect(result.content).toBe("Текущий уровень подробности: full.\nВарианты: on, full, off.");
     expect(request).toHaveBeenNthCalledWith(1, "sessions.list", {});
   });
 
@@ -428,7 +428,7 @@ describe("executeSlashCommand directives", () => {
       "",
     );
 
-    expect(result.content).toBe("Current fast mode: on.\nOptions: status, on, off.");
+    expect(result.content).toBe("Текущий быстрый режим: on.\nВарианты: status, on, off.");
     expect(request).toHaveBeenNthCalledWith(1, "sessions.list", {});
   });
 
@@ -442,7 +442,7 @@ describe("executeSlashCommand directives", () => {
       "on",
     );
 
-    expect(result.content).toBe("Fast mode enabled.");
+    expect(result.content).toBe("Быстрый режим включён.");
     expect(request).toHaveBeenCalledWith("sessions.patch", {
       key: "agent:main:main",
       fastMode: true,
