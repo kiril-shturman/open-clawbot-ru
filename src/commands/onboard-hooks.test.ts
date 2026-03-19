@@ -141,9 +141,9 @@ describe("onboard-hooks", () => {
       });
       expect(prompter.note).toHaveBeenCalledTimes(2);
       expect(prompter.multiselect).toHaveBeenCalledWith({
-        message: "Enable hooks?",
+        message: "Включить hooks?",
         options: [
-          { value: "__skip__", label: "Skip for now" },
+          { value: "__skip__", label: "Пока пропустить" },
           {
             value: "session-memory",
             label: "💾 session-memory",
@@ -176,8 +176,8 @@ describe("onboard-hooks", () => {
       expect(result).toEqual(cfg);
       expect(prompter.multiselect).not.toHaveBeenCalled();
       expect(prompter.note).toHaveBeenCalledWith(
-        "No eligible hooks found. You can configure hooks later in your config.",
-        "No Hooks Available",
+        "Подходящих hooks не найдено. Позже их можно настроить в конфиге.",
+        "Hooks недоступны",
       );
     });
 
@@ -225,11 +225,11 @@ describe("onboard-hooks", () => {
       expect(noteCalls).toHaveLength(2);
 
       // First note should explain what hooks are
-      expect(noteCalls[0][0]).toContain("Hooks let you automate actions");
-      expect(noteCalls[0][0]).toContain("automate actions");
+      expect(noteCalls[0][0]).toContain("Hooks позволяют автоматизировать действия");
+      expect(noteCalls[0][0]).toContain("контекст сессии");
 
       // Second note should confirm configuration
-      expect(noteCalls[1][0]).toContain("Enabled 1 hook: session-memory");
+      expect(noteCalls[1][0]).toContain("Включено (1): session-memory");
       expect(noteCalls[1][0]).toMatch(/(?:openclaw|openclaw)( --profile isolated)? hooks list/);
     });
   });
