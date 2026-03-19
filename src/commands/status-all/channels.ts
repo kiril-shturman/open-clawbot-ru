@@ -167,7 +167,7 @@ const buildAccountNotes = (params: {
   const notes: string[] = [];
   const snapshot = entry.snapshot;
   if (snapshot.enabled === false) {
-    notes.push("disabled");
+    notes.push("отключено");
   }
   if (snapshot.dmPolicy) {
     notes.push(`dm:${snapshot.dmPolicy}`);
@@ -188,7 +188,7 @@ const buildAccountNotes = (params: {
     notes.push(`signing:${snapshot.signingSecretSource}`);
   }
   if (hasConfiguredUnavailableCredentialStatus(entry.account)) {
-    notes.push("secret unavailable in this command path");
+    notes.push("секрет недоступен в этом пути команды");
   }
   if (snapshot.baseUrl) {
     notes.push(snapshot.baseUrl);
@@ -317,19 +317,19 @@ function summarizeTokenConfig(params: {
     if (unavailable.length > 0) {
       return {
         state: "warn",
-        detail: `configured http credentials unavailable in this command path · accounts ${unavailable.length}`,
+        detail: `настроенные HTTP-учётные данные недоступны в этом пути команды · аккаунтов ${unavailable.length}`,
       };
     }
 
     if (partial.length > 0) {
       return {
         state: "warn",
-        detail: `partial credentials (need bot+signing) · accounts ${partial.length}`,
+        detail: `учётные данные заполнены частично (нужны bot+signing) · аккаунтов ${partial.length}`,
       };
     }
 
     if (ready.length === 0) {
-      return { state: "setup", detail: "no credentials (need bot+signing)" };
+      return { state: "setup", detail: "учётные данные отсутствуют (нужны bot+signing)" };
     }
 
     const botSources = summarizeSources(ready.map((a) => a.snapshot.botTokenSource ?? "none"));
@@ -349,7 +349,7 @@ function summarizeTokenConfig(params: {
       botHint || signingHint ? ` (bot ${botHint || "?"}, signing ${signingHint || "?"})` : "";
     return {
       state: "ok",
-      detail: `credentials ok (bot ${botSources.label}, signing ${signingSources.label})${hint} · accounts ${ready.length}/${enabled.length || 1}`,
+      detail: `учётные данные в порядке (bot ${botSources.label}, signing ${signingSources.label})${hint} · аккаунтов ${ready.length}/${enabled.length || 1}`,
     };
   }
 
@@ -373,19 +373,19 @@ function summarizeTokenConfig(params: {
     if (partial.length > 0) {
       return {
         state: "warn",
-        detail: `partial tokens (need bot+app) · accounts ${partial.length}`,
+        detail: `токены заполнены частично (нужны bot+app) · аккаунтов ${partial.length}`,
       };
     }
 
     if (unavailable.length > 0) {
       return {
         state: "warn",
-        detail: `configured tokens unavailable in this command path · accounts ${unavailable.length}`,
+        detail: `настроенные токены недоступны в этом пути команды · аккаунтов ${unavailable.length}`,
       };
     }
 
     if (ready.length === 0) {
-      return { state: "setup", detail: "no tokens (need bot+app)" };
+      return { state: "setup", detail: "токены отсутствуют (нужны bot+app)" };
     }
 
     const botSources = summarizeSources(ready.map((a) => a.snapshot.botTokenSource ?? "none"));
@@ -404,7 +404,7 @@ function summarizeTokenConfig(params: {
     const hint = botHint || appHint ? ` (bot ${botHint || "?"}, app ${appHint || "?"})` : "";
     return {
       state: "ok",
-      detail: `tokens ok (bot ${botSources.label}, app ${appSources.label})${hint} · accounts ${ready.length}/${enabled.length || 1}`,
+      detail: `токены в порядке (bot ${botSources.label}, app ${appSources.label})${hint} · аккаунтов ${ready.length}/${enabled.length || 1}`,
     };
   }
 
@@ -419,12 +419,12 @@ function summarizeTokenConfig(params: {
     if (unavailable.length > 0) {
       return {
         state: "warn",
-        detail: `configured bot token unavailable in this command path · accounts ${unavailable.length}`,
+        detail: `настроенный bot token недоступен в этом пути команды · аккаунтов ${unavailable.length}`,
       };
     }
 
     if (ready.length === 0) {
-      return { state: "setup", detail: "no bot token" };
+      return { state: "setup", detail: "bot token отсутствует" };
     }
 
     const sample = ready[0]?.account ? asRecord(ready[0].account) : {};
@@ -436,7 +436,7 @@ function summarizeTokenConfig(params: {
 
     return {
       state: "ok",
-      detail: `bot token config${hint} · accounts ${ready.length}/${enabled.length || 1}`,
+      detail: `bot token настроен${hint} · аккаунтов ${ready.length}/${enabled.length || 1}`,
     };
   }
 
@@ -448,11 +448,11 @@ function summarizeTokenConfig(params: {
   if (unavailable.length > 0) {
     return {
       state: "warn",
-      detail: `configured token unavailable in this command path · accounts ${unavailable.length}`,
+      detail: `настроенный token недоступен в этом пути команды · аккаунтов ${unavailable.length}`,
     };
   }
   if (ready.length === 0) {
-    return { state: "setup", detail: "no token" };
+    return { state: "setup", detail: "token отсутствует" };
   }
 
   const sources = summarizeSources(ready.map((a) => a.snapshot.tokenSource));
@@ -463,7 +463,7 @@ function summarizeTokenConfig(params: {
     : "";
   return {
     state: "ok",
-    detail: `token ${sources.label}${hint} · accounts ${ready.length}/${enabled.length || 1}`,
+    detail: `token ${sources.label}${hint} · аккаунтов ${ready.length}/${enabled.length || 1}`,
   };
 }
 
@@ -574,19 +574,19 @@ export async function buildChannelsTable(
     const detail = (() => {
       if (!anyEnabled) {
         if (!defaultEntry) {
-          return "disabled";
+          return "отключено";
         }
-        return plugin.config.disabledReason?.(defaultEntry.account, cfg) ?? "disabled";
+        return plugin.config.disabledReason?.(defaultEntry.account, cfg) ?? "отключено";
       }
       if (missingPaths.length > 0) {
-        return `missing file (${missingPaths[0]})`;
+        return `отсутствует файл (${missingPaths[0]})`;
       }
       if (issues.length > 0) {
-        return issues[0]?.message ?? "misconfigured";
+        return issues[0]?.message ?? "некорректная конфигурация";
       }
 
       if (link.linked !== null) {
-        const base = link.linked ? "linked" : "not linked";
+        const base = link.linked ? "связан" : "не связан";
         const extra: string[] = [];
         if (link.linked && link.selfE164) {
           extra.push(link.selfE164);
@@ -595,16 +595,16 @@ export async function buildChannelsTable(
           extra.push(`auth ${formatTimeAgo(link.authAgeMs)}`);
         }
         if (accounts.length > 1 || plugin.meta.forceAccountBinding) {
-          extra.push(`accounts ${accounts.length || 1}`);
+          extra.push(`аккаунтов ${accounts.length || 1}`);
         }
         return extra.length > 0 ? `${base} · ${extra.join(" · ")}` : base;
       }
 
       if (unavailableConfiguredAccounts.length > 0) {
-        if (tokenSummary.detail?.includes("unavailable")) {
+        if (tokenSummary.detail && /недоступ|unavailable/i.test(tokenSummary.detail)) {
           return tokenSummary.detail;
         }
-        return `configured credentials unavailable in this command path · accounts ${unavailableConfiguredAccounts.length}`;
+        return `настроенные учётные данные недоступны в этом пути команды · аккаунтов ${unavailableConfiguredAccounts.length}`;
       }
 
       if (tokenSummary.detail) {
@@ -612,18 +612,18 @@ export async function buildChannelsTable(
       }
 
       if (configuredAccounts.length > 0) {
-        const head = "configured";
+        const head = "настроено";
         if (accounts.length <= 1 && !plugin.meta.forceAccountBinding) {
           return head;
         }
-        return `${head} · accounts ${configuredAccounts.length}/${enabledAccounts.length || 1}`;
+        return `${head} · аккаунтов ${configuredAccounts.length}/${enabledAccounts.length || 1}`;
       }
 
       const reason =
         defaultEntry && plugin.config.unconfiguredReason
           ? plugin.config.unconfiguredReason(defaultEntry.account, cfg)
           : null;
-      return reason ?? "not configured";
+      return reason ?? "не настроено";
     })();
 
     rows.push({
@@ -636,8 +636,8 @@ export async function buildChannelsTable(
 
     if (configuredAccounts.length > 0) {
       details.push({
-        title: `${label} accounts`,
-        columns: ["Account", "Status", "Notes"],
+        title: `${label} аккаунты`,
+        columns: ["Аккаунт", "Статус", "Заметки"],
         rows: configuredAccounts.map((entry) => {
           const notes = buildAccountNotes({ plugin, cfg, entry });
           return {

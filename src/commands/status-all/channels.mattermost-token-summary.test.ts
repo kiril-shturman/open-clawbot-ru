@@ -256,12 +256,12 @@ describe("buildChannelsTable - mattermost token summary", () => {
   it("does not require appToken for mattermost accounts", async () => {
     const table = await buildTestTable([makeMattermostPlugin()]);
     const mattermostRow = expectTableRow(table, { id: "mattermost", state: "ok" });
-    expect(mattermostRow?.detail).not.toContain("need bot+app");
+    expect(mattermostRow?.detail).not.toContain("нужны bot+app");
   });
 
   it("keeps bot+app requirement when both fields exist", async () => {
     const table = await buildTestTable([makeSlackPlugin({ botToken: "bot-token", appToken: "" })]);
-    expectTableRow(table, { id: "slack", state: "warn", detailContains: "need bot+app" });
+    expectTableRow(table, { id: "slack", state: "warn", detailContains: "нужны bot+app" });
   });
 
   it("reports configured-but-unavailable Slack credentials as warn", async () => {
@@ -269,7 +269,7 @@ describe("buildChannelsTable - mattermost token summary", () => {
     expectTableRow(table, {
       id: "slack",
       state: "warn",
-      detailContains: "unavailable in this command path",
+      detailContains: "недоступны в этом пути команды",
     });
   });
 
@@ -282,12 +282,12 @@ describe("buildChannelsTable - mattermost token summary", () => {
     expectTableRow(table, {
       id: "slack",
       state: "warn",
-      detailContains: "unavailable in this command path",
+      detailContains: "недоступны в этом пути команды",
     });
-    expectTableDetailRows(table, "Slack accounts", [
+    expectTableDetailRows(table, "Slack аккаунты", [
       {
         Account: "primary (Primary)",
-        Notes: "bot:config · app:config · secret unavailable in this command path",
+        Notes: "bot:config · app:config · секрет недоступен в этом пути команды",
         Status: "WARN",
       },
     ]);
@@ -299,8 +299,8 @@ describe("buildChannelsTable - mattermost token summary", () => {
       sourceConfig: { marker: "source", channels: {} },
     });
 
-    expectTableRow(table, { id: "discord", state: "ok", detailEquals: "configured" });
-    expectTableDetailRows(table, "Discord accounts", [
+    expectTableRow(table, { id: "discord", state: "ok", detailEquals: "настроено" });
+    expectTableDetailRows(table, "Discord аккаунты", [
       {
         Account: "primary (Primary)",
         Notes: "token:config",
@@ -314,12 +314,12 @@ describe("buildChannelsTable - mattermost token summary", () => {
     expectTableRow(table, {
       id: "slack",
       state: "warn",
-      detailContains: "configured http credentials unavailable",
+      detailContains: "настроенные HTTP-учётные данные недоступны",
     });
-    expectTableDetailRows(table, "Slack accounts", [
+    expectTableDetailRows(table, "Slack аккаунты", [
       {
         Account: "primary (Primary)",
-        Notes: "bot:config · signing:config · secret unavailable in this command path",
+        Notes: "bot:config · signing:config · секрет недоступен в этом пути команды",
         Status: "WARN",
       },
     ]);
