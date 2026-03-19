@@ -17,7 +17,7 @@ describe("collectMissingExplicitDefaultAccountWarnings", () => {
 
     const warnings = collectMissingExplicitDefaultAccountWarnings(cfg);
     expect(warnings).toEqual([
-      expect.stringContaining("channels.telegram: multiple accounts are configured"),
+      expect.stringContaining("channels.telegram: настроено несколько аккаунтов"),
     ]);
   });
 
@@ -97,7 +97,7 @@ describe("collectMissingExplicitDefaultAccountWarnings", () => {
 
     const warnings = collectMissingExplicitDefaultAccountWarnings(cfg);
     expect(warnings).toEqual([
-      expect.stringContaining('channels.telegram: defaultAccount is set to "missing"'),
+      expect.stringContaining('channels.telegram: defaultAccount задан как "missing"'),
     ]);
   });
 

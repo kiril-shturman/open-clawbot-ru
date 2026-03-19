@@ -178,13 +178,13 @@ export function collectMissingDefaultAccountBindingWarnings(cfg: OpenClawConfig)
     }
     if (coveredAccountIds.size > 0) {
       warnings.push(
-        `- channels.${channelKey}: accounts.default is missing and account bindings only cover a subset of configured accounts. Uncovered accounts: ${uncoveredAccountIds.join(", ")}. Add bindings[].match.accountId for uncovered accounts (or "*"), or add ${formatChannelAccountsDefaultPath(channelKey)}.`,
+        `- channels.${channelKey}: accounts.default отсутствует, а account bindings покрывают только часть настроенных аккаунтов. Непокрытые аккаунты: ${uncoveredAccountIds.join(", ")}. Добавьте bindings[].match.accountId для непокрытых аккаунтов (или "*"), либо задайте ${formatChannelAccountsDefaultPath(channelKey)}.`,
       );
       continue;
     }
 
     warnings.push(
-      `- channels.${channelKey}: accounts.default is missing and no valid account-scoped binding exists for configured accounts (${normalizedAccountIds.join(", ")}). Channel-only bindings (no accountId) match only default. Add bindings[].match.accountId for one of these accounts (or "*"), or add ${formatChannelAccountsDefaultPath(channelKey)}.`,
+      `- channels.${channelKey}: accounts.default отсутствует, и для настроенных аккаунтов (${normalizedAccountIds.join(", ")}) нет корректного account-scoped binding. Bindings только с channel (без accountId) совпадают лишь с default. Добавьте bindings[].match.accountId для одного из этих аккаунтов (или "*"), либо задайте ${formatChannelAccountsDefaultPath(channelKey)}.`,
     );
   }
 
@@ -208,13 +208,13 @@ export function collectMissingExplicitDefaultAccountWarnings(cfg: OpenClawConfig
         continue;
       }
       warnings.push(
-        `- channels.${channelKey}: defaultAccount is set to "${preferredDefault}" but does not match configured accounts (${normalizedAccountIds.join(", ")}). ${formatSetExplicitDefaultToConfiguredInstruction({ channelKey })} to avoid fallback routing.`,
+        `- channels.${channelKey}: defaultAccount задан как "${preferredDefault}", но не совпадает с настроенными аккаунтами (${normalizedAccountIds.join(", ")}). ${formatSetExplicitDefaultToConfiguredInstruction({ channelKey })}, чтобы избежать fallback routing.`,
       );
       continue;
     }
 
     warnings.push(
-      `- channels.${channelKey}: multiple accounts are configured but no explicit default is set. ${formatSetExplicitDefaultInstruction(channelKey)} to avoid fallback routing.`,
+      `- channels.${channelKey}: настроено несколько аккаунтов, но явный default не задан. ${formatSetExplicitDefaultInstruction(channelKey)}, чтобы избежать fallback routing.`,
     );
   }
 
@@ -344,7 +344,7 @@ async function maybeRepairTelegramAllowFromUsernames(cfg: OpenClawConfig): Promi
             return resolveTelegramAccount({ cfg: resolvedConfig, accountId });
           } catch (error) {
             tokenResolutionWarnings.push(
-              `- Telegram account ${accountId}: failed to inspect bot token (${describeUnknownError(error)}).`,
+              `- Telegram account ${accountId}: не удалось проверить bot token (${describeUnknownError(error)}).`,
             );
             return null;
           }
@@ -364,8 +364,8 @@ async function maybeRepairTelegramAllowFromUsernames(cfg: OpenClawConfig): Promi
       changes: [
         ...tokenResolutionWarnings,
         hasConfiguredUnavailableToken
-          ? `- Telegram allowFrom contains @username entries, but configured Telegram bot credentials are unavailable in this command path; cannot auto-resolve (start the gateway or make the secret source available, then rerun doctor --fix).`
-          : `- Telegram allowFrom contains @username entries, but no Telegram bot token is configured; cannot auto-resolve (run setup or replace with numeric sender IDs).`,
+          ? `- В Telegram allowFrom есть записи @username, но настроенные Telegram bot credentials недоступны в этом пути команды; авторазрешение невозможно (запустите gateway или сделайте источник секрета доступным, затем снова выполните doctor --fix).`
+          : `- В Telegram allowFrom есть записи @username, но bot token Telegram не настроен; авторазрешение невозможно (запустите setup или замените записи на числовые sender ID).`,
       ],
     };
   }
@@ -1627,12 +1627,12 @@ function maybeRepairLegacyToolsBySenderKeys(cfg: OpenClawConfig): {
     if (row.migrated > 0) {
       const suffix = row.examples.length > 0 ? ` (${row.examples.join(", ")})` : "";
       changes.push(
-        `- ${pathLabel}: migrated ${row.migrated} legacy key${row.migrated === 1 ? "" : "s"} to typed id: entries${suffix}.`,
+        `- ${pathLabel}: перенесено legacy key: ${row.migrated} → typed id: entries${suffix}.`,
       );
     }
     if (row.dropped > 0) {
       changes.push(
-        `- ${pathLabel}: removed ${row.dropped} legacy key${row.dropped === 1 ? "" : "s"} where typed id: entries already existed.`,
+        `- ${pathLabel}: удалено legacy key: ${row.dropped}, потому что typed id: entries уже существовали.`,
       );
     }
   }

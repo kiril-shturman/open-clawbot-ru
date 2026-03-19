@@ -426,13 +426,13 @@ describe("doctor config flow", () => {
       expect(fetchSpy).not.toHaveBeenCalled();
       expect(
         noteSpy.mock.calls.some((call) =>
-          String(call[0]).includes("Telegram account inactive: failed to inspect bot token"),
+          String(call[0]).includes("Telegram account inactive: не удалось проверить bot token"),
         ),
       ).toBe(true);
       expect(
         noteSpy.mock.calls.some((call) =>
           String(call[0]).includes(
-            "Telegram allowFrom contains @username entries, but no Telegram bot token is configured",
+            "В Telegram allowFrom есть записи @username, но bot token Telegram не настроен",
           ),
         ),
       ).toBe(true);

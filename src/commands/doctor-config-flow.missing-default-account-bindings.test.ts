@@ -52,8 +52,8 @@ describe("collectMissingDefaultAccountBindingWarnings", () => {
 
     const warnings = collectMissingDefaultAccountBindingWarnings(cfg);
     expect(warnings).toHaveLength(1);
-    expect(warnings[0]).toContain("subset");
-    expect(warnings[0]).toContain("Uncovered accounts: work");
+    expect(warnings[0]).toContain("покрывают только часть");
+    expect(warnings[0]).toContain("Непокрытые аккаунты: work");
   });
 
   it("does not warn when wildcard account binding exists", () => {

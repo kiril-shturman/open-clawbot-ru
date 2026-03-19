@@ -52,7 +52,7 @@ describe("doctor missing default account binding warning", () => {
     );
 
     expect(noteSpy).toHaveBeenCalledWith(
-      expect.stringContaining("channels.telegram: accounts.default is missing"),
+      expect.stringContaining("channels.telegram: accounts.default отсутствует"),
       "Doctor warnings",
     );
   });
@@ -82,7 +82,7 @@ describe("doctor missing default account binding warning", () => {
 
     expect(noteSpy).toHaveBeenCalledWith(
       expect.stringContaining(
-        "channels.telegram: multiple accounts are configured but no explicit default is set",
+        "channels.telegram: настроено несколько аккаунтов, но явный default не задан",
       ),
       "Doctor warnings",
     );
@@ -114,7 +114,7 @@ describe("doctor missing default account binding warning", () => {
 
     expect(noteSpy).toHaveBeenCalledWith(
       expect.stringContaining(
-        'channels.telegram: defaultAccount is set to "missing" but does not match configured accounts',
+        'channels.telegram: defaultAccount задан как "missing", но не совпадает с настроенными аккаунтами',
       ),
       "Doctor warnings",
     );
