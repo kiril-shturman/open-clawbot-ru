@@ -24,24 +24,24 @@ export async function removeChannelConfigWizard(
     if (configured.length === 0) {
       note(
         [
-          "No channel config found in openclaw.json.",
-          `Tip: \`${formatCliCommand("openclaw channels status")}\` shows what is configured and enabled.`,
+          "В openclaw.json не найдено настроек каналов.",
+          `Подсказка: \`${formatCliCommand("openclaw channels status")}\` показывает, что настроено и включено.`,
         ].join("\n"),
-        "Remove channel",
+        "Удаление канала",
       );
       return next;
     }
 
     const channel = guardCancel(
       await select({
-        message: "Remove which channel config?",
+        message: "Какую конфигурацию канала удалить?",
         options: [
           ...configured.map((meta) => ({
             value: meta.id,
             label: meta.label,
-            hint: "Deletes tokens + settings from config (credentials stay on disk)",
+            hint: "Удаляет токены и настройки из конфига (credentials на диске останутся)",
           })),
-          { value: "done", label: "Done" },
+          { value: "done", label: "Готово" },
         ],
       }),
       runtime,
@@ -54,7 +54,7 @@ export async function removeChannelConfigWizard(
     const label = getChannelPlugin(channel)?.meta.label ?? channel;
     const confirmed = guardCancel(
       await confirm({
-        message: `Delete ${label} configuration from ${shortenHomePath(CONFIG_PATH)}?`,
+        message: `Удалить конфигурацию ${label} из ${shortenHomePath(CONFIG_PATH)}?`,
         initialValue: false,
       }),
       runtime,
@@ -73,10 +73,11 @@ export async function removeChannelConfigWizard(
     };
 
     note(
-      [`${label} removed from config.`, "Note: credentials/sessions on disk are unchanged."].join(
-        "\n",
-      ),
-      "Channel removed",
+      [
+        `${label} удалён из конфига.`,
+        "Примечание: credentials и сессии на диске не изменены.",
+      ].join("\n"),
+      "Канал удалён",
     );
   }
 }

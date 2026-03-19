@@ -14,7 +14,7 @@ export async function runNonInteractiveSetup(
   const snapshot = await readConfigFileSnapshot();
   if (snapshot.exists && !snapshot.valid) {
     runtime.error(
-      `Config invalid. Run \`${formatCliCommand("openclaw doctor")}\` to repair it, then re-run setup.`,
+      `Конфиг некорректен. Запустите \`${formatCliCommand("openclaw doctor")}\`, чтобы исправить его, затем повторите настройку.`,
     );
     runtime.exit(1);
     return;
@@ -23,7 +23,7 @@ export async function runNonInteractiveSetup(
   const baseConfig: OpenClawConfig = snapshot.valid ? (snapshot.exists ? snapshot.config : {}) : {};
   const mode = opts.mode ?? "local";
   if (mode !== "local" && mode !== "remote") {
-    runtime.error(`Invalid --mode "${String(mode)}" (use local|remote).`);
+    runtime.error(`Некорректный --mode "${String(mode)}" (используйте local|remote).`);
     runtime.exit(1);
     return;
   }

@@ -83,7 +83,9 @@ describe("requireValidConfigSnapshot", () => {
     expect(config).toEqual({ plugins: {} });
     expect(runtime.error).not.toHaveBeenCalled();
     expect(runtime.exit).not.toHaveBeenCalled();
-    expect(String(runtime.log.mock.calls[0]?.[0])).toContain("Plugin compatibility: 1 notice.");
+    expect(String(runtime.log.mock.calls[0]?.[0])).toContain(
+      "Совместимость плагинов: 1 предупреждение.",
+    );
     expect(String(runtime.log.mock.calls[0]?.[0])).toContain(
       "legacy-plugin still uses legacy before_agent_start",
     );

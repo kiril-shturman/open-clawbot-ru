@@ -16,9 +16,9 @@ export async function requireValidConfigSnapshot(
     const issues =
       snapshot.issues.length > 0
         ? formatConfigIssueLines(snapshot.issues, "-").join("\n")
-        : "Unknown validation issue.";
-    runtime.error(`Config invalid:\n${issues}`);
-    runtime.error(`Fix the config or run ${formatCliCommand("openclaw doctor")}.`);
+        : "Неизвестная ошибка валидации.";
+    runtime.error(`Конфиг некорректен:\n${issues}`);
+    runtime.error(`Исправьте конфиг или запустите ${formatCliCommand("openclaw doctor")}.`);
     runtime.exit(1);
     return null;
   }
@@ -29,12 +29,12 @@ export async function requireValidConfigSnapshot(
   if (compatibility.length > 0) {
     runtime.log(
       [
-        `Plugin compatibility: ${compatibility.length} notice${compatibility.length === 1 ? "" : "s"}.`,
+        `Совместимость плагинов: ${compatibility.length} предупреждени${compatibility.length === 1 ? "е" : compatibility.length < 5 ? "я" : "й"}.`,
         ...compatibility
           .slice(0, 3)
           .map((notice) => `- ${formatPluginCompatibilityNotice(notice)}`),
-        ...(compatibility.length > 3 ? [`- ... +${compatibility.length - 3} more`] : []),
-        `Review: ${formatCliCommand("openclaw doctor")}`,
+        ...(compatibility.length > 3 ? [`- ... и ещё ${compatibility.length - 3}`] : []),
+        `Проверьте: ${formatCliCommand("openclaw doctor")}`,
       ].join("\n"),
     );
   }

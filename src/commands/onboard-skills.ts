@@ -192,9 +192,9 @@ export async function setupSkills(
         runtime.log(result.stdout.trim());
       }
       runtime.log(
-        `Tip: run \`${formatCliCommand("openclaw doctor")}\` to review skills + requirements.`,
+        `Подсказка: запустите \`${formatCliCommand("openclaw doctor")}\`, чтобы проверить навыки и требования.`,
       );
-      runtime.log("Docs: https://docs.openclaw.ai/skills");
+      runtime.log("Документация: https://docs.openclaw.ai/skills");
     }
   }
 
