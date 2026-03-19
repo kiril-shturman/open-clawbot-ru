@@ -117,7 +117,7 @@ describe("maybeInstallDaemon", () => {
     });
 
     expect(note).toHaveBeenCalledWith(
-      expect.stringContaining("Gateway install blocked"),
+      expect.stringContaining("Установка Gateway заблокирована"),
       "Gateway",
     );
     expect(buildGatewayInstallPlan).not.toHaveBeenCalled();
