@@ -23,9 +23,9 @@ afterEach(() => {
 
 describe("resolveGatewayService", () => {
   it.each([
-    { platform: "darwin" as const, label: "LaunchAgent", loadedText: "loaded" },
-    { platform: "linux" as const, label: "systemd", loadedText: "enabled" },
-    { platform: "win32" as const, label: "Scheduled Task", loadedText: "registered" },
+    { platform: "darwin" as const, label: "LaunchAgent", loadedText: "загружен" },
+    { platform: "linux" as const, label: "systemd", loadedText: "включен" },
+    { platform: "win32" as const, label: "Scheduled Task", loadedText: "зарегистрирован" },
   ])("returns the registered adapter for $platform", ({ platform, label, loadedText }) => {
     setPlatform(platform);
     const service = resolveGatewayService();

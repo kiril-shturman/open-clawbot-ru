@@ -96,8 +96,8 @@ type SupportedGatewayServicePlatform = "darwin" | "linux" | "win32";
 const GATEWAY_SERVICE_REGISTRY: Record<SupportedGatewayServicePlatform, GatewayService> = {
   darwin: {
     label: "LaunchAgent",
-    loadedText: "loaded",
-    notLoadedText: "not loaded",
+    loadedText: "загружен",
+    notLoadedText: "не загружен",
     install: ignoreInstallResult(installLaunchAgent),
     uninstall: uninstallLaunchAgent,
     stop: stopLaunchAgent,
@@ -108,8 +108,8 @@ const GATEWAY_SERVICE_REGISTRY: Record<SupportedGatewayServicePlatform, GatewayS
   },
   linux: {
     label: "systemd",
-    loadedText: "enabled",
-    notLoadedText: "disabled",
+    loadedText: "включен",
+    notLoadedText: "выключен",
     install: ignoreInstallResult(installSystemdService),
     uninstall: uninstallSystemdService,
     stop: stopSystemdService,
@@ -120,8 +120,8 @@ const GATEWAY_SERVICE_REGISTRY: Record<SupportedGatewayServicePlatform, GatewayS
   },
   win32: {
     label: "Scheduled Task",
-    loadedText: "registered",
-    notLoadedText: "missing",
+    loadedText: "зарегистрирован",
+    notLoadedText: "отсутствует",
     install: ignoreInstallResult(installScheduledTask),
     uninstall: uninstallScheduledTask,
     stop: stopScheduledTask,
