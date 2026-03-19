@@ -108,10 +108,10 @@ describe("sandboxListCommand", () => {
 
       await sandboxListCommand({ browser: false, json: false }, runtime as never);
 
-      expectLogContains(runtime, "📦 Sandbox Runtimes");
+      expectLogContains(runtime, "📦 Sandbox-окружения");
       expectLogContains(runtime, container1.containerName);
       expectLogContains(runtime, container2.containerName);
-      expectLogContains(runtime, "Total");
+      expectLogContains(runtime, "Всего");
     });
 
     it("should display browsers when --browser flag is set", async () => {
@@ -120,7 +120,7 @@ describe("sandboxListCommand", () => {
 
       await sandboxListCommand({ browser: true, json: false }, runtime as never);
 
-      expectLogContains(runtime, "🌐 Sandbox Browser Containers");
+      expectLogContains(runtime, "🌐 Sandbox browser-контейнеры");
       expectLogContains(runtime, browser.containerName);
       expectLogContains(runtime, String(browser.cdpPort));
     });
@@ -132,14 +132,14 @@ describe("sandboxListCommand", () => {
       await sandboxListCommand({ browser: false, json: false }, runtime as never);
 
       expectLogContains(runtime, "⚠️");
-      expectLogContains(runtime, "config mismatch");
+      expectLogContains(runtime, "несовпадением конфигурации");
       expectLogContains(runtime, "sandbox recreate --all");
     });
 
     it("should display message when no containers found", async () => {
       await sandboxListCommand({ browser: false, json: false }, runtime as never);
 
-      expect(runtime.log).toHaveBeenCalledWith("No sandbox runtimes found.");
+      expect(runtime.log).toHaveBeenCalledWith("Sandbox-окружения не найдены.");
     });
   });
 
@@ -165,7 +165,7 @@ describe("sandboxListCommand", () => {
 
       await sandboxListCommand({ browser: false, json: false }, runtime as never);
 
-      expect(runtime.log).toHaveBeenCalledWith("No sandbox runtimes found.");
+      expect(runtime.log).toHaveBeenCalledWith("Sandbox-окружения не найдены.");
     });
   });
 });
@@ -183,7 +183,7 @@ describe("sandboxRecreateCommand", () => {
     it("should error if no filter is specified", async () => {
       await sandboxRecreateCommand({ all: false, browser: false, force: false }, runtime as never);
 
-      expectErrorContains(runtime, "Please specify --all, --session <key>, or --agent <id>");
+      expectErrorContains(runtime, "Укажите --all, --session <key> или --agent <id>");
       expect(runtime.exit).toHaveBeenCalledWith(1);
       expect(mocks.listSandboxContainers).not.toHaveBeenCalled();
       expect(mocks.listSandboxBrowsers).not.toHaveBeenCalled();
@@ -195,7 +195,7 @@ describe("sandboxRecreateCommand", () => {
         runtime as never,
       );
 
-      expectErrorContains(runtime, "Please specify only one of: --all, --session, --agent");
+      expectErrorContains(runtime, "Укажите только один вариант: --all, --session или --agent");
       expect(runtime.exit).toHaveBeenCalledWith(1);
       expect(mocks.listSandboxContainers).not.toHaveBeenCalled();
       expect(mocks.listSandboxBrowsers).not.toHaveBeenCalled();
@@ -274,14 +274,14 @@ describe("sandboxRecreateCommand", () => {
     it("should cancel when user declines", async () => {
       await runCancelledConfirmation(false);
 
-      expect(runtime.log).toHaveBeenCalledWith("Cancelled.");
+      expect(runtime.log).toHaveBeenCalledWith("Отменено.");
       expect(mocks.removeSandboxContainer).not.toHaveBeenCalled();
     });
 
     it("should cancel on clack cancel symbol", async () => {
       await runCancelledConfirmation(Symbol.for("clack:cancel"));
 
-      expect(runtime.log).toHaveBeenCalledWith("Cancelled.");
+      expect(runtime.log).toHaveBeenCalledWith("Отменено.");
       expect(mocks.removeSandboxContainer).not.toHaveBeenCalled();
     });
 
@@ -299,7 +299,7 @@ describe("sandboxRecreateCommand", () => {
     it("should show message when no containers match", async () => {
       await sandboxRecreateCommand({ all: true, browser: false, force: true }, runtime as never);
 
-      expect(runtime.log).toHaveBeenCalledWith("No sandbox runtimes found matching the criteria.");
+      expect(runtime.log).toHaveBeenCalledWith("Подходящие sandbox-окружения не найдены.");
       expect(mocks.removeSandboxContainer).not.toHaveBeenCalled();
     });
 
@@ -314,8 +314,8 @@ describe("sandboxRecreateCommand", () => {
 
       await sandboxRecreateCommand({ all: true, browser: false, force: true }, runtime as never);
 
-      expectErrorContains(runtime, "Failed to remove");
-      expectLogContains(runtime, "1 removed, 1 failed");
+      expectErrorContains(runtime, "Не удалось удалить");
+      expectLogContains(runtime, "удалено 1, ошибок 1");
       expect(runtime.exit).toHaveBeenCalledWith(1);
     });
 
@@ -324,9 +324,9 @@ describe("sandboxRecreateCommand", () => {
 
       await sandboxRecreateCommand({ all: true, browser: false, force: true }, runtime as never);
 
-      expectLogContains(runtime, "✓ Removed");
-      expectLogContains(runtime, "1 removed, 0 failed");
-      expectLogContains(runtime, "automatically recreated");
+      expectLogContains(runtime, "✓ Удалено");
+      expectLogContains(runtime, "удалено 1, ошибок 0");
+      expectLogContains(runtime, "автоматически пересозданы");
     });
   });
 });

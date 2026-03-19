@@ -30,22 +30,22 @@ export function displayContainers(containers: SandboxContainerInfo[], runtime: R
   displayItems(
     containers,
     {
-      emptyMessage: "No sandbox runtimes found.",
-      title: "📦 Sandbox Runtimes:",
+      emptyMessage: "Sandbox-окружения не найдены.",
+      title: "📦 Sandbox-окружения:",
       renderItem: (container, rt) => {
         rt.log(`  ${container.runtimeLabel ?? container.containerName}`);
-        rt.log(`    Status:  ${formatStatus(container.running)}`);
+        rt.log(`    Статус:  ${formatStatus(container.running)}`);
         rt.log(
-          `    ${container.configLabelKind ?? "Image"}:   ${container.image} ${formatImageMatch(container.imageMatch)}`,
+          `    ${container.configLabelKind ?? "Образ"}:   ${container.image} ${formatImageMatch(container.imageMatch)}`,
         );
-        rt.log(`    Backend: ${container.backendId ?? "docker"}`);
+        rt.log(`    Бэкенд: ${container.backendId ?? "docker"}`);
         rt.log(
-          `    Age:     ${formatDurationCompact(Date.now() - container.createdAtMs, { spaced: true }) ?? "0s"}`,
+          `    Возраст: ${formatDurationCompact(Date.now() - container.createdAtMs, { spaced: true }) ?? "0 с"}`,
         );
         rt.log(
-          `    Idle:    ${formatDurationCompact(Date.now() - container.lastUsedAtMs, { spaced: true }) ?? "0s"}`,
+          `    Простой: ${formatDurationCompact(Date.now() - container.lastUsedAtMs, { spaced: true }) ?? "0 с"}`,
         );
-        rt.log(`    Session: ${container.sessionKey}`);
+        rt.log(`    Сессия:  ${container.sessionKey}`);
         rt.log("");
       },
     },
@@ -57,23 +57,23 @@ export function displayBrowsers(browsers: SandboxBrowserInfo[], runtime: Runtime
   displayItems(
     browsers,
     {
-      emptyMessage: "No sandbox browser containers found.",
-      title: "🌐 Sandbox Browser Containers:",
+      emptyMessage: "Sandbox browser-контейнеры не найдены.",
+      title: "🌐 Sandbox browser-контейнеры:",
       renderItem: (browser, rt) => {
         rt.log(`  ${browser.containerName}`);
-        rt.log(`    Status:  ${formatStatus(browser.running)}`);
-        rt.log(`    Image:   ${browser.image} ${formatImageMatch(browser.imageMatch)}`);
+        rt.log(`    Статус:  ${formatStatus(browser.running)}`);
+        rt.log(`    Образ:   ${browser.image} ${formatImageMatch(browser.imageMatch)}`);
         rt.log(`    CDP:     ${browser.cdpPort}`);
         if (browser.noVncPort) {
           rt.log(`    noVNC:   ${browser.noVncPort}`);
         }
         rt.log(
-          `    Age:     ${formatDurationCompact(Date.now() - browser.createdAtMs, { spaced: true }) ?? "0s"}`,
+          `    Возраст: ${formatDurationCompact(Date.now() - browser.createdAtMs, { spaced: true }) ?? "0 с"}`,
         );
         rt.log(
-          `    Idle:    ${formatDurationCompact(Date.now() - browser.lastUsedAtMs, { spaced: true }) ?? "0s"}`,
+          `    Простой: ${formatDurationCompact(Date.now() - browser.lastUsedAtMs, { spaced: true }) ?? "0 с"}`,
         );
-        rt.log(`    Session: ${browser.sessionKey}`);
+        rt.log(`    Сессия:  ${browser.sessionKey}`);
         rt.log("");
       },
     },
@@ -92,12 +92,12 @@ export function displaySummary(
   const mismatchCount =
     containers.filter((c) => !c.imageMatch).length + browsers.filter((b) => !b.imageMatch).length;
 
-  runtime.log(`Total: ${totalCount} (${runningCount} running)`);
+  runtime.log(`Всего: ${totalCount} (${runningCount} запущено)`);
 
   if (mismatchCount > 0) {
-    runtime.log(`\n⚠️  ${mismatchCount} runtime(s) with config mismatch detected.`);
+    runtime.log(`\n⚠️  Обнаружено ${mismatchCount} окруж. с несовпадением конфигурации.`);
     runtime.log(
-      `   Run '${formatCliCommand("openclaw sandbox recreate --all")}' to update all runtimes.`,
+      `   Запустите '${formatCliCommand("openclaw sandbox recreate --all")}', чтобы обновить все окружения.`,
     );
   }
 }
@@ -107,10 +107,10 @@ export function displayRecreatePreview(
   browsers: SandboxBrowserInfo[],
   runtime: RuntimeEnv,
 ): void {
-  runtime.log("\nSandbox runtimes to be recreated:\n");
+  runtime.log("\nSandbox-окружения для пересоздания:\n");
 
   if (containers.length > 0) {
-    runtime.log("📦 Sandbox Runtimes:");
+    runtime.log("📦 Sandbox-окружения:");
     for (const container of containers) {
       runtime.log(
         `  - ${container.runtimeLabel ?? container.containerName} [${container.backendId ?? "docker"}] (${formatSimpleStatus(container.running)})`,
@@ -119,23 +119,23 @@ export function displayRecreatePreview(
   }
 
   if (browsers.length > 0) {
-    runtime.log("\n🌐 Browser Containers:");
+    runtime.log("\n🌐 Browser-контейнеры:");
     for (const browser of browsers) {
       runtime.log(`  - ${browser.containerName} (${formatSimpleStatus(browser.running)})`);
     }
   }
 
   const total = containers.length + browsers.length;
-  runtime.log(`\nTotal: ${total} runtime(s)`);
+  runtime.log(`\nВсего: ${total} окруж.`);
 }
 
 export function displayRecreateResult(
   result: { successCount: number; failCount: number },
   runtime: RuntimeEnv,
 ): void {
-  runtime.log(`\nDone: ${result.successCount} removed, ${result.failCount} failed`);
+  runtime.log(`\nГотово: удалено ${result.successCount}, ошибок ${result.failCount}`);
 
   if (result.successCount > 0) {
-    runtime.log("\nRuntimes will be automatically recreated when the agent is next used.");
+    runtime.log("\nОкружения будут автоматически пересозданы при следующем использовании агента.");
   }
 }
