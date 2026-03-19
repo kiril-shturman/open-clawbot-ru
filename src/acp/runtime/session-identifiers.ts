@@ -10,27 +10,27 @@ const ACP_AGENT_RESUME_HINT_BY_KEY = new Map<string, SessionResumeHintResolver>(
   [
     "codex",
     ({ agentSessionId }) =>
-      `resume in Codex CLI: \`codex resume ${agentSessionId}\` (continues this conversation).`,
+      `продолжить в Codex CLI: \`codex resume ${agentSessionId}\` (продолжит этот диалог).`,
   ],
   [
     "openai-codex",
     ({ agentSessionId }) =>
-      `resume in Codex CLI: \`codex resume ${agentSessionId}\` (continues this conversation).`,
+      `продолжить в Codex CLI: \`codex resume ${agentSessionId}\` (продолжит этот диалог).`,
   ],
   [
     "codex-cli",
     ({ agentSessionId }) =>
-      `resume in Codex CLI: \`codex resume ${agentSessionId}\` (continues this conversation).`,
+      `продолжить в Codex CLI: \`codex resume ${agentSessionId}\` (продолжит этот диалог).`,
   ],
   [
     "kimi",
     ({ agentSessionId }) =>
-      `resume in Kimi CLI: \`kimi resume ${agentSessionId}\` (continues this conversation).`,
+      `продолжить в Kimi CLI: \`kimi resume ${agentSessionId}\` (продолжит этот диалог).`,
   ],
   [
     "moonshot-kimi",
     ({ agentSessionId }) =>
-      `resume in Kimi CLI: \`kimi resume ${agentSessionId}\` (continues this conversation).`,
+      `продолжить в Kimi CLI: \`kimi resume ${agentSessionId}\` (продолжит этот диалог).`,
   ],
 ]);
 
@@ -90,19 +90,19 @@ export function resolveAcpSessionIdentifierLinesFromIdentity(params: {
   const hasIdentifier = Boolean(agentSessionId || acpxSessionId || acpxRecordId);
   if (isSessionIdentityPending(identity) && hasIdentifier) {
     if (mode === "status") {
-      return ["session ids: pending (available after the first reply)"];
+      return ["идентификаторы session: ожидание (появятся после первого ответа)"];
     }
     return [];
   }
   const lines: string[] = [];
   if (agentSessionId) {
-    lines.push(`agent session id: ${agentSessionId}`);
+    lines.push(`id сессии агента: ${agentSessionId}`);
   }
   if (acpxSessionId) {
-    lines.push(`${backend} session id: ${acpxSessionId}`);
+    lines.push(`id session ${backend}: ${acpxSessionId}`);
   }
   if (acpxRecordId) {
-    lines.push(`${backend} record id: ${acpxRecordId}`);
+    lines.push(`id записи ${backend}: ${acpxRecordId}`);
   }
   return lines;
 }

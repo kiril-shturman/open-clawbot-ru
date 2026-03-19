@@ -245,14 +245,14 @@ describe("/focus, /unfocus, /agents", () => {
     expect(hoisted.sessionBindingBindMock).toHaveBeenCalledWith(
       expect.objectContaining({
         metadata: expect.objectContaining({
-          introText: expect.stringContaining("agent session id: codex-123"),
+          introText: expect.stringContaining("id сессии агента: codex-123"),
         }),
       }),
     );
     expect(hoisted.sessionBindingBindMock).toHaveBeenCalledWith(
       expect.objectContaining({
         metadata: expect.objectContaining({
-          introText: expect.stringContaining("acpx session id: acpx-456"),
+          introText: expect.stringContaining("id session acpx: acpx-456"),
         }),
       }),
     );

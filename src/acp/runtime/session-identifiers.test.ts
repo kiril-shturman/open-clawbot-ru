@@ -49,10 +49,10 @@ describe("session identifier helpers", () => {
       },
     });
 
-    expect(lines).toContain("agent session id: inner-123");
-    expect(lines).toContain("acpx session id: acpx-123");
+    expect(lines).toContain("id сессии агента: inner-123");
+    expect(lines).toContain("id session acpx: acpx-123");
     expect(lines).toContain(
-      "resume in Codex CLI: `codex resume inner-123` (continues this conversation).",
+      "продолжить в Codex CLI: `codex resume inner-123` (продолжит этот диалог).",
     );
   });
 
@@ -76,10 +76,10 @@ describe("session identifier helpers", () => {
       },
     });
 
-    expect(lines).toContain("agent session id: kimi-inner-123");
-    expect(lines).toContain("acpx session id: acpx-kimi-123");
+    expect(lines).toContain("id сессии агента: kimi-inner-123");
+    expect(lines).toContain("id session acpx: acpx-kimi-123");
     expect(lines).toContain(
-      "resume in Kimi CLI: `kimi resume kimi-inner-123` (continues this conversation).",
+      "продолжить в Kimi CLI: `kimi resume kimi-inner-123` (продолжит этот диалог).",
     );
   });
 
@@ -95,7 +95,7 @@ describe("session identifier helpers", () => {
       },
     });
 
-    expect(lines).toEqual(["session ids: pending (available after the first reply)"]);
+    expect(lines).toEqual(["идентификаторы session: ожидание (появятся после первого ответа)"]);
   });
 
   it("prefers runtimeOptions.cwd over legacy meta.cwd", () => {

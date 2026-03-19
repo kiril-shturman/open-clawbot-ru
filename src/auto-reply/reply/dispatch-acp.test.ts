@@ -419,7 +419,7 @@ describe("tryDispatchAcpReply", () => {
   it("surfaces ACP policy errors as final error replies", async () => {
     setReadyAcpResolution();
     policyMocks.resolveAcpDispatchPolicyError.mockReturnValue(
-      new AcpRuntimeError("ACP_DISPATCH_DISABLED", "ACP dispatch is disabled by policy."),
+      new AcpRuntimeError("ACP_DISPATCH_DISABLED", "ACP dispatch отключён политикой."),
     );
     const { dispatcher } = createDispatcher();
 

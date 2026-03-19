@@ -513,7 +513,9 @@ describe("/acp command", () => {
         }),
       }),
     );
-    expectBoundIntroTextToExclude("session ids: pending (available after the first reply)");
+    expectBoundIntroTextToExclude(
+      "идентификаторы session: ожидание (появятся после первого ответа)",
+    );
     expect(hoisted.callGatewayMock).toHaveBeenCalledWith(
       expect.objectContaining({
         method: "sessions.patch",
@@ -759,7 +761,7 @@ describe("/acp command", () => {
       },
     } satisfies OpenClawConfig;
     const result = await runDiscordAcpCommand("/acp steer tighten logging", cfg);
-    expect(result?.reply?.text).toContain("ACP dispatch is disabled by policy");
+    expect(result?.reply?.text).toContain("ACP dispatch отключён политикой");
     expect(hoisted.runTurnMock).not.toHaveBeenCalled();
   });
 
@@ -827,8 +829,8 @@ describe("/acp command", () => {
 
     expect(result?.reply?.text).toContain("ACP status:");
     expect(result?.reply?.text).toContain(`session: ${defaultAcpSessionKey}`);
-    expect(result?.reply?.text).toContain("agent session id: codex-sid-1");
-    expect(result?.reply?.text).toContain("acpx session id: acpx-sid-1");
+    expect(result?.reply?.text).toContain("id сессии агента: codex-sid-1");
+    expect(result?.reply?.text).toContain("id session acpx: acpx-sid-1");
     expect(result?.reply?.text).toContain("capabilities:");
     expect(hoisted.getStatusMock).toHaveBeenCalledTimes(1);
   });

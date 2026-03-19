@@ -250,7 +250,7 @@ export async function handleAcpSpawnAction(
   restTokens: string[],
 ): Promise<CommandHandlerResult> {
   if (!isAcpEnabledByPolicy(params.cfg)) {
-    return stopWithText("ACP is disabled by policy (`acp.enabled=false`).");
+    return stopWithText("ACP отключён политикой (`acp.enabled=false`).");
   }
 
   const parsed = parseSpawnInput(params, restTokens);

@@ -92,9 +92,9 @@ export type SpawnAcpResult = {
 };
 
 export const ACP_SPAWN_ACCEPTED_NOTE =
-  "initial ACP task queued in isolated session; follow-ups continue in the bound thread.";
+  "Начальная ACP-задача поставлена в очередь в изолированной session; продолжение будет в привязанном thread.";
 export const ACP_SPAWN_SESSION_ACCEPTED_NOTE =
-  "thread-bound ACP session stays active after this task; continue in-thread for follow-ups.";
+  "Привязанная к thread ACP-session останется активной после этой задачи; продолжайте в том же thread.";
 
 export function resolveAcpSpawnRuntimePolicyError(params: {
   cfg: OpenClawConfig;
@@ -109,10 +109,10 @@ export function resolveAcpSpawnRuntimePolicyError(params: {
   });
   const requesterSandboxed = params.requesterSandboxed === true || requesterRuntime.sandboxed;
   if (requesterSandboxed) {
-    return 'Sandboxed sessions cannot spawn ACP sessions because runtime="acp" runs on the host. Use runtime="subagent" from sandboxed sessions.';
+    return 'Session в sandbox не могут запускать ACP-session, потому что runtime="acp" работает на хосте. Используйте runtime="subagent" из sandbox-session.';
   }
   if (sandboxMode === "require") {
-    return 'sessions_spawn sandbox="require" is unsupported for runtime="acp" because ACP sessions run outside the sandbox. Use runtime="subagent" or sandbox="inherit".';
+    return 'sessions_spawn sandbox="require" не поддерживается для runtime="acp", потому что ACP-session работают вне sandbox. Используйте runtime="subagent" или sandbox="inherit".';
   }
   return undefined;
 }
@@ -244,7 +244,7 @@ function resolveTargetAcpAgentId(params: {
   return {
     ok: false,
     error:
-      "ACP target agent is not configured. Pass `agentId` in `sessions_spawn` or set `acp.defaultAgent` in config.",
+      "Целевой ACP-агент не настроен. Передайте `agentId` в `sessions_spawn` или задайте `acp.defaultAgent` в config.",
   };
 }
 
@@ -331,7 +331,7 @@ function prepareAcpThreadBinding(params: {
   if (!channel) {
     return {
       ok: false,
-      error: "thread=true for ACP sessions requires a channel context.",
+      error: "Для `thread=true` у ACP-session нужен контекст канала.",
     };
   }
 
@@ -370,13 +370,13 @@ function prepareAcpThreadBinding(params: {
   if (!capabilities.adapterAvailable) {
     return {
       ok: false,
-      error: `Thread bindings are unavailable for ${policy.channel}.`,
+      error: `Привязки thread недоступны для ${policy.channel}.`,
     };
   }
   if (!capabilities.bindSupported || !capabilities.placements.includes("child")) {
     return {
       ok: false,
-      error: `Thread bindings do not support ACP thread spawn for ${policy.channel}.`,
+      error: `Привязки thread не поддерживают запуск ACP-thread для ${policy.channel}.`,
     };
   }
   const conversationId = resolveConversationIdForThreadBinding({
@@ -386,7 +386,7 @@ function prepareAcpThreadBinding(params: {
   if (!conversationId) {
     return {
       ok: false,
-      error: `Could not resolve a ${policy.channel} conversation for ACP thread spawn.`,
+      error: `Не удалось определить разговор ${policy.channel} для запуска ACP-thread.`,
     };
   }
 
@@ -412,7 +412,7 @@ export async function spawnAcpDirect(
   if (!isAcpEnabledByPolicy(cfg)) {
     return {
       status: "forbidden",
-      error: "ACP is disabled by policy (`acp.enabled=false`).",
+      error: "ACP отключён политикой (`acp.enabled=false`).",
     };
   }
   const streamToParentRequested = params.streamTo === "parent";
@@ -420,7 +420,7 @@ export async function spawnAcpDirect(
   if (streamToParentRequested && !parentSessionKey) {
     return {
       status: "error",
-      error: 'sessions_spawn streamTo="parent" requires an active requester session context.',
+      error: 'Для `sessions_spawn streamTo="parent"` нужен активный контекст session инициатора.',
     };
   }
 
@@ -445,7 +445,8 @@ export async function spawnAcpDirect(
   if (spawnMode === "session" && !requestThreadBinding) {
     return {
       status: "error",
-      error: 'mode="session" requires thread=true so the ACP session can stay bound to a thread.',
+      error:
+        'Для `mode="session"` нужен `thread=true`, чтобы ACP-session могла оставаться привязанной к thread.',
     };
   }
 
@@ -620,7 +621,7 @@ export async function spawnAcpDirect(
       });
       if (!binding?.conversation.conversationId) {
         throw new Error(
-          `Failed to create and bind a ${preparedBinding.channel} thread for this ACP session.`,
+          `Не удалось создать и привязать thread ${preparedBinding.channel} для этой ACP-session.`,
         );
       }
       if (sessionId) {

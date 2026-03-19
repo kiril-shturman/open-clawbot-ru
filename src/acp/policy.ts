@@ -2,9 +2,9 @@ import type { OpenClawConfig } from "../config/config.js";
 import { normalizeAgentId } from "../routing/session-key.js";
 import { AcpRuntimeError } from "./runtime/errors.js";
 
-const ACP_DISABLED_MESSAGE = "ACP is disabled by policy (`acp.enabled=false`).";
+const ACP_DISABLED_MESSAGE = "ACP отключён политикой (`acp.enabled=false`).";
 const ACP_DISPATCH_DISABLED_MESSAGE =
-  "ACP dispatch is disabled by policy (`acp.dispatch.enabled=false`).";
+  "ACP dispatch отключён политикой (`acp.dispatch.enabled=false`).";
 
 export type AcpDispatchPolicyState = "enabled" | "acp_disabled" | "dispatch_disabled";
 
@@ -65,6 +65,6 @@ export function resolveAcpAgentPolicyError(
   }
   return new AcpRuntimeError(
     "ACP_SESSION_INIT_FAILED",
-    `ACP agent "${normalizeAgentId(agentId)}" is not allowed by policy.`,
+    `ACP-агент "${normalizeAgentId(agentId)}" запрещён политикой.`,
   );
 }

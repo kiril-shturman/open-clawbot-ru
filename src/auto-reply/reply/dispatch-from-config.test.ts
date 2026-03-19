@@ -1043,8 +1043,8 @@ describe("dispatchReplyFromConfig", () => {
     expect(finalCalls.length).toBe(1);
     const finalPayload = finalCalls[0]?.[0] as ReplyPayload | undefined;
     expect(finalPayload?.text).toContain("Session ids resolved");
-    expect(finalPayload?.text).toContain("agent session id: inner-123");
-    expect(finalPayload?.text).toContain("acpx session id: acpx-123");
+    expect(finalPayload?.text).toContain("id сессии агента: inner-123");
+    expect(finalPayload?.text).toContain("id session acpx: acpx-123");
     expect(finalPayload?.text).toContain("codex resume inner-123");
   });
 
@@ -1126,8 +1126,8 @@ describe("dispatchReplyFromConfig", () => {
     expect(finalCalls.length).toBe(1);
     const finalPayload = finalCalls[0]?.[0] as ReplyPayload | undefined;
     expect(finalPayload?.text).toContain("Session ids resolved");
-    expect(finalPayload?.text).toContain("agent session id: inner-123");
-    expect(finalPayload?.text).toContain("acpx session id: acpx-123");
+    expect(finalPayload?.text).toContain("id сессии агента: inner-123");
+    expect(finalPayload?.text).toContain("id session acpx: acpx-123");
   });
 
   it("honors send-policy deny before ACP runtime dispatch", async () => {
@@ -1717,7 +1717,7 @@ describe("dispatchReplyFromConfig", () => {
     expect(acpMocks.requireAcpRuntimeBackend).not.toHaveBeenCalled();
     const finalPayload = (dispatcher.sendFinalReply as ReturnType<typeof vi.fn>).mock
       .calls[0]?.[0] as ReplyPayload | undefined;
-    expect(finalPayload?.text).toContain("ACP dispatch is disabled by policy");
+    expect(finalPayload?.text).toContain("ACP dispatch отключён политикой");
   });
 
   it("fails closed when ACP metadata is missing for an ACP session key", async () => {

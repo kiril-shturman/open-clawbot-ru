@@ -196,7 +196,9 @@ function expectResolvedIntroTextInBindMetadata(): void {
   const introText =
     (callWithMetadata?.[0] as { metadata?: { introText?: string } } | undefined)?.metadata
       ?.introText ?? "";
-  expect(introText.includes("session ids: pending (available after the first reply)")).toBe(false);
+  expect(
+    introText.includes("идентификаторы session: ожидание (появятся после первого ответа)"),
+  ).toBe(false);
 }
 
 describe("spawnAcpDirect", () => {

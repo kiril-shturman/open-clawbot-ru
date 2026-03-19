@@ -7,13 +7,13 @@ describe("formatAcpRuntimeErrorText", () => {
     const text = formatAcpRuntimeErrorText(
       new AcpRuntimeError("ACP_BACKEND_MISSING", "backend missing"),
     );
-    expect(text).toContain("ACP error (ACP_BACKEND_MISSING): backend missing");
-    expect(text).toContain("next:");
+    expect(text).toContain("Ошибка ACP (ACP_BACKEND_MISSING): backend missing");
+    expect(text).toContain("дальше:");
   });
 
   it("returns consistent ACP error envelope for runtime failures", () => {
     const text = formatAcpRuntimeErrorText(new AcpRuntimeError("ACP_TURN_FAILED", "turn failed"));
-    expect(text).toContain("ACP error (ACP_TURN_FAILED): turn failed");
-    expect(text).toContain("next:");
+    expect(text).toContain("Ошибка ACP (ACP_TURN_FAILED): turn failed");
+    expect(text).toContain("дальше:");
   });
 });

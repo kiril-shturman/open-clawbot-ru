@@ -2,22 +2,22 @@ import { type AcpRuntimeErrorCode, AcpRuntimeError, toAcpRuntimeError } from "./
 
 function resolveAcpRuntimeErrorNextStep(error: AcpRuntimeError): string | undefined {
   if (error.code === "ACP_BACKEND_MISSING" || error.code === "ACP_BACKEND_UNAVAILABLE") {
-    return "Run `/acp doctor`, install/enable the backend plugin, then retry.";
+    return "Запустите `/acp doctor`, установите или включите backend-плагин и повторите попытку.";
   }
   if (error.code === "ACP_DISPATCH_DISABLED") {
-    return "Enable `acp.dispatch.enabled=true` to allow thread-message ACP turns.";
+    return "Включите `acp.dispatch.enabled=true`, чтобы разрешить ACP-turn для сообщений из thread.";
   }
   if (error.code === "ACP_SESSION_INIT_FAILED") {
-    return "If this session is stale, recreate it with `/acp spawn` and rebind the thread.";
+    return "Если эта session устарела, пересоздайте её через `/acp spawn` и заново привяжите thread.";
   }
   if (error.code === "ACP_INVALID_RUNTIME_OPTION") {
-    return "Use `/acp status` to inspect options and pass valid values.";
+    return "Используйте `/acp status`, чтобы проверить параметры и передать допустимые значения.";
   }
   if (error.code === "ACP_BACKEND_UNSUPPORTED_CONTROL") {
-    return "This backend does not support that control; use a supported command.";
+    return "Этот backend не поддерживает такое действие; используйте поддерживаемую команду.";
   }
   if (error.code === "ACP_TURN_FAILED") {
-    return "Retry, or use `/acp cancel` and send the message again.";
+    return "Повторите попытку или используйте `/acp cancel` и отправьте сообщение заново.";
   }
   return undefined;
 }
@@ -25,9 +25,9 @@ function resolveAcpRuntimeErrorNextStep(error: AcpRuntimeError): string | undefi
 export function formatAcpRuntimeErrorText(error: AcpRuntimeError): string {
   const next = resolveAcpRuntimeErrorNextStep(error);
   if (!next) {
-    return `ACP error (${error.code}): ${error.message}`;
+    return `Ошибка ACP (${error.code}): ${error.message}`;
   }
-  return `ACP error (${error.code}): ${error.message}\nnext: ${next}`;
+  return `Ошибка ACP (${error.code}): ${error.message}\nдальше: ${next}`;
 }
 
 export function toAcpRuntimeErrorText(params: {
