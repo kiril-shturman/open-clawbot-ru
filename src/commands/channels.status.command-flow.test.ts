@@ -124,7 +124,7 @@ describe("channelsStatusCommand SecretRef fallback flow", () => {
     resolveCommandSecretRefsViaGateway.mockResolvedValue({
       resolvedConfig: { secretResolved: false, channels: {} },
       diagnostics: [
-        "channels status: channels.discord.token is unavailable in this command path; continuing with degraded read-only config.",
+        "channels status: channels.discord.token недоступен в этом режиме команды; продолжаю с деградированным read-only конфигом.",
       ],
       targetStatesByPath: {},
       hadUnresolvedTargets: true,
@@ -133,7 +133,7 @@ describe("channelsStatusCommand SecretRef fallback flow", () => {
 
     await channelsStatusCommand({ probe: false }, runtime as never);
 
-    expect(errors.some((line) => line.includes("Gateway not reachable"))).toBe(true);
+    expect(errors.some((line) => line.includes("Gateway недоступен"))).toBe(true);
     expect(resolveCommandSecretRefsViaGateway).toHaveBeenCalledWith(
       expect.objectContaining({
         commandName: "channels status",
@@ -142,12 +142,12 @@ describe("channelsStatusCommand SecretRef fallback flow", () => {
     );
     expect(
       logs.some((line) =>
-        line.includes("[secrets] channels status: channels.discord.token is unavailable"),
+        line.includes("[secrets] channels status: channels.discord.token недоступен"),
       ),
     ).toBe(true);
     const joined = logs.join("\n");
-    expect(joined).toContain("configured, secret unavailable in this command path");
-    expect(joined).toContain("token:config (unavailable)");
+    expect(joined).toContain("настроено, секрет недоступен в этом режиме команды");
+    expect(joined).toContain("token:config (недоступно)");
   });
 
   it("prefers resolved snapshots when command-local SecretRef resolution succeeds", async () => {
@@ -164,9 +164,9 @@ describe("channelsStatusCommand SecretRef fallback flow", () => {
     await channelsStatusCommand({ probe: false }, runtime as never);
 
     const joined = logs.join("\n");
-    expect(joined).toContain("configured");
+    expect(joined).toContain("настроено");
     expect(joined).toContain("token:config");
-    expect(joined).not.toContain("secret unavailable in this command path");
-    expect(joined).not.toContain("token:config (unavailable)");
+    expect(joined).not.toContain("секрет недоступен в этом режиме команды");
+    expect(joined).not.toContain("token:config (недоступно)");
   });
 });

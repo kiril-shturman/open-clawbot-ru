@@ -33,20 +33,20 @@ export type ChannelsStatusOptions = {
 
 function appendEnabledConfiguredLinkedBits(bits: string[], account: Record<string, unknown>) {
   if (typeof account.enabled === "boolean") {
-    bits.push(account.enabled ? "enabled" : "disabled");
+    bits.push(account.enabled ? "включено" : "отключено");
   }
   if (typeof account.configured === "boolean") {
     if (account.configured) {
-      bits.push("configured");
+      bits.push("настроено");
       if (hasConfiguredUnavailableCredentialStatus(account)) {
-        bits.push("secret unavailable in this command path");
+        bits.push("секрет недоступен в этом режиме команды");
       }
     } else {
-      bits.push("not configured");
+      bits.push("не настроено");
     }
   }
   if (typeof account.linked === "boolean") {
-    bits.push(account.linked ? "linked" : "not linked");
+    bits.push(account.linked ? "связано" : "не связано");
   }
 }
 
@@ -63,7 +63,7 @@ function appendTokenSourceBits(bits: string[], account: Record<string, unknown>)
       return;
     }
     const status = account[statusKey];
-    const unavailable = status === "configured_unavailable" ? " (unavailable)" : "";
+    const unavailable = status === "configured_unavailable" ? " (недоступно)" : "";
     bits.push(`${label}:${source}${unavailable}`);
   };
 
@@ -96,16 +96,16 @@ function buildChannelAccountLine(
 
 export function formatGatewayChannelsStatusLines(payload: Record<string, unknown>): string[] {
   const lines: string[] = [];
-  lines.push(theme.success("Gateway reachable."));
+  lines.push(theme.success("Gateway доступен."));
   const accountLines = (provider: ChatChannel, accounts: Array<Record<string, unknown>>) =>
     accounts.map((account) => {
       const bits: string[] = [];
       appendEnabledConfiguredLinkedBits(bits, account);
       if (typeof account.running === "boolean") {
-        bits.push(account.running ? "running" : "stopped");
+        bits.push(account.running ? "запущено" : "остановлено");
       }
       if (typeof account.connected === "boolean") {
-        bits.push(account.connected ? "connected" : "disconnected");
+        bits.push(account.connected ? "подключено" : "отключено от сети");
       }
       const inboundAt =
         typeof account.lastInboundAt === "number" && Number.isFinite(account.lastInboundAt)
@@ -162,14 +162,14 @@ export function formatGatewayChannelsStatusLines(payload: Record<string, unknown
       appendBaseUrlBit(bits, account);
       const probe = account.probe as { ok?: boolean } | undefined;
       if (probe && typeof probe.ok === "boolean") {
-        bits.push(probe.ok ? "works" : "probe failed");
+        bits.push(probe.ok ? "probe ok" : "probe не прошёл");
       }
       const audit = account.audit as { ok?: boolean } | undefined;
       if (audit && typeof audit.ok === "boolean") {
-        bits.push(audit.ok ? "audit ok" : "audit failed");
+        bits.push(audit.ok ? "audit ok" : "audit с ошибкой");
       }
       if (typeof account.lastError === "string" && account.lastError) {
-        bits.push(`error:${account.lastError}`);
+        bits.push(`ошибка:${account.lastError}`);
       }
       return buildChannelAccountLine(provider, account, bits);
     });
@@ -194,17 +194,17 @@ export function formatGatewayChannelsStatusLines(payload: Record<string, unknown
   lines.push("");
   const issues = collectChannelStatusIssues(payload);
   if (issues.length > 0) {
-    lines.push(theme.warn("Warnings:"));
+    lines.push(theme.warn("Предупреждения:"));
     for (const issue of issues) {
       lines.push(
         `- ${issue.channel} ${issue.accountId}: ${issue.message}${issue.fix ? ` (${issue.fix})` : ""}`,
       );
     }
-    lines.push(`- Run: ${formatCliCommand("openclaw doctor")}`);
+    lines.push(`- Запустите: ${formatCliCommand("openclaw doctor")}`);
     lines.push("");
   }
   lines.push(
-    `Tip: ${formatDocsLink("/cli#status", "status --deep")} adds gateway health probes to status output (requires a reachable gateway).`,
+    `Подсказка: ${formatDocsLink("/cli#status", "status --deep")} добавляет проверки состояния gateway в вывод статуса (нужен доступный gateway).`,
   );
   return lines;
 }
@@ -215,12 +215,12 @@ export async function formatConfigChannelsStatusLines(
   opts?: { sourceConfig?: OpenClawConfig },
 ): Promise<string[]> {
   const lines: string[] = [];
-  lines.push(theme.warn("Gateway not reachable; showing config-only status."));
+  lines.push(theme.warn("Gateway недоступен; показываю статус только по конфигу."));
   if (meta.path) {
-    lines.push(`Config: ${meta.path}`);
+    lines.push(`Конфиг: ${meta.path}`);
   }
   if (meta.mode) {
-    lines.push(`Mode: ${meta.mode}`);
+    lines.push(`Режим: ${meta.mode}`);
   }
   if (meta.path || meta.mode) {
     lines.push("");
@@ -271,7 +271,7 @@ export async function formatConfigChannelsStatusLines(
 
   lines.push("");
   lines.push(
-    `Tip: ${formatDocsLink("/cli#status", "status --deep")} adds gateway health probes to status output (requires a reachable gateway).`,
+    `Подсказка: ${formatDocsLink("/cli#status", "status --deep")} добавляет проверки состояния gateway в вывод статуса (нужен доступный gateway).`,
   );
   return lines;
 }
@@ -281,7 +281,7 @@ export async function channelsStatusCommand(
   runtime: RuntimeEnv = defaultRuntime,
 ) {
   const timeoutMs = Number(opts.timeout ?? 10_000);
-  const statusLabel = opts.probe ? "Checking channel status (probe)…" : "Checking channel status…";
+  const statusLabel = opts.probe ? "Проверяю статус каналов (probe)…" : "Проверяю статус каналов…";
   const shouldLogStatus = opts.json !== true && !process.stderr.isTTY;
   if (shouldLogStatus) {
     runtime.log(statusLabel);
@@ -306,7 +306,7 @@ export async function channelsStatusCommand(
     }
     runtime.log(formatGatewayChannelsStatusLines(payload).join("\n"));
   } catch (err) {
-    runtime.error(`Gateway not reachable: ${String(err)}`);
+    runtime.error(`Gateway недоступен: ${String(err)}`);
     const cfg = await requireValidConfigSnapshot(runtime);
     if (!cfg) {
       return;

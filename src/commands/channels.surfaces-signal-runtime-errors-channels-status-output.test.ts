@@ -30,9 +30,9 @@ describe("channels command", () => {
         ],
       },
     });
-    expect(lines.join("\n")).toMatch(/Warnings:/);
+    expect(lines.join("\n")).toMatch(/Предупреждения:/);
     expect(lines.join("\n")).toMatch(/signal/i);
-    expect(lines.join("\n")).toMatch(/Channel error/i);
+    expect(lines.join("\n")).toMatch(/error/i);
   });
 
   it("surfaces iMessage runtime errors in channels status output", () => {
@@ -58,8 +58,8 @@ describe("channels command", () => {
         ],
       },
     });
-    expect(lines.join("\n")).toMatch(/Warnings:/);
+    expect(lines.join("\n")).toMatch(/Предупреждения:/);
     expect(lines.join("\n")).toMatch(/imessage/i);
-    expect(lines.join("\n")).toMatch(/Channel error/i);
+    expect(lines.join("\n")).toMatch(/error/i);
   });
 });

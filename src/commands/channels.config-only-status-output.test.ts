@@ -160,9 +160,9 @@ function expectResolvedTokenStatusSummary(
   options?: { includeUnavailableTokenLine?: boolean },
 ) {
   expect(summary).toContain("TokenOnly");
-  expect(summary).toContain("configured");
+  expect(summary).toContain("настроено");
   expect(summary).toContain("token:config");
-  expect(summary).not.toContain("secret unavailable in this command path");
+  expect(summary).not.toContain("секрет недоступен в этом режиме команды");
   if (options?.includeUnavailableTokenLine === false) {
     expect(summary).not.toContain("token:config (unavailable)");
   }
@@ -178,8 +178,8 @@ describe("config-only channels status output", () => {
 
     const joined = await formatLocalStatusSummary({ channels: {} });
     expect(joined).toContain("TokenOnly");
-    expect(joined).toContain("configured, secret unavailable in this command path");
-    expect(joined).toContain("token:config (unavailable)");
+    expect(joined).toContain("настроено, секрет недоступен в этом режиме команды");
+    expect(joined).toContain("token:config (недоступно)");
   });
 
   it("prefers resolved config snapshots when command-local secret resolution succeeds", async () => {
@@ -211,9 +211,9 @@ describe("config-only channels status output", () => {
 
     const joined = await formatLocalStatusSummary({ channels: {} });
     expect(joined).toContain("Slack");
-    expect(joined).toContain("configured, secret unavailable in this command path");
+    expect(joined).toContain("настроено, секрет недоступен в этом режиме команды");
     expect(joined).toContain("mode:http");
     expect(joined).toContain("bot:config");
-    expect(joined).toContain("signing:config (unavailable)");
+    expect(joined).toContain("signing:config (недоступно)");
   });
 });
