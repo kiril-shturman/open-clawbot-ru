@@ -113,7 +113,7 @@ describe("agents bind/unbind commands", () => {
         bindings: [{ agentId: "main", match: { channel: "telegram", accountId: "work" } }],
       }),
     );
-    expect(runtime.log).toHaveBeenCalledWith("Updated bindings:");
+    expect(runtime.log).toHaveBeenCalledWith("Обновлённые привязки:");
     expect(runtime.exit).not.toHaveBeenCalled();
   });
 
@@ -151,7 +151,7 @@ describe("agents bind/unbind commands", () => {
     await agentsUnbindCommand({ agent: "ops", bind: ["telegram:ops"] }, runtime);
 
     expect(writeConfigFileMock).not.toHaveBeenCalled();
-    expect(runtime.error).toHaveBeenCalledWith("Bindings are owned by another agent:");
+    expect(runtime.error).toHaveBeenCalledWith("Эти привязки принадлежат другому agent:");
     expect(runtime.exit).toHaveBeenCalledWith(1);
   });
 

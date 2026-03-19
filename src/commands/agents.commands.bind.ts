@@ -70,12 +70,12 @@ function resolveTargetAgentIdOrExit(params: {
     fallbackToDefault: true,
   });
   if (!agentId) {
-    params.runtime.error("Unable to resolve agent id.");
+    params.runtime.error("Не удалось определить agent id.");
     params.runtime.exit(1);
     return null;
   }
   if (!hasAgent(params.cfg, agentId)) {
-    params.runtime.error(`Agent "${agentId}" not found.`);
+    params.runtime.error(`Agent "${agentId}" не найден.`);
     params.runtime.exit(1);
     return null;
   }
@@ -162,12 +162,12 @@ export async function agentsBindingsCommand(
 
   const filterAgentId = resolveAgentId(cfg, opts.agent?.trim());
   if (opts.agent && !filterAgentId) {
-    runtime.error("Agent id is required.");
+    runtime.error("Требуется agent id.");
     runtime.exit(1);
     return;
   }
   if (filterAgentId && !hasAgent(cfg, filterAgentId)) {
-    runtime.error(`Agent "${filterAgentId}" not found.`);
+    runtime.error(`Agent "${filterAgentId}" не найден.`);
     runtime.exit(1);
     return;
   }
@@ -192,14 +192,16 @@ export async function agentsBindingsCommand(
 
   if (filtered.length === 0) {
     runtime.log(
-      filterAgentId ? `No routing bindings for agent "${filterAgentId}".` : "No routing bindings.",
+      filterAgentId
+        ? `Для agent "${filterAgentId}" нет routing bindings.`
+        : "Routing bindings не настроены.",
     );
     return;
   }
 
   runtime.log(
     [
-      "Routing bindings:",
+      "Привязки маршрутизации:",
       ...filtered.map((binding) => `- ${formatBindingOwnerLine(binding)}`),
     ].join("\n"),
   );
@@ -223,7 +225,7 @@ export async function agentsBindCommand(
     cfg,
     agentId,
     bindValues: opts.bind,
-    emptyMessage: "Provide at least one --bind <channel[:accountId]>.",
+    emptyMessage: "Укажите хотя бы один --bind <channel[:accountId]>.",
   });
   if (!parsed) {
     return;
@@ -251,30 +253,30 @@ export async function agentsBindCommand(
   }
 
   if (result.added.length > 0) {
-    runtime.log("Added bindings:");
+    runtime.log("Добавленные привязки:");
     for (const binding of result.added) {
       runtime.log(`- ${describeBinding(binding)}`);
     }
   } else if (result.updated.length === 0) {
-    runtime.log("No new bindings added.");
+    runtime.log("Новых привязок не добавлено.");
   }
 
   if (result.updated.length > 0) {
-    runtime.log("Updated bindings:");
+    runtime.log("Обновлённые привязки:");
     for (const binding of result.updated) {
       runtime.log(`- ${describeBinding(binding)}`);
     }
   }
 
   if (result.skipped.length > 0) {
-    runtime.log("Already present:");
+    runtime.log("Уже настроено:");
     for (const binding of result.skipped) {
       runtime.log(`- ${describeBinding(binding)}`);
     }
   }
 
   if (result.conflicts.length > 0) {
-    runtime.error("Skipped bindings already claimed by another agent:");
+    runtime.error("Пропущены привязки, уже занятые другим agent:");
     for (const conflict of result.conflicts) {
       runtime.error(`- ${describeBinding(conflict.binding)} (agent=${conflict.existingAgentId})`);
     }
@@ -295,7 +297,7 @@ export async function agentsUnbindCommand(
   }
   const { cfg, agentId } = resolved;
   if (opts.all && (opts.bind?.length ?? 0) > 0) {
-    runtime.error("Use either --all or --bind, not both.");
+    runtime.error("Используйте либо --all, либо --bind, но не оба варианта сразу.");
     runtime.exit(1);
     return;
   }
@@ -306,7 +308,7 @@ export async function agentsUnbindCommand(
     const keptRoutes = existing.filter((binding) => normalizeAgentId(binding.agentId) !== agentId);
     const nonRoutes = (cfg.bindings ?? []).filter((binding) => !isRouteBinding(binding));
     if (removed.length === 0) {
-      runtime.log(`No bindings to remove for agent "${agentId}".`);
+      runtime.log(`Для agent "${agentId}" нет привязок для удаления.`);
       return;
     }
     const next = {
@@ -327,7 +329,7 @@ export async function agentsUnbindCommand(
     if (emitJsonPayload({ runtime, json: opts.json, payload })) {
       return;
     }
-    runtime.log(`Removed ${removed.length} binding(s) for "${agentId}".`);
+    runtime.log(`Для "${agentId}" удалено привязок: ${removed.length}.`);
     return;
   }
 
@@ -336,7 +338,7 @@ export async function agentsUnbindCommand(
     cfg,
     agentId,
     bindValues: opts.bind,
-    emptyMessage: "Provide at least one --bind <channel[:accountId]> or use --all.",
+    emptyMessage: "Укажите хотя бы один --bind <channel[:accountId]> или используйте --all.",
   });
   if (!parsed) {
     return;
@@ -363,21 +365,21 @@ export async function agentsUnbindCommand(
   }
 
   if (result.removed.length > 0) {
-    runtime.log("Removed bindings:");
+    runtime.log("Удалённые привязки:");
     for (const binding of result.removed) {
       runtime.log(`- ${describeBinding(binding)}`);
     }
   } else {
-    runtime.log("No bindings removed.");
+    runtime.log("Привязки не удалены.");
   }
   if (result.missing.length > 0) {
-    runtime.log("Not found:");
+    runtime.log("Не найдено:");
     for (const binding of result.missing) {
       runtime.log(`- ${describeBinding(binding)}`);
     }
   }
   if (result.conflicts.length > 0) {
-    runtime.error("Bindings are owned by another agent:");
+    runtime.error("Эти привязки принадлежат другому agent:");
     for (const conflict of result.conflicts) {
       runtime.error(`- ${describeBinding(conflict.binding)} (agent=${conflict.existingAgentId})`);
     }

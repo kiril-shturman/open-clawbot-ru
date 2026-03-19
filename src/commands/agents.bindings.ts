@@ -302,12 +302,12 @@ export function parseBindingSpecs(params: {
     const [channelRaw, accountRaw] = trimmed.split(":", 2);
     const channel = normalizeChannelId(channelRaw);
     if (!channel) {
-      errors.push(`Unknown channel "${channelRaw}".`);
+      errors.push(`Неизвестный канал "${channelRaw}".`);
       continue;
     }
     let accountId: string | undefined = accountRaw?.trim();
     if (accountRaw !== undefined && !accountId) {
-      errors.push(`Invalid binding "${trimmed}" (empty account id).`);
+      errors.push(`Недопустимая привязка "${trimmed}" (пустой account id).`);
       continue;
     }
     accountId = resolveBindingAccountId({

@@ -164,7 +164,7 @@ export async function agentsAddCommand(
       if (bindingResult.conflicts.length > 0) {
         runtime.error(
           [
-            "Skipped bindings already claimed by another agent:",
+            "Пропущены привязки, уже занятые другим agent:",
             ...bindingResult.conflicts.map(
               (conflict) =>
                 `- ${describeBinding(conflict.binding)} (agent=${conflict.existingAgentId})`,
@@ -322,13 +322,13 @@ export async function agentsAddCommand(
         if (result.conflicts.length > 0) {
           await prompter.note(
             [
-              "Skipped bindings already claimed by another agent:",
+              "Пропущены привязки, уже занятые другим agent:",
               ...result.conflicts.map(
                 (conflict) =>
                   `- ${describeBinding(conflict.binding)} (agent=${conflict.existingAgentId})`,
               ),
             ].join("\n"),
-            "Routing bindings",
+            "Привязки маршрутизации",
           );
         }
       } else {
