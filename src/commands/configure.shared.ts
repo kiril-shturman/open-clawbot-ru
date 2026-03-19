@@ -50,25 +50,29 @@ export const CONFIGURE_SECTION_OPTIONS: Array<{
   label: string;
   hint: string;
 }> = [
-  { value: "workspace", label: "Workspace", hint: "Set workspace + sessions" },
-  { value: "model", label: "Model", hint: "Pick provider + credentials" },
-  { value: "web", label: "Web tools", hint: "Configure web search (Perplexity/Brave) + fetch" },
-  { value: "gateway", label: "Gateway", hint: "Port, bind, auth, tailscale" },
+  { value: "workspace", label: "Рабочее пространство", hint: "Настроить workspace и сессии" },
+  { value: "model", label: "Модель", hint: "Выбрать провайдера и учётные данные" },
+  {
+    value: "web",
+    label: "Веб-инструменты",
+    hint: "Настроить веб-поиск (Perplexity/Brave) и fetch",
+  },
+  { value: "gateway", label: "Gateway", hint: "Порт, bind, auth, Tailscale" },
   {
     value: "daemon",
     label: "Daemon",
-    hint: "Install/manage the background service",
+    hint: "Установить или управлять фоновым сервисом",
   },
   {
     value: "channels",
-    label: "Channels",
-    hint: "Link WhatsApp/Telegram/etc and defaults",
+    label: "Каналы",
+    hint: "Подключить WhatsApp/Telegram и значения по умолчанию",
   },
-  { value: "skills", label: "Skills", hint: "Install/enable workspace skills" },
+  { value: "skills", label: "Skills", hint: "Установить или включить skills workspace" },
   {
     value: "health",
-    label: "Health check",
-    hint: "Run gateway + channel checks",
+    label: "Проверка состояния",
+    hint: "Запустить проверки gateway и каналов",
   },
 ];
 

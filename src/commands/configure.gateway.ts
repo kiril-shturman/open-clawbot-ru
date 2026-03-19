@@ -34,9 +34,9 @@ export async function promptGatewayConfig(
 }> {
   const portRaw = guardCancel(
     await text({
-      message: "Gateway port",
+      message: "Порт gateway",
       initialValue: String(resolveGatewayPort(cfg)),
-      validate: (value) => (Number.isFinite(Number(value)) ? undefined : "Invalid port"),
+      validate: (value) => (Number.isFinite(Number(value)) ? undefined : "Некорректный порт"),
     }),
     runtime,
   );
@@ -44,32 +44,32 @@ export async function promptGatewayConfig(
 
   let bind = guardCancel(
     await select({
-      message: "Gateway bind mode",
+      message: "Режим bind для gateway",
       options: [
         {
           value: "loopback",
-          label: "Loopback (Local only)",
-          hint: "Bind to 127.0.0.1 - secure, local-only access",
+          label: "Loopback (только локально)",
+          hint: "Bind к 127.0.0.1 — безопасный доступ только с этого устройства",
         },
         {
           value: "tailnet",
-          label: "Tailnet (Tailscale IP)",
-          hint: "Bind to your Tailscale IP only (100.x.x.x)",
+          label: "Tailnet (IP Tailscale)",
+          hint: "Bind только к вашему IP Tailscale (100.x.x.x)",
         },
         {
           value: "auto",
-          label: "Auto (Loopback → LAN)",
-          hint: "Prefer loopback; fall back to all interfaces if unavailable",
+          label: "Авто (Loopback → LAN)",
+          hint: "Сначала loopback, если нельзя — переход на все интерфейсы",
         },
         {
           value: "lan",
-          label: "LAN (All interfaces)",
-          hint: "Bind to 0.0.0.0 - accessible from anywhere on your network",
+          label: "LAN (все интерфейсы)",
+          hint: "Bind к 0.0.0.0 — доступен из вашей сети",
         },
         {
           value: "custom",
-          label: "Custom IP",
-          hint: "Specify a specific IP address, with 0.0.0.0 fallback if unavailable",
+          label: "Свой IP",
+          hint: "Указать конкретный IP-адрес; при недоступности — fallback на 0.0.0.0",
         },
       ],
     }),
@@ -80,7 +80,7 @@ export async function promptGatewayConfig(
   if (bind === "custom") {
     const input = guardCancel(
       await text({
-        message: "Custom IP address",
+        message: "Пользовательский IP-адрес",
         placeholder: "192.168.1.100",
         validate: validateIPv4AddressInput,
       }),
@@ -91,14 +91,14 @@ export async function promptGatewayConfig(
 
   let authMode = guardCancel(
     await select({
-      message: "Gateway auth",
+      message: "Режим auth для gateway",
       options: [
-        { value: "token", label: "Token", hint: "Recommended default" },
-        { value: "password", label: "Password" },
+        { value: "token", label: "Token", hint: "Рекомендуемый вариант по умолчанию" },
+        { value: "password", label: "Пароль" },
         {
           value: "trusted-proxy",
           label: "Trusted Proxy",
-          hint: "Behind reverse proxy (Pomerium, Caddy, Traefik, etc.)",
+          hint: "За reverse proxy (Pomerium, Caddy, Traefik и т. д.)",
         },
       ],
       initialValue: "token",
@@ -108,7 +108,7 @@ export async function promptGatewayConfig(
 
   let tailscaleMode = guardCancel(
     await select({
-      message: "Tailscale exposure",
+      message: "Публикация через Tailscale",
       options: [...TAILSCALE_EXPOSURE_OPTIONS],
     }),
     runtime,
@@ -120,7 +120,7 @@ export async function promptGatewayConfig(
   if (tailscaleMode !== "off") {
     tailscaleBin = await findTailscaleBinary();
     if (!tailscaleBin) {
-      note(TAILSCALE_MISSING_BIN_NOTE_LINES.join("\n"), "Tailscale Warning");
+      note(TAILSCALE_MISSING_BIN_NOTE_LINES.join("\n"), "Предупреждение Tailscale");
     }
   }
 
@@ -130,7 +130,7 @@ export async function promptGatewayConfig(
     tailscaleResetOnExit = Boolean(
       guardCancel(
         await confirm({
-          message: "Reset Tailscale serve/funnel on exit?",
+          message: "Сбросить Tailscale serve/funnel при выходе?",
           initialValue: false,
         }),
         runtime,
@@ -139,12 +139,12 @@ export async function promptGatewayConfig(
   }
 
   if (tailscaleMode !== "off" && bind !== "loopback") {
-    note("Tailscale requires bind=loopback. Adjusting bind to loopback.", "Note");
+    note("Для Tailscale нужен bind=loopback. Переключаю bind на loopback.", "Заметка");
     bind = "loopback";
   }
 
   if (tailscaleMode === "funnel" && authMode !== "password") {
-    note("Tailscale funnel requires password auth.", "Note");
+    note("Для Tailscale funnel нужен auth по паролю.", "Заметка");
     authMode = "password";
   }
 
@@ -152,8 +152,8 @@ export async function promptGatewayConfig(
   // host (e.g. cloudflared, nginx, Caddy). trustedProxies must include 127.0.0.1.
   if (authMode === "trusted-proxy" && tailscaleMode !== "off") {
     note(
-      "Trusted proxy auth is incompatible with Tailscale serve/funnel. Disabling Tailscale.",
-      "Note",
+      "Auth через trusted proxy несовместим с Tailscale serve/funnel. Отключаю Tailscale.",
+      "Заметка",
     );
     tailscaleMode = "off";
     tailscaleResetOnExit = false;
@@ -171,17 +171,17 @@ export async function promptGatewayConfig(
   if (authMode === "token") {
     const tokenInputMode = guardCancel(
       await select<GatewayTokenInputMode>({
-        message: "Gateway token source",
+        message: "Источник token для gateway",
         options: [
           {
             value: "plaintext",
-            label: "Generate/store plaintext token",
-            hint: "Default",
+            label: "Сгенерировать и сохранить token в открытом виде",
+            hint: "По умолчанию",
           },
           {
             value: "ref",
-            label: "Use SecretRef",
-            hint: "Store an env-backed reference instead of plaintext",
+            label: "Использовать SecretRef",
+            hint: "Сохранить ссылку на env-переменную вместо открытого token",
           },
         ],
         initialValue: "plaintext",
@@ -191,17 +191,17 @@ export async function promptGatewayConfig(
     if (tokenInputMode === "ref") {
       const envVar = guardCancel(
         await text({
-          message: "Gateway token env var",
+          message: "Env-переменная для token gateway",
           initialValue: "OPENCLAW_GATEWAY_TOKEN",
           placeholder: "OPENCLAW_GATEWAY_TOKEN",
           validate: (value) => {
             const candidate = String(value ?? "").trim();
             if (!isValidEnvSecretRefId(candidate)) {
-              return "Use an env var name like OPENCLAW_GATEWAY_TOKEN.";
+              return "Используйте имя env-переменной вроде OPENCLAW_GATEWAY_TOKEN.";
             }
             const resolved = process.env[candidate]?.trim();
             if (!resolved) {
-              return `Environment variable "${candidate}" is missing or empty in this session.`;
+              return `Env-переменная "${candidate}" отсутствует или пуста в этой сессии.`;
             }
             return undefined;
           },
@@ -216,11 +216,14 @@ export async function promptGatewayConfig(
         }),
         id: envVarName,
       };
-      note(`Validated ${envVarName}. OpenClaw will store a token SecretRef.`, "Gateway token");
+      note(
+        `Проверка ${envVarName} пройдена. OpenClaw сохранит token как SecretRef.`,
+        "Token gateway",
+      );
     } else {
       const tokenInput = guardCancel(
         await text({
-          message: "Gateway token (blank to generate)",
+          message: "Token gateway (оставьте пустым для генерации)",
           initialValue: randomToken(),
         }),
         runtime,
@@ -233,7 +236,7 @@ export async function promptGatewayConfig(
   if (authMode === "password") {
     const password = guardCancel(
       await text({
-        message: "Gateway password",
+        message: "Пароль gateway",
         validate: validateGatewayPasswordInput,
       }),
       runtime,
@@ -244,29 +247,29 @@ export async function promptGatewayConfig(
   if (authMode === "trusted-proxy") {
     note(
       [
-        "Trusted proxy mode: OpenClaw trusts user identity from a reverse proxy.",
-        "The proxy must authenticate users and pass identity via headers.",
-        "Only requests from specified proxy IPs will be trusted.",
+        "Режим trusted proxy: OpenClaw доверяет identity пользователя от reverse proxy.",
+        "Proxy должен аутентифицировать пользователей и передавать identity в заголовках.",
+        "Доверие будет только к запросам с указанных IP-адресов proxy.",
         "",
-        "Common use cases: Pomerium, Caddy + OAuth, Traefik + forward auth",
-        "Docs: https://docs.openclaw.ai/gateway/trusted-proxy-auth",
+        "Типовые сценарии: Pomerium, Caddy + OAuth, Traefik + forward auth",
+        "Документация: https://docs.openclaw.ai/gateway/trusted-proxy-auth",
       ].join("\n"),
-      "Trusted Proxy Auth",
+      "Auth trusted proxy",
     );
 
     const userHeader = guardCancel(
       await text({
-        message: "Header containing user identity",
+        message: "Заголовок с identity пользователя",
         placeholder: "x-forwarded-user",
         initialValue: "x-forwarded-user",
-        validate: (value) => (value?.trim() ? undefined : "User header is required"),
+        validate: (value) => (value?.trim() ? undefined : "Нужно указать заголовок пользователя"),
       }),
       runtime,
     );
 
     const requiredHeadersRaw = guardCancel(
       await text({
-        message: "Required headers (comma-separated, optional)",
+        message: "Обязательные заголовки (через запятую, необязательно)",
         placeholder: "x-forwarded-proto,x-forwarded-host",
       }),
       runtime,
@@ -280,7 +283,7 @@ export async function promptGatewayConfig(
 
     const allowUsersRaw = guardCancel(
       await text({
-        message: "Allowed users (comma-separated, blank = all authenticated users)",
+        message: "Разрешённые пользователи (через запятую, пусто = все аутентифицированные)",
         placeholder: "nick@example.com,admin@company.com",
       }),
       runtime,
@@ -294,11 +297,11 @@ export async function promptGatewayConfig(
 
     const trustedProxiesRaw = guardCancel(
       await text({
-        message: "Trusted proxy IPs (comma-separated)",
+        message: "Доверенные IP-адреса proxy (через запятую)",
         placeholder: "10.0.1.10,192.168.1.5",
         validate: (value) => {
           if (!value || String(value).trim() === "") {
-            return "At least one trusted proxy IP is required";
+            return "Нужен хотя бы один доверенный IP-адрес proxy";
           }
           return undefined;
         },
