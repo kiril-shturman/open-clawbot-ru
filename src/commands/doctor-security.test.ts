@@ -47,8 +47,8 @@ describe("noteSecurityWarnings gateway exposure", () => {
     await noteSecurityWarnings(cfg);
     const message = lastMessage();
     expect(message).toContain("CRITICAL");
-    expect(message).toContain("without authentication");
-    expect(message).toContain("Safer remote access");
+    expect(message).toContain("без аутентификации");
+    expect(message).toContain("Более безопасный удалённый доступ");
     expect(message).toContain("ssh -N -L 18789:127.0.0.1:18789");
   });
 
@@ -90,7 +90,7 @@ describe("noteSecurityWarnings gateway exposure", () => {
     const cfg = { gateway: { bind: "loopback" } } as OpenClawConfig;
     await noteSecurityWarnings(cfg);
     const message = lastMessage();
-    expect(message).toContain("No channel security warnings detected");
+    expect(message).toContain("Предупреждений по безопасности каналов не найдено");
     expect(message).not.toContain("Gateway bound");
   });
 
@@ -131,7 +131,7 @@ describe("noteSecurityWarnings gateway exposure", () => {
     } as OpenClawConfig;
     await noteSecurityWarnings(cfg);
     const message = lastMessage();
-    expect(message).toContain("disables approval forwarding only");
+    expect(message).toContain("отключает только forwarding approval-запросов");
     expect(message).toContain("exec-approvals.json");
     expect(message).toContain("openclaw approvals get --gateway");
   });
@@ -150,7 +150,7 @@ describe("noteSecurityWarnings gateway exposure", () => {
     const message = lastMessage();
     expect(message).toContain("Heartbeat defaults");
     expect(message).toContain("agents.defaults.heartbeat.directPolicy");
-    expect(message).toContain("direct/DM targets by default");
+    expect(message).toContain("direct/DM-цели");
   });
 
   it("warns when a per-agent heartbeat relies on implicit directPolicy", async () => {
@@ -170,7 +170,7 @@ describe("noteSecurityWarnings gateway exposure", () => {
     const message = lastMessage();
     expect(message).toContain('Heartbeat agent "ops"');
     expect(message).toContain('heartbeat.directPolicy for agent "ops"');
-    expect(message).toContain("direct/DM targets by default");
+    expect(message).toContain("direct/DM-цели");
   });
 
   it("degrades safely when channel account resolution fails in read-only security checks", async () => {
@@ -196,7 +196,7 @@ describe("noteSecurityWarnings gateway exposure", () => {
     const message = lastMessage();
     expect(message).toContain("[secrets]");
     expect(message).toContain("failed to resolve account");
-    expect(message).toContain("Run: openclaw security audit --deep");
+    expect(message).toContain("openclaw security audit --deep");
   });
 
   it("skips heartbeat directPolicy warning when delivery is internal-only or explicit", async () => {

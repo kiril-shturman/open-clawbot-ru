@@ -1742,7 +1742,7 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
       }
     } else {
       fixHints.push(
-        `Run "${formatCliCommand("openclaw doctor --fix")}" to apply compatibility migrations.`,
+        `Запустите "${formatCliCommand("openclaw doctor --fix")}", чтобы применить миграции совместимости.`,
       );
     }
   }
@@ -1755,7 +1755,9 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
     if (shouldRepair) {
       cfg = normalized.config;
     } else {
-      fixHints.push(`Run "${formatCliCommand("openclaw doctor --fix")}" to apply these changes.`);
+      fixHints.push(
+        `Запустите "${formatCliCommand("openclaw doctor --fix")}", чтобы применить эти изменения.`,
+      );
     }
   }
 
@@ -1767,7 +1769,9 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
     if (shouldRepair) {
       cfg = autoEnable.config;
     } else {
-      fixHints.push(`Run "${formatCliCommand("openclaw doctor --fix")}" to apply these changes.`);
+      fixHints.push(
+        `Запустите "${formatCliCommand("openclaw doctor --fix")}", чтобы применить эти изменения.`,
+      );
     }
   }
 
@@ -1842,8 +1846,8 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
     if (hits.length > 0) {
       note(
         [
-          `- Telegram allowFrom contains ${hits.length} non-numeric entries (e.g. ${hits[0]?.entry ?? "@"}); Telegram authorization requires numeric sender IDs.`,
-          `- Run "${formatCliCommand("openclaw doctor --fix")}" to auto-resolve @username entries to numeric IDs (requires a Telegram bot token).`,
+          `- В Telegram allowFrom найдено ${hits.length} нечисловых ${hits.length === 1 ? "значение" : "значения"} (например, ${hits[0]?.entry ?? "@"}); для авторизации Telegram нужны числовые ID отправителей.`,
+          `- Запустите "${formatCliCommand("openclaw doctor --fix")}", чтобы автоматически преобразовать записи @username в числовые ID (потребуется bot token Telegram).`,
         ].join("\n"),
         "Doctor warnings",
       );
@@ -1853,8 +1857,8 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
     if (discordHits.length > 0) {
       note(
         [
-          `- Discord allowlists contain ${discordHits.length} numeric entries (e.g. ${discordHits[0]?.path}=${discordHits[0]?.entry}).`,
-          `- Discord IDs must be strings; run "${formatCliCommand("openclaw doctor --fix")}" to convert numeric IDs to quoted strings.`,
+          `- В allowlist Discord найдено ${discordHits.length} числовых ${discordHits.length === 1 ? "значение" : "значения"} (например, ${discordHits[0]?.path}=${discordHits[0]?.entry}).`,
+          `- ID Discord должны быть строками; запустите "${formatCliCommand("openclaw doctor --fix")}", чтобы преобразовать числовые ID в строки в кавычках.`,
         ].join("\n"),
         "Doctor warnings",
       );
@@ -1865,7 +1869,7 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
       note(
         [
           ...allowFromScan.changes,
-          `- Run "${formatCliCommand("openclaw doctor --fix")}" to add missing allowFrom wildcards.`,
+          `- Запустите "${formatCliCommand("openclaw doctor --fix")}", чтобы добавить недостающие wildcard-записи allowFrom.`,
         ].join("\n"),
         "Doctor warnings",
       );
@@ -1882,9 +1886,9 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
       const sampleLabel = sample ? `${sample.pathLabel}.${sample.key}` : "toolsBySender";
       note(
         [
-          `- Found ${toolsBySenderHits.length} legacy untyped toolsBySender key${toolsBySenderHits.length === 1 ? "" : "s"} (for example ${sampleLabel}).`,
-          "- Untyped sender keys are deprecated; use explicit prefixes (id:, e164:, username:, name:).",
-          `- Run "${formatCliCommand("openclaw doctor --fix")}" to migrate legacy keys to typed id: entries.`,
+          `- Найдено ${toolsBySenderHits.length} устаревших нетипизированных ${toolsBySenderHits.length === 1 ? "ключ" : "ключа"} toolsBySender (например, ${sampleLabel}).`,
+          "- Нетипизированные ключи отправителей устарели; используйте явные префиксы (id:, e164:, username:, name:).",
+          `- Запустите "${formatCliCommand("openclaw doctor --fix")}", чтобы мигрировать старые ключи в типизированные записи id:.`,
         ].join("\n"),
         "Doctor warnings",
       );
@@ -1898,29 +1902,29 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
       if (interpreterHits.length > 0) {
         for (const hit of interpreterHits.slice(0, 5)) {
           lines.push(
-            `- ${hit.scopePath}.safeBins includes interpreter/runtime '${hit.bin}' without profile.`,
+            `- В ${hit.scopePath}.safeBins интерпретатор/рантайм '${hit.bin}' указан без профиля.`,
           );
         }
         if (interpreterHits.length > 5) {
           lines.push(
-            `- ${interpreterHits.length - 5} more interpreter/runtime safeBins entries are missing profiles.`,
+            `- Ещё для ${interpreterHits.length - 5} записей interpreter/runtime в safeBins не хватает профилей.`,
           );
         }
       }
       if (customHits.length > 0) {
         for (const hit of customHits.slice(0, 5)) {
           lines.push(
-            `- ${hit.scopePath}.safeBins entry '${hit.bin}' is missing safeBinProfiles.${hit.bin}.`,
+            `- Для записи ${hit.scopePath}.safeBins '${hit.bin}' отсутствует safeBinProfiles.${hit.bin}.`,
           );
         }
         if (customHits.length > 5) {
           lines.push(
-            `- ${customHits.length - 5} more custom safeBins entries are missing profiles.`,
+            `- Ещё для ${customHits.length - 5} пользовательских записей safeBins не хватает профилей.`,
           );
         }
       }
       lines.push(
-        `- Run "${formatCliCommand("openclaw doctor --fix")}" to scaffold missing custom safeBinProfiles entries.`,
+        `- Запустите "${formatCliCommand("openclaw doctor --fix")}", чтобы создать недостающие записи custom safeBinProfiles.`,
       );
       note(lines.join("\n"), "Doctor warnings");
     }
@@ -1931,15 +1935,15 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
         .slice(0, 5)
         .map(
           (hit) =>
-            `- ${hit.scopePath}.safeBins entry '${hit.bin}' resolves to '${hit.resolvedPath}' outside trusted safe-bin dirs.`,
+            `- Запись ${hit.scopePath}.safeBins '${hit.bin}' разрешается в '${hit.resolvedPath}' вне доверенных каталогов safe-bin.`,
         );
       if (safeBinTrustedDirHints.length > 5) {
         lines.push(
-          `- ${safeBinTrustedDirHints.length - 5} more safeBins entries resolve outside trusted safe-bin dirs.`,
+          `- Ещё ${safeBinTrustedDirHints.length - 5} записей safeBins разрешаются вне доверенных каталогов safe-bin.`,
         );
       }
       lines.push(
-        "- If intentional, add the binary directory to tools.exec.safeBinTrustedDirs (global or agent scope).",
+        "- Если это намеренно, добавьте каталог бинарника в tools.exec.safeBinTrustedDirs (глобально или в scope агента).",
       );
       note(lines.join("\n"), "Doctor warnings");
     }
@@ -1982,14 +1986,14 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
       cfg = unknown.config;
       note(lines, "Doctor changes");
     } else {
-      note(lines, "Unknown config keys");
-      fixHints.push('Run "openclaw doctor --fix" to remove these keys.');
+      note(lines, "Неизвестные ключи config");
+      fixHints.push('Запустите "openclaw doctor --fix", чтобы удалить эти ключи.');
     }
   }
 
   if (!shouldRepair && pendingChanges) {
     const shouldApply = await params.confirm({
-      message: "Apply recommended config repairs now?",
+      message: "Применить рекомендуемые исправления config сейчас?",
       initialValue: true,
     });
     if (shouldApply) {
