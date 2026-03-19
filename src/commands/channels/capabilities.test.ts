@@ -110,6 +110,8 @@ describe("channelsCapabilitiesCommand", () => {
     await channelsCapabilitiesCommand({ channel: "slack" }, runtime);
 
     const output = logs.join("\n");
+    expect(output).toContain("Поддержка:");
+    expect(output).toContain("Действия:");
     expect(output).toContain("Bot scopes");
     expect(output).toContain("User scopes");
     expect(output).toContain("chat:write");

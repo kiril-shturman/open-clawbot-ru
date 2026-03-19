@@ -25,11 +25,11 @@ const colorValue = (value: string) => {
 };
 
 function formatEnabled(value: boolean | undefined): string {
-  return value === false ? theme.error("disabled") : theme.success("enabled");
+  return value === false ? theme.error("отключено") : theme.success("включено");
 }
 
 function formatConfigured(value: boolean): string {
-  return value ? theme.success("configured") : theme.warn("not configured");
+  return value ? theme.success("настроено") : theme.warn("не настроено");
 }
 
 function formatTokenSource(source?: string): string {
@@ -43,7 +43,7 @@ function formatSource(label: string, source?: string): string {
 }
 
 function formatLinked(value: boolean): string {
-  return value ? theme.success("linked") : theme.warn("not linked");
+  return value ? theme.success("привязано") : theme.warn("не привязано");
 }
 
 function shouldShowConfigured(channel: ChannelPlugin): boolean {
@@ -91,7 +91,7 @@ async function loadUsageWithProgress(
 ): Promise<Awaited<ReturnType<typeof loadProviderUsageSummary>> | null> {
   try {
     return await withProgress(
-      { label: "Fetching usage snapshot…", indeterminate: true, enabled: true },
+      { label: "Загрузка снимка использования…", indeterminate: true, enabled: true },
       async () => await loadProviderUsageSummary(),
     );
   } catch (err) {
@@ -131,7 +131,7 @@ export async function channelsListCommand(
   }
 
   const lines: string[] = [];
-  lines.push(theme.heading("Chat channels:"));
+  lines.push(theme.heading("Каналы чата:"));
 
   for (const plugin of plugins) {
     const accounts = plugin.config.listAccountIds(cfg);
@@ -154,12 +154,12 @@ export async function channelsListCommand(
   }
 
   lines.push("");
-  lines.push(theme.heading("Auth providers (OAuth + API keys):"));
+  lines.push(theme.heading("Провайдеры auth (OAuth + API keys):"));
   if (authProfiles.length === 0) {
-    lines.push(theme.muted("- none"));
+    lines.push(theme.muted("- нет"));
   } else {
     for (const profile of authProfiles) {
-      const external = profile.isExternal ? theme.muted(" (synced)") : "";
+      const external = profile.isExternal ? theme.muted(" (синхронизировано)") : "";
       lines.push(`- ${theme.accent(profile.id)} (${theme.success(profile.type)}${external})`);
     }
   }
@@ -179,5 +179,5 @@ export async function channelsListCommand(
   }
 
   runtime.log("");
-  runtime.log(`Docs: ${formatDocsLink("/gateway/configuration", "gateway/configuration")}`);
+  runtime.log(`Документация: ${formatDocsLink("/gateway/configuration", "gateway/configuration")}`);
 }

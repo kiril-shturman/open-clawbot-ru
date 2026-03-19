@@ -46,7 +46,7 @@ function normalizeTimeout(raw: unknown, fallback = 10_000) {
 
 function formatSupport(capabilities?: ChannelCapabilities) {
   if (!capabilities) {
-    return "unknown";
+    return "неизвестно";
   }
   const bits: string[] = [];
   if (capabilities.chatTypes?.length) {
@@ -85,7 +85,7 @@ function formatSupport(capabilities?: ChannelCapabilities) {
   if (capabilities.blockStreaming) {
     bits.push("blockStreaming");
   }
-  return bits.length ? bits.join(" ") : "none";
+  return bits.length ? bits.join(" ") : "нет";
 }
 
 function formatGenericProbeLines(probe: unknown): ChannelCapabilitiesDisplayLine[] {
@@ -95,12 +95,12 @@ function formatGenericProbeLines(probe: unknown): ChannelCapabilitiesDisplayLine
   const probeObj = probe as Record<string, unknown>;
   const ok = typeof probeObj.ok === "boolean" ? probeObj.ok : undefined;
   if (ok === true) {
-    return [{ text: "Probe: ok" }];
+    return [{ text: "Проверка: ok" }];
   }
   if (ok === false) {
     const error =
       typeof probeObj.error === "string" && probeObj.error ? ` (${probeObj.error})` : "";
-    return [{ text: `Probe: failed${error}`, tone: "error" }];
+    return [{ text: `Проверка: ошибка${error}`, tone: "error" }];
   }
   return [];
 }
@@ -213,12 +213,12 @@ export async function channelsCapabilitiesCommand(
   const rawTarget = typeof opts.target === "string" ? opts.target.trim() : "";
 
   if (opts.account && (!rawChannel || rawChannel === "all")) {
-    runtime.error(danger("--account requires a specific --channel."));
+    runtime.error(danger("--account требует указать конкретный --channel."));
     runtime.exit(1);
     return;
   }
   if (rawTarget && (!rawChannel || rawChannel === "all")) {
-    runtime.error(danger("--target requires a specific --channel."));
+    runtime.error(danger("--target требует указать конкретный --channel."));
     runtime.exit(1);
     return;
   }
@@ -236,7 +236,7 @@ export async function channelsCapabilitiesCommand(
         })();
 
   if (!selected || selected.length === 0) {
-    runtime.error(danger(`Unknown channel "${rawChannel}".`));
+    runtime.error(danger(`Неизвестный канал "${rawChannel}".`));
     runtime.exit(1);
     return;
   }
@@ -270,14 +270,14 @@ export async function channelsCapabilitiesCommand(
       accountStyle: theme.heading,
     });
     lines.push(theme.heading(label));
-    lines.push(`Support: ${formatSupport(report.support)}`);
+    lines.push(`Поддержка: ${formatSupport(report.support)}`);
     if (report.actions && report.actions.length > 0) {
-      lines.push(`Actions: ${report.actions.join(", ")}`);
+      lines.push(`Действия: ${report.actions.join(", ")}`);
     }
     if (report.configured === false || report.enabled === false) {
-      const configuredLabel = report.configured === false ? "not configured" : "configured";
-      const enabledLabel = report.enabled === false ? "disabled" : "enabled";
-      lines.push(`Status: ${configuredLabel}, ${enabledLabel}`);
+      const configuredLabel = report.configured === false ? "не настроено" : "настроено";
+      const enabledLabel = report.enabled === false ? "отключено" : "включено";
+      lines.push(`Статус: ${configuredLabel}, ${enabledLabel}`);
     }
     const probeLines =
       getChannelPlugin(report.channel)?.status?.formatCapabilitiesProbe?.({
@@ -286,7 +286,7 @@ export async function channelsCapabilitiesCommand(
     if (probeLines.length > 0) {
       lines.push(...probeLines.map(renderDisplayLine));
     } else if (report.configured && report.enabled) {
-      lines.push(theme.muted("Probe: unavailable"));
+      lines.push(theme.muted("Проверка: недоступна"));
     }
     if (report.diagnostics?.lines?.length) {
       lines.push(...report.diagnostics.lines.map(renderDisplayLine));
