@@ -214,7 +214,7 @@ describe("modelsAuthLoginCommand", () => {
       "Auth profile: openai-codex:user@example.com (openai-codex/oauth)",
     );
     expect(runtime.log).toHaveBeenCalledWith(
-      "Default model available: openai-codex/gpt-5.4 (use --set-default to apply)",
+      "Доступна модель по умолчанию: openai-codex/gpt-5.4 (используйте --set-default, чтобы применить)",
     );
   });
 
@@ -226,7 +226,9 @@ describe("modelsAuthLoginCommand", () => {
     expect(lastUpdatedConfig?.agents?.defaults?.model).toEqual({
       primary: "openai-codex/gpt-5.4",
     });
-    expect(runtime.log).toHaveBeenCalledWith("Default model set to openai-codex/gpt-5.4");
+    expect(runtime.log).toHaveBeenCalledWith(
+      "Модель по умолчанию установлена: openai-codex/gpt-5.4",
+    );
   });
 
   it("clears stale auth lockouts before attempting openai-codex login", async () => {

@@ -275,8 +275,8 @@ describe("applyAuthChoiceLoadedPluginProvider", () => {
     });
     expect(runProviderModelSelectedHook).not.toHaveBeenCalled();
     expect(note).toHaveBeenCalledWith(
-      'Default model set to ollama/qwen3:4b for agent "worker".',
-      "Model configured",
+      'Модель по умолчанию установлена: ollama/qwen3:4b для агента "worker".',
+      "Модель настроена",
     );
   });
 

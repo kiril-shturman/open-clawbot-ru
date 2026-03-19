@@ -23,8 +23,8 @@ export function createAuthChoiceAgentModelNoter(
       return;
     }
     await params.prompter.note(
-      `Default model set to ${model} for agent "${params.agentId}".`,
-      "Model configured",
+      `Модель по умолчанию установлена: ${model} для агента "${params.agentId}".`,
+      "Модель настроена",
     );
   };
 }

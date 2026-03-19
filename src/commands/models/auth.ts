@@ -253,8 +253,8 @@ async function persistProviderAuthResult(params: {
   if (params.result.defaultModel) {
     params.runtime.log(
       params.setDefault
-        ? `Default model set to ${params.result.defaultModel}`
-        : `Default model available: ${params.result.defaultModel} (use --set-default to apply)`,
+        ? `Модель по умолчанию установлена: ${params.result.defaultModel}`
+        : `Доступна модель по умолчанию: ${params.result.defaultModel} (используйте --set-default, чтобы применить)`,
     );
   }
   if (params.result.notes && params.result.notes.length > 0) {

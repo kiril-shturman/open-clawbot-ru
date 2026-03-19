@@ -204,8 +204,8 @@ export async function applyAuthChoiceLoadedPluginProvider(
         workspaceDir,
       });
       await params.prompter.note(
-        `Default model set to ${applied.defaultModel}`,
-        "Model configured",
+        `Модель по умолчанию установлена: ${applied.defaultModel}`,
+        "Модель настроена",
       );
       return { config: nextConfig };
     }
@@ -290,15 +290,15 @@ export async function applyAuthChoicePluginProvider(
         workspaceDir,
       });
       await params.prompter.note(
-        `Default model set to ${applied.defaultModel}`,
-        "Model configured",
+        `Модель по умолчанию установлена: ${applied.defaultModel}`,
+        "Модель настроена",
       );
       return { config: nextConfig };
     }
     if (params.agentId) {
       await params.prompter.note(
-        `Default model set to ${applied.defaultModel} for agent "${params.agentId}".`,
-        "Model configured",
+        `Модель по умолчанию установлена: ${applied.defaultModel} для агента "${params.agentId}".`,
+        "Модель настроена",
       );
     }
     nextConfig = restoreConfiguredPrimaryModel(nextConfig, params.config);
