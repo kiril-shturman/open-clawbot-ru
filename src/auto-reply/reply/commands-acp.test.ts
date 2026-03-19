@@ -494,8 +494,8 @@ describe("/acp command", () => {
 
     const result = await runDiscordAcpCommand("/acp spawn codex --cwd /home/bob/clawd");
 
-    expect(result?.reply?.text).toContain("Spawned ACP session agent:codex:acp:");
-    expect(result?.reply?.text).toContain("Created thread thread-created and bound it");
+    expect(result?.reply?.text).toContain("Запущена ACP session agent:codex:acp:");
+    expect(result?.reply?.text).toContain("Создан тред thread-created и привязан к");
     expect(hoisted.requireAcpRuntimeBackendMock).toHaveBeenCalledWith("acpx");
     expect(hoisted.ensureSessionMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -545,8 +545,8 @@ describe("/acp command", () => {
       "/acp spawn codex \u2014mode oneshot \u2014thread here \u2014cwd /home/bob/clawd \u2014label jeerreview",
     );
 
-    expect(result?.reply?.text).toContain("Spawned ACP session agent:codex:acp:");
-    expect(result?.reply?.text).toContain("Bound this thread to");
+    expect(result?.reply?.text).toContain("Запущена ACP session agent:codex:acp:");
+    expect(result?.reply?.text).toContain("Этот тред привязан к");
     expect(hoisted.ensureSessionMock).toHaveBeenCalledWith(
       expect.objectContaining({
         agent: "codex",
@@ -567,8 +567,8 @@ describe("/acp command", () => {
   it("binds Telegram topic ACP spawns to full conversation ids", async () => {
     const result = await runTelegramAcpCommand("/acp spawn codex --thread here");
 
-    expect(result?.reply?.text).toContain("Spawned ACP session agent:codex:acp:");
-    expect(result?.reply?.text).toContain("Bound this conversation to");
+    expect(result?.reply?.text).toContain("Запущена ACP session agent:codex:acp:");
+    expect(result?.reply?.text).toContain("Этот диалог привязан к");
     expect(result?.reply?.channelData).toEqual({ telegram: { pin: true } });
     expect(hoisted.sessionBindingBindMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -585,8 +585,8 @@ describe("/acp command", () => {
   it("binds Telegram DM ACP spawns to the DM conversation id", async () => {
     const result = await runTelegramDmAcpCommand("/acp spawn codex --thread here");
 
-    expect(result?.reply?.text).toContain("Spawned ACP session agent:codex:acp:");
-    expect(result?.reply?.text).toContain("Bound this conversation to");
+    expect(result?.reply?.text).toContain("Запущена ACP session agent:codex:acp:");
+    expect(result?.reply?.text).toContain("Этот диалог привязан к");
     expect(result?.reply?.channelData).toBeUndefined();
     expect(hoisted.sessionBindingBindMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -603,8 +603,8 @@ describe("/acp command", () => {
   it("binds Feishu DM ACP spawns to the current DM conversation", async () => {
     const result = await runFeishuDmAcpCommand("/acp spawn codex --thread here");
 
-    expect(result?.reply?.text).toContain("Spawned ACP session agent:codex:acp:");
-    expect(result?.reply?.text).toContain("Bound this thread to");
+    expect(result?.reply?.text).toContain("Запущена ACP session agent:codex:acp:");
+    expect(result?.reply?.text).toContain("Этот тред привязан к");
     expect(hoisted.sessionBindingBindMock).toHaveBeenCalledWith(
       expect.objectContaining({
         placement: "current",
@@ -620,7 +620,7 @@ describe("/acp command", () => {
   it("requires explicit ACP target when acp.defaultAgent is not configured", async () => {
     const result = await runDiscordAcpCommand("/acp spawn");
 
-    expect(result?.reply?.text).toContain("ACP target harness id is required");
+    expect(result?.reply?.text).toContain("Нужен target harness id для ACP");
     expect(hoisted.ensureSessionMock).not.toHaveBeenCalled();
   });
 
@@ -827,7 +827,7 @@ describe("/acp command", () => {
     });
     const result = await runThreadAcpCommand("/acp status", baseCfg);
 
-    expect(result?.reply?.text).toContain("ACP status:");
+    expect(result?.reply?.text).toContain("Статус ACP:");
     expect(result?.reply?.text).toContain(`session: ${defaultAcpSessionKey}`);
     expect(result?.reply?.text).toContain("id сессии агента: codex-sid-1");
     expect(result?.reply?.text).toContain("id session acpx: acpx-sid-1");
@@ -844,7 +844,7 @@ describe("/acp command", () => {
         mode: "plan",
       }),
     );
-    expect(result?.reply?.text).toContain("Updated ACP runtime mode");
+    expect(result?.reply?.text).toContain("Обновлён режим runtime для ACP");
   });
 
   it("blocks mutating /acp actions for internal operator.write clients", async () => {
@@ -902,7 +902,7 @@ describe("/acp command", () => {
         mode: "plan",
       }),
     );
-    expect(result?.reply?.text).toContain("Updated ACP runtime mode");
+    expect(result?.reply?.text).toContain("Обновлён режим runtime для ACP");
   });
 
   it("updates ACP config options and keeps cwd local when using /acp set", async () => {
@@ -915,12 +915,12 @@ describe("/acp command", () => {
         value: "gpt-5.3-codex",
       }),
     );
-    expect(setModel?.reply?.text).toContain("Updated ACP config option");
+    expect(setModel?.reply?.text).toContain("Обновлена опция конфигурации ACP");
 
     hoisted.setConfigOptionMock.mockClear();
     const setCwd = await runThreadAcpCommand("/acp set cwd /tmp/worktree", baseCfg);
     expect(hoisted.setConfigOptionMock).not.toHaveBeenCalled();
-    expect(setCwd?.reply?.text).toContain("Updated ACP cwd");
+    expect(setCwd?.reply?.text).toContain("Обновлён cwd для ACP");
   });
 
   it("rejects non-absolute cwd values via ACP runtime option validation", async () => {
@@ -952,7 +952,7 @@ describe("/acp command", () => {
 
     const result = await runDiscordAcpCommand("/acp doctor", baseCfg);
 
-    expect(result?.reply?.text).toContain("ACP doctor:");
+    expect(result?.reply?.text).toContain("Диагностика ACP:");
     expect(result?.reply?.text).toContain("healthy: no");
     expect(result?.reply?.text).toContain("next:");
   });
@@ -960,7 +960,7 @@ describe("/acp command", () => {
   it("shows deterministic install instructions via /acp install", async () => {
     const result = await runDiscordAcpCommand("/acp install", baseCfg);
 
-    expect(result?.reply?.text).toContain("ACP install:");
+    expect(result?.reply?.text).toContain("Установка ACP:");
     expect(result?.reply?.text).toContain("run:");
     expect(result?.reply?.text).toContain("then: /acp doctor");
   });

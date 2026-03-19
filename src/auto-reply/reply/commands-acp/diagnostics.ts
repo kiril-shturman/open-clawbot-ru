@@ -31,7 +31,7 @@ export async function handleAcpDoctorAction(
   const installHint = resolveAcpInstallCommandHint(params.cfg);
   const registeredBackend = getAcpRuntimeBackend(backendId);
   const managerSnapshot = getAcpSessionManager().getObservabilitySnapshot(params.cfg);
-  const lines = ["ACP doctor:", "-----", `configuredBackend: ${backendId}`];
+  const lines = ["Диагностика ACP:", "-----", `configuredBackend: ${backendId}`];
   lines.push(`activeRuntimeSessions: ${managerSnapshot.runtimeCache.activeSessions}`);
   lines.push(`runtimeIdleTtlMs: ${managerSnapshot.runtimeCache.idleTtlMs}`);
   lines.push(`evictedIdleRuntimes: ${managerSnapshot.runtimeCache.evictedTotal}`);
@@ -46,12 +46,12 @@ export async function handleAcpDoctorAction(
   const errorStatsText =
     Object.entries(managerSnapshot.errorsByCode)
       .map(([code, count]) => `${code}=${count}`)
-      .join(", ") || "(none)";
+      .join(", ") || "(нет)";
   lines.push(`errorCodes: ${errorStatsText}`);
   if (registeredBackend) {
     lines.push(`registeredBackend: ${registeredBackend.id}`);
   } else {
-    lines.push("registeredBackend: (none)");
+    lines.push("registeredBackend: (нет)");
   }
 
   if (registeredBackend?.runtime.doctor) {
@@ -73,7 +73,7 @@ export async function handleAcpDoctorAction(
           toAcpRuntimeError({
             error,
             fallbackCode: "ACP_TURN_FAILED",
-            fallbackMessage: "Runtime doctor failed.",
+            fallbackMessage: "Диагностика runtime завершилась ошибкой.",
           }).message
         })`,
       );
@@ -95,7 +95,7 @@ export async function handleAcpDoctorAction(
     const acpError = toAcpRuntimeError({
       error,
       fallbackCode: "ACP_TURN_FAILED",
-      fallbackMessage: "ACP backend doctor failed.",
+      fallbackMessage: "Диагностика backend ACP завершилась ошибкой.",
     });
     lines.push("healthy: no");
     lines.push(formatAcpRuntimeErrorText(acpError));
@@ -118,7 +118,7 @@ export function handleAcpInstallAction(
   const backendId = resolveConfiguredAcpBackendId(params.cfg);
   const installHint = resolveAcpInstallCommandHint(params.cfg);
   const lines = [
-    "ACP install:",
+    "Установка ACP:",
     "-----",
     `configuredBackend: ${backendId}`,
     `run: ${installHint}`,
@@ -154,7 +154,7 @@ export function handleAcpSessionsAction(
 
   const currentSessionKey = resolveBoundAcpThreadSessionKey(params) || params.sessionKey;
   if (!currentSessionKey) {
-    return stopWithText("⚠️ Missing session key.");
+    return stopWithText("⚠️ Отсутствует session key.");
   }
 
   const { storePath } = resolveSessionStorePathForAcp({
@@ -196,7 +196,7 @@ export function handleAcpSessionsAction(
     .filter(Boolean);
 
   if (rows.length === 0) {
-    return stopWithText("ACP sessions:\n-----\n(none)");
+    return stopWithText("ACP sessions:\n-----\n(нет)");
   }
 
   return stopWithText(["ACP sessions:", "-----", ...rows].join("\n"));

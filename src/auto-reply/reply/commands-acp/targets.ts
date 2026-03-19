@@ -63,7 +63,7 @@ export async function resolveAcpTargetSessionKey(params: {
     if (!resolved) {
       return {
         ok: false,
-        error: `Unable to resolve session target: ${token}`,
+        error: `Не удалось определить target session: ${token}`,
       };
     }
     return { ok: true, sessionKey: resolved };
@@ -83,7 +83,7 @@ export async function resolveAcpTargetSessionKey(params: {
   if (!fallback) {
     return {
       ok: false,
-      error: "Missing session key.",
+      error: "Отсутствует session key.",
     };
   }
   return {

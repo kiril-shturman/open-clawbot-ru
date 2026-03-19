@@ -350,19 +350,25 @@ export async function handleAcpSpawnAction(
   }
 
   const parts = [
-    `✅ Spawned ACP session ${sessionKey} (${spawn.mode}, backend ${initializedBackend}).`,
+    `✅ Запущена ACP session ${sessionKey} (${spawn.mode}, backend ${initializedBackend}).`,
   ];
   if (binding) {
     const currentConversationId = resolveAcpCommandConversationId(params)?.trim() || "";
     const boundConversationId = binding.conversation.conversationId.trim();
     const placementLabel = binding.conversation.channel === "telegram" ? "conversation" : "thread";
     if (currentConversationId && boundConversationId === currentConversationId) {
-      parts.push(`Bound this ${placementLabel} to ${sessionKey}.`);
+      parts.push(
+        `Этот ${placementLabel === "conversation" ? "диалог" : "тред"} привязан к ${sessionKey}.`,
+      );
     } else {
-      parts.push(`Created ${placementLabel} ${boundConversationId} and bound it to ${sessionKey}.`);
+      parts.push(
+        `Создан ${placementLabel === "conversation" ? "диалог" : "тред"} ${boundConversationId} и привязан к ${sessionKey}.`,
+      );
     }
   } else {
-    parts.push("Session is unbound (use /focus <session-key> to bind this thread/conversation).");
+    parts.push(
+      "Session не привязана (используйте /focus <session-key>, чтобы привязать этот тред/диалог).",
+    );
   }
 
   const dispatchNote = resolveAcpDispatchPolicyMessage(params.cfg);

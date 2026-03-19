@@ -120,14 +120,14 @@ export async function handleAcpStatusAction(
         sessionKey: targetSessionKey,
       }),
     fallbackCode: "ACP_TURN_FAILED",
-    fallbackMessage: "Could not read ACP session status.",
+    fallbackMessage: "Не удалось прочитать статус ACP session.",
     onSuccess: (status) => {
       const sessionIdentifierLines = resolveAcpSessionIdentifierLinesFromIdentity({
         backend: status.backend,
         identity: status.identity,
       });
       const lines = [
-        "ACP status:",
+        "Статус ACP:",
         "-----",
         `session: ${status.sessionKey}`,
         `backend: ${status.backend}`,
@@ -172,10 +172,10 @@ export async function handleAcpSetModeAction(
           };
         },
         fallbackCode: "ACP_TURN_FAILED",
-        fallbackMessage: "Could not update ACP runtime mode.",
+        fallbackMessage: "Не удалось обновить режим runtime для ACP.",
         onSuccess: ({ runtimeMode, options }) =>
           stopWithText(
-            `✅ Updated ACP runtime mode for ${targetSessionKey}: ${runtimeMode}. Effective options: ${formatRuntimeOptionsText(options)}`,
+            `✅ Обновлён режим runtime для ACP у ${targetSessionKey}: ${runtimeMode}. Итоговые опции: ${formatRuntimeOptionsText(options)}`,
           ),
       }),
   });
@@ -210,7 +210,7 @@ export async function handleAcpSetAction(
           patch: { cwd },
         });
         return {
-          text: `✅ Updated ACP cwd for ${target.sessionKey}: ${cwd}. Effective options: ${formatRuntimeOptionsText(options)}`,
+          text: `✅ Обновлён cwd для ACP у ${target.sessionKey}: ${cwd}. Итоговые опции: ${formatRuntimeOptionsText(options)}`,
         };
       }
       const validated = validateRuntimeConfigOptionInput(key, value);
@@ -221,11 +221,11 @@ export async function handleAcpSetAction(
         value: validated.value,
       });
       return {
-        text: `✅ Updated ACP config option for ${target.sessionKey}: ${validated.key}=${validated.value}. Effective options: ${formatRuntimeOptionsText(options)}`,
+        text: `✅ Обновлена опция конфигурации ACP у ${target.sessionKey}: ${validated.key}=${validated.value}. Итоговые опции: ${formatRuntimeOptionsText(options)}`,
       };
     },
     fallbackCode: "ACP_TURN_FAILED",
-    fallbackMessage: "Could not update ACP config option.",
+    fallbackMessage: "Не удалось обновить опцию конфигурации ACP.",
     onSuccess: ({ text }) => stopWithText(text),
   });
 }
@@ -253,10 +253,10 @@ export async function handleAcpCwdAction(
           };
         },
         fallbackCode: "ACP_TURN_FAILED",
-        fallbackMessage: "Could not update ACP cwd.",
+        fallbackMessage: "Не удалось обновить cwd для ACP.",
         onSuccess: ({ cwd, options }) =>
           stopWithText(
-            `✅ Updated ACP cwd for ${targetSessionKey}: ${cwd}. Effective options: ${formatRuntimeOptionsText(options)}`,
+            `✅ Обновлён cwd для ACP у ${targetSessionKey}: ${cwd}. Итоговые опции: ${formatRuntimeOptionsText(options)}`,
           ),
       }),
   });
@@ -286,10 +286,10 @@ export async function handleAcpPermissionsAction(
           };
         },
         fallbackCode: "ACP_TURN_FAILED",
-        fallbackMessage: "Could not update ACP permissions profile.",
+        fallbackMessage: "Не удалось обновить профиль permissions для ACP.",
         onSuccess: ({ permissionProfile, options }) =>
           stopWithText(
-            `✅ Updated ACP permissions profile for ${targetSessionKey}: ${permissionProfile}. Effective options: ${formatRuntimeOptionsText(options)}`,
+            `✅ Обновлён профиль permissions для ACP у ${targetSessionKey}: ${permissionProfile}. Итоговые опции: ${formatRuntimeOptionsText(options)}`,
           ),
       }),
   });
@@ -319,10 +319,10 @@ export async function handleAcpTimeoutAction(
           };
         },
         fallbackCode: "ACP_TURN_FAILED",
-        fallbackMessage: "Could not update ACP timeout.",
+        fallbackMessage: "Не удалось обновить timeout для ACP.",
         onSuccess: ({ timeoutSeconds, options }) =>
           stopWithText(
-            `✅ Updated ACP timeout for ${targetSessionKey}: ${timeoutSeconds}s. Effective options: ${formatRuntimeOptionsText(options)}`,
+            `✅ Обновлён timeout для ACP у ${targetSessionKey}: ${timeoutSeconds}s. Итоговые опции: ${formatRuntimeOptionsText(options)}`,
           ),
       }),
   });
@@ -352,10 +352,10 @@ export async function handleAcpModelAction(
           };
         },
         fallbackCode: "ACP_TURN_FAILED",
-        fallbackMessage: "Could not update ACP model.",
+        fallbackMessage: "Не удалось обновить модель ACP.",
         onSuccess: ({ model, options }) =>
           stopWithText(
-            `✅ Updated ACP model for ${targetSessionKey}: ${model}. Effective options: ${formatRuntimeOptionsText(options)}`,
+            `✅ Обновлена модель ACP у ${targetSessionKey}: ${model}. Итоговые опции: ${formatRuntimeOptionsText(options)}`,
           ),
       }),
   });
@@ -381,7 +381,7 @@ export async function handleAcpResetOptionsAction(
         sessionKey: targetSessionKey,
       }),
     fallbackCode: "ACP_TURN_FAILED",
-    fallbackMessage: "Could not reset ACP runtime options.",
-    onSuccess: () => stopWithText(`✅ Reset ACP runtime options for ${targetSessionKey}.`),
+    fallbackMessage: "Не удалось сбросить runtime options для ACP.",
+    onSuccess: () => stopWithText(`✅ Сброшены runtime options для ACP у ${targetSessionKey}.`),
   });
 }
