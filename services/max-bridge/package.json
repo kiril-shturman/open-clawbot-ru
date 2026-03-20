@@ -1,0 +1,14 @@
+{
+  "name": "max-bridge",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.mjs",
+    "start": "node src/index.mjs"
+  },
+  "dependencies": {
+    "@max-messenger/max-bot-api": "github:max-messenger/max-bot-api-client-ts",
+    "dotenv": "^16.4.5"
+  }
+}
