@@ -4,10 +4,11 @@
 - ✅ MVP standalone bot working (`services/max-bridge/`)
 - ✅ Core channel integration created (`extensions/max/`)
 - ✅ Error handling and logging implemented
-- ✅ Media handling structure created
+- ✅ Media handling IMPLEMENTED (upload + download + fallbacks)
 - ✅ Account management added
 - ✅ Setup wizard created
 - ✅ Documentation written
+- ✅ Unit tests written (media, accounts, logger)
 - ⏳ Testing with real MAX bot needed
 
 ## Completed ✅
@@ -33,11 +34,11 @@
 - ✅ `src/setup.ts` - Setup wizard
 
 ### 3. Integration Points
-- ✅ Register channel in plugin registry
+- ✅ Register channel in plugin registry (auto-discovery)
 - ✅ Implement OpenClaw channel interface
 - ✅ Support session management
 - ✅ Support allowlists/pairing
-- ⏳ Support media attachments (structure done, upload pending)
+- ✅ Support media attachments (download + upload + fallbacks)
 - ❌ Support reactions (MAX API limitation)
 
 ### 4. Documentation
@@ -50,7 +51,8 @@
 
 ### 5. Testing
 - ❌ Test with real MAX bot (PRIORITY)
-- ❌ Unit tests for bot logic
+- ✅ Unit tests for media, accounts, logger
+- ⏳ Unit tests for bot, send, monitor (in progress)
 - ❌ Integration tests
 - ❌ E2E tests with real MAX API
 
@@ -61,7 +63,7 @@
 - ❌ Add to plugin registry
 
 ### 7. Additional Features
-- ❌ Complete media upload implementation
+- ✅ Complete media upload implementation (with 4-level fallback)
 - ❌ Support message editing (if MAX API supports)
 - ❌ Support message deletion (if MAX API supports)
 - ❌ Enhanced group chat support
@@ -76,35 +78,38 @@
 
 ## Next Steps (Priority Order)
 
-1. **TEST WITH REAL BOT** ⚠️
+1. **TEST WITH REAL BOT** ⚠️ HIGHEST PRIORITY
    - Get actual MAX bot token
    - Test basic send/receive
    - Verify allowlist works
    - Check session management
+   - Test media sending
 
 2. **Fix any bugs found** 🐛
    - Address test failures
    - Improve error handling as needed
+   - Adjust media upload based on real MAX API behavior
 
-3. **Complete media implementation** 📎
-   - Implement media upload
-   - Test image sending
-   - Test file attachments
+3. **Complete unit tests** 🧪
+   - Add tests for bot.ts
+   - Add tests for send.ts  
+   - Add tests for monitor.ts
+   - Run test suite
 
-4. **Write tests** 🧪
-   - Unit tests for core logic
-   - Integration tests
-   - E2E with mock bot
+4. **Integration tests** 🔗
+   - Write integration tests with mock bot
+   - Test Gateway integration
+   - Test session flow
 
-5. **Register plugin** 📦
-   - Add to main OpenClaw plugin registry
-   - Update CLI
-   - Update setup wizard
+5. **Polish** ✨
+   - Code review
+   - Clean up any TODOs in code
+   - Update CHANGELOG
 
 6. **Submit PR** 🚀
-   - Clean up code
-   - Write PR description
-   - Request review
+   - Merge to main
+   - Publish to OpenClaw community
+   - Write announcement
 
 ## Known Issues
 
@@ -129,4 +134,4 @@
 
 ---
 
-**Progress:** ~70% complete (core done, needs testing & integration)
+**Progress:** ~90% complete (core + media + tests done, needs real-world testing)
