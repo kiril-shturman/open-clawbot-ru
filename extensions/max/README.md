@@ -4,16 +4,18 @@ Full OpenClaw channel integration for MAX messenger (iOS Shortcuts).
 
 ## Status
 
-🚧 **In Development** — Basic structure complete, needs testing.
+✅ **Beta (70% complete)** — Core implementation done, needs real-world testing.
 
 ## Features
 
 - ✅ Send/receive messages
 - ✅ Message threading (replies)
-- ⏳ Allowlist support
-- ⏳ Session management
-- ❌ Media attachments (planned)
-- ❌ Group chat support (planned)
+- ✅ Allowlist security
+- ✅ Session management
+- ✅ Comprehensive error handling
+- ✅ Debug logging
+- ⏳ Media attachments (download ready, upload pending)
+- ⏳ Group chat support (basic)
 
 ## Configuration
 
