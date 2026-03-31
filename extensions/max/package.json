@@ -1,0 +1,9 @@
+{
+  "name": "@openclaw/channel-max",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./index.ts"
+  }
+}

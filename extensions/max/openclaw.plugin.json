@@ -1,0 +1,24 @@
+{
+  "id": "max",
+  "channels": ["max"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "port": {
+        "type": "number",
+        "default": 3033,
+        "description": "Port for Max/iOS Shortcuts HTTP endpoint"
+      },
+      "apiKey": {
+        "type": "string",
+        "description": "API key for authenticating iOS Shortcuts requests"
+      },
+      "allowFrom": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Allowlist of device IDs or user IDs"
+      }
+    }
+  }
+}
