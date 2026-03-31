@@ -69,26 +69,40 @@ async function llmReply({ chatId, _userId, text }) {
 const bot = new Bot(TOKEN);
 
 bot.on("message_created", async (ctx) => {
+  console.log("📨 Message received:", JSON.stringify(ctx.message, null, 2));
   try {
     const msg = ctx.message?.body;
     const text = msg?.text || msg?.caption || "";
+    console.log("📝 Text extracted:", text);
+
     if (!text.trim()) {
+      console.log("⚠️  Empty text, skipping");
       return;
     }
 
     const chatId = msg.chat_id;
     const userId = msg.user_id;
+    console.log(`💬 Processing message from user ${userId} in chat ${chatId}`);
 
     const replyText = await llmReply({ chatId, userId, text });
+    console.log("🤖 LLM reply:", replyText.slice(0, 100) + "...");
 
     await ctx.reply(replyText, {
       // reply threading if supported
       link: msg.mid ? { type: "reply", mid: msg.mid } : undefined,
     });
+    console.log("✅ Reply sent");
   } catch (e) {
-    console.error("handler error", e);
+    console.error("❌ Handler error:", e);
   }
 });
 
-console.log("MAX bridge starting…");
+// Add error handler
+bot.on("error", (err) => {
+  console.error("❌ Bot error:", err);
+});
+
+console.log("🚀 MAX bridge starting…");
+console.log("🔑 Token:", TOKEN.slice(0, 20) + "...");
 await bot.start();
+console.log("✅ Bot started and listening for messages");
