@@ -5,20 +5,32 @@ import { getMaxRuntime, setMaxRuntime } from "./runtime.js";
 import { createMaxBot, type MaxInboundMessage } from "./bot.js";
 import { sendMaxMessage } from "./send.js";
 import { handleMaxInbound } from "./monitor.js";
+import { getDefaultMaxAccount, validateMaxToken } from "./accounts.js";
+import { logger } from "./logger.js";
 
 export const maxPlugin: ChannelPlugin = {
   id: "max",
   channelId: "max",
   
   async start(config: OpenClawConfig) {
-    const maxConfig = config.channels?.max || {};
-    const token = maxConfig.token || process.env.MAX_BOT_TOKEN;
-
-    if (!token) {
-      throw new Error("[MAX] MAX_BOT_TOKEN is required");
+    logger.info("Starting MAX channel...");
+    
+    const account = getDefaultMaxAccount(config);
+    if (!account) {
+      const error = new Error(
+        "MAX_BOT_TOKEN not configured. Set MAX_BOT_TOKEN environment variable or add channels.max.token to config."
+      );
+      logger.error("Start failed:", error.message);
+      throw error;
     }
 
-    console.log("[MAX] Starting MAX channel...");
+    const token = account.token;
+    
+    if (!validateMaxToken(token)) {
+      logger.warn("Token validation failed - continuing anyway");
+    }
+
+    logger.info(`Starting with account: ${account.label || account.accountId}`);
 
     const bot = await createMaxBot({
       token,
@@ -44,12 +56,17 @@ export const maxPlugin: ChannelPlugin = {
   },
 
   async stop() {
-    console.log("[MAX] Stopping MAX channel...");
-    const runtime = getMaxRuntime();
-    if (runtime.channel?.max?.stopServer) {
-      await runtime.channel.max.stopServer();
+    logger.info("Stopping MAX channel...");
+    try {
+      const runtime = getMaxRuntime();
+      if (runtime.channel?.max?.stopServer) {
+        await runtime.channel.max.stopServer();
+      }
+      logger.success("MAX channel stopped successfully");
+    } catch (err) {
+      logger.error("Error during channel stop:", err);
+      throw err;
     }
-    console.log("[MAX] Channel stopped");
   },
 
   async send(params) {
