@@ -4,6 +4,7 @@
 import { Bot } from "@max-messenger/max-bot-api";
 import type { OpenClawConfig } from "openclaw/plugin-sdk/core";
 import { getMaxRuntime } from "./runtime.js";
+import { logger } from "./logger.js";
 
 export interface MaxBotOptions {
   token: string;
@@ -24,15 +25,31 @@ export interface MaxInboundMessage {
 }
 
 export async function createMaxBot(options: MaxBotOptions) {
-  const bot = new Bot(options.token);
+  logger.info("Creating MAX bot...");
+  
+  let bot: Bot;
+  try {
+    bot = new Bot(options.token);
+  } catch (err) {
+    logger.error("Failed to create bot instance:", err);
+    throw new Error(`MAX bot initialization failed: ${err}`);
+  }
 
   bot.on("message_created", async (ctx) => {
     try {
+      logger.debug("Message event received:", ctx.message);
+      
       const msg = ctx.message?.body;
-      if (!msg) return;
+      if (!msg) {
+        logger.debug("Empty message body, skipping");
+        return;
+      }
 
       const text = msg.text || msg.caption || "";
-      if (!text.trim()) return;
+      if (!text.trim()) {
+        logger.debug("Empty text content, skipping");
+        return;
+      }
 
       const inboundMsg: MaxInboundMessage = {
         chatId: msg.chat_id,
@@ -43,34 +60,56 @@ export async function createMaxBot(options: MaxBotOptions) {
         attachments: extractAttachments(msg),
       };
 
+      logger.info(`Incoming message from user ${inboundMsg.userId} in chat ${inboundMsg.chatId}`);
       await options.onMessage(inboundMsg);
     } catch (err) {
-      console.error("[MAX] Message handler error:", err);
+      logger.error("Message handler error:", err);
+      // Don't throw - we want to continue processing other messages
     }
   });
 
   bot.on("error", (err) => {
-    console.error("[MAX] Bot error:", err);
+    logger.error("Bot error:", err);
   });
 
-  await bot.start();
-  console.log("[MAX] Bot started and listening");
+  try {
+    await bot.start();
+    logger.success("Bot started and listening for messages");
+  } catch (err) {
+    logger.error("Failed to start bot:", err);
+    throw new Error(`MAX bot start failed: ${err}`);
+  }
 
   return {
     bot,
     async stop() {
-      await bot.stop();
+      try {
+        logger.info("Stopping bot...");
+        await bot.stop();
+        logger.success("Bot stopped");
+      } catch (err) {
+        logger.error("Error stopping bot:", err);
+        throw err;
+      }
     },
     async sendMessage(params: {
       chatId: string;
       text: string;
       replyToMid?: string;
     }) {
-      return await bot.sendMessage({
-        chat_id: params.chatId,
-        text: params.text,
-        link: params.replyToMid ? { type: "reply", mid: params.replyToMid } : undefined,
-      });
+      try {
+        logger.debug(`Sending message to chat ${params.chatId}:`, params.text.slice(0, 50));
+        const result = await bot.sendMessage({
+          chat_id: params.chatId,
+          text: params.text,
+          link: params.replyToMid ? { type: "reply", mid: params.replyToMid } : undefined,
+        });
+        logger.debug("Message sent successfully:", result);
+        return result;
+      } catch (err) {
+        logger.error(`Failed to send message to chat ${params.chatId}:`, err);
+        throw err;
+      }
     },
   };
 }
