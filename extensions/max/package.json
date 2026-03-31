@@ -5,5 +5,10 @@
   "private": true,
   "exports": {
     ".": "./index.ts"
-  }
+  },
+  "dependencies": {
+    "@max-messenger/max-bot-api": "github:max-messenger/max-bot-api-client-ts"
+  },
+  "devDependencies": {},
+  "description": "MAX (iOS Shortcuts) channel plugin for OpenClaw"
 }
