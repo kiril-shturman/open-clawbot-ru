@@ -4,6 +4,7 @@
 import type { OpenClawConfig } from "openclaw/plugin-sdk/core";
 import { getMaxBot } from "./bot.js";
 import { logger } from "./logger.js";
+import { validateMediaUrl, downloadMedia } from "./media.js";
 
 export interface MaxSendParams {
   to: string; // chatId
@@ -11,6 +12,7 @@ export interface MaxSendParams {
   cfg: OpenClawConfig;
   mediaUrl?: string | null;
   replyToId?: string | null;
+  mediaLocalRoots?: readonly string[] | null;
 }
 
 export async function sendMaxMessage(params: MaxSendParams) {
@@ -31,6 +33,26 @@ export async function sendMaxMessage(params: MaxSendParams) {
   }
 
   logger.debug(`Sending to ${chatId}: ${params.text.slice(0, 100)}...`);
+
+  // Handle media if present
+  if (params.mediaUrl) {
+    logger.debug(`Media URL provided: ${params.mediaUrl}`);
+    
+    if (!validateMediaUrl(params.mediaUrl)) {
+      logger.warn(`Invalid media URL: ${params.mediaUrl}`);
+      // Continue without media rather than failing
+    } else {
+      try {
+        // Download and attach media
+        // Note: MAX Bot API might need specific media handling
+        // This is a placeholder for future implementation
+        logger.warn("Media sending not fully implemented yet - sending text only");
+      } catch (err) {
+        logger.error("Failed to process media, sending text only:", err);
+        // Continue with text-only message
+      }
+    }
+  }
 
   try {
     const result = await bot.sendMessage({
