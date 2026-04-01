@@ -71,8 +71,9 @@ const bot = new Bot(TOKEN);
 bot.on("message_created", async (ctx) => {
   console.log("📨 Message received:", JSON.stringify(ctx.message, null, 2));
   try {
-    const msg = ctx.message?.body;
-    const text = msg?.text || msg?.caption || "";
+    const msg = ctx.message;
+    const body = msg?.body;
+    const text = body?.text || body?.caption || "";
     console.log("📝 Text extracted:", text);
 
     if (!text.trim()) {
@@ -80,16 +81,18 @@ bot.on("message_created", async (ctx) => {
       return;
     }
 
-    const chatId = msg.chat_id;
-    const userId = msg.user_id;
-    console.log(`💬 Processing message from user ${userId} in chat ${chatId}`);
+    // Fix: correct structure parsing
+    const chatId = msg?.recipient?.chat_id;
+    const userId = msg?.sender?.user_id;
+    const userName = msg?.sender?.name || msg?.sender?.first_name || "Unknown";
+    console.log(`💬 Processing message from ${userName} (user ${userId}) in chat ${chatId}`);
 
     const replyText = await llmReply({ chatId, userId, text });
     console.log("🤖 LLM reply:", replyText.slice(0, 100) + "...");
 
     await ctx.reply(replyText, {
       // reply threading if supported
-      link: msg.mid ? { type: "reply", mid: msg.mid } : undefined,
+      link: body?.mid ? { type: "reply", mid: body.mid } : undefined,
     });
     console.log("✅ Reply sent");
   } catch (e) {

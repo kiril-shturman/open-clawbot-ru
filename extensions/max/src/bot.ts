@@ -3,8 +3,8 @@
  */
 import { Bot } from "@max-messenger/max-bot-api";
 import type { OpenClawConfig } from "openclaw/plugin-sdk/core";
-import { getMaxRuntime } from "./runtime.js";
 import { logger } from "./logger.js";
+import { getMaxRuntime } from "./runtime.js";
 
 export interface MaxBotOptions {
   token: string;
@@ -15,9 +15,11 @@ export interface MaxBotOptions {
 export interface MaxInboundMessage {
   chatId: string;
   userId: string;
+  userName?: string;
   text: string;
   mid?: string; // message ID for threading
   timestamp: number;
+  chatType?: string; // "dialog" | "group" etc.
   attachments?: Array<{
     type: string;
     url?: string;
@@ -26,7 +28,7 @@ export interface MaxInboundMessage {
 
 export async function createMaxBot(options: MaxBotOptions) {
   logger.info("Creating MAX bot...");
-  
+
   let bot: Bot;
   try {
     bot = new Bot(options.token);
@@ -38,7 +40,7 @@ export async function createMaxBot(options: MaxBotOptions) {
   bot.on("message_created", async (ctx) => {
     try {
       logger.debug("Message event received:", ctx.message);
-      
+
       const msg = ctx.message?.body;
       if (!msg) {
         logger.debug("Empty message body, skipping");
@@ -51,12 +53,18 @@ export async function createMaxBot(options: MaxBotOptions) {
         return;
       }
 
+      // Extract data from MAX message structure
+      const recipient = ctx.message?.recipient;
+      const sender = ctx.message?.sender;
+
       const inboundMsg: MaxInboundMessage = {
-        chatId: msg.chat_id,
-        userId: msg.user_id,
+        chatId: String(recipient?.chat_id || msg.chat_id),
+        userId: String(sender?.user_id || msg.user_id),
+        userName: sender?.name || sender?.first_name || undefined,
+        chatType: recipient?.chat_type || "dialog",
         text,
         mid: msg.mid,
-        timestamp: msg.timestamp || Date.now(),
+        timestamp: ctx.message?.timestamp || Date.now(),
         attachments: extractAttachments(msg),
       };
 
@@ -92,11 +100,7 @@ export async function createMaxBot(options: MaxBotOptions) {
         throw err;
       }
     },
-    async sendMessage(params: {
-      chatId: string;
-      text: string;
-      replyToMid?: string;
-    }) {
+    async sendMessage(params: { chatId: string; text: string; replyToMid?: string }) {
       try {
         logger.debug(`Sending message to chat ${params.chatId}:`, params.text.slice(0, 50));
         const result = await bot.sendMessage({
@@ -116,7 +120,7 @@ export async function createMaxBot(options: MaxBotOptions) {
 
 function extractAttachments(msg: any) {
   const attachments: Array<{ type: string; url?: string }> = [];
-  
+
   if (msg.photo) {
     attachments.push({ type: "photo", url: msg.photo });
   }
